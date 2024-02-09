@@ -7,7 +7,7 @@ const express_1 = __importDefault(require("express"));
 const express_ws_1 = __importDefault(require("express-ws"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
-const whitelist_1 = require("./config/whitelist");
+const cors_config_1 = require("./config/cors-config");
 const create_1 = __importDefault(require("./routes/create"));
 require("./db/index");
 const encrypt_decrypt_1 = require("./utils/encrypt-decrypt");
@@ -17,25 +17,7 @@ const app = (0, express_1.default)();
 const appWs = (0, express_ws_1.default)(app).app;
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded());
-app.use((0, cors_1.default)({
-    // If environment is development, allow calls from all origins,
-    // else, restrict it to Tradable's website only.
-    origin: 
-    // 💡 Remove after Vercel origin is resolved.
-    DEVELOPMENT_ENVIRONMENT == "true"
-        ? "*"
-        : function (origin, callback) {
-            origin;
-            if (whitelist_1.whitelist.indexOf(origin) !== -1) {
-                callback(null, true);
-            }
-            else {
-                callback(new Error(`${origin} Not allowed by CORS!`));
-            }
-        },
-    // We basically use just two.
-    methods: ["GET", "POST"]
-}));
+app.use((0, cors_1.default)(cors_config_1.corsOptions));
 // Connection message.
 app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" });
@@ -59,6 +41,12 @@ app.listen(PORT, function () {
  */
 app.use(function (req, res, next) {
     const encryptedAPIKey = req.headers["api-key"];
+    const origin = req.headers["origin"];
+    if (!cors_config_1.whitelist.includes(origin)) {
+        const response = { status: 403, msg: `You cannot make calls from ${origin}` };
+        res.send(response);
+        return;
+    }
     if (encryptedAPIKey.length != 292) {
         const response = { status: 403, msg: "Invalid API Key!" };
         res.send(response);

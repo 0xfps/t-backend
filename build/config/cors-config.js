@@ -1,0 +1,31 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.corsOptions = exports.whitelist = void 0;
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+exports.whitelist = [
+    "https://tradable.trade/",
+    "https://tradable-backend.vercel.app/",
+    "http://tradable.trade/",
+    "http://tradable-backend.vercel.app/"
+];
+exports.corsOptions = {
+    // If environment is development, allow calls from all origins,
+    // else, restrict it to Tradable's website only.
+    origin: "*",
+    // 💡 Remove after Vercel origin is resolved.
+    // process.env.DEVELOPMENT_ENVIRONMENT == "true"
+    //     ? "*"
+    //     : function (origin: any, callback: any) {
+    //         if (whitelist.indexOf(origin as string) !== -1) {
+    //             callback(null, true)
+    //         } else {
+    //             callback(new Error(`Not allowed by CORS!`))
+    //         }
+    //     },
+    // We basically use just two.
+    methods: ["GET", "POST"]
+};
