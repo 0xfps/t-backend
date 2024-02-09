@@ -24,7 +24,7 @@ exports.corsOptions = {
                 callback(null, true);
             }
             else {
-                callback(new Error('Not allowed by CORS!'));
+                callback(new Error(`${origin} Not allowed by CORS!`));
             }
         },
     // We basically use just two.
