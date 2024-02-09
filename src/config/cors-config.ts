@@ -1,4 +1,5 @@
 import dotenv from "dotenv"
+import { request } from "express"
 dotenv.config()
 
 const whitelist = [
@@ -8,6 +9,8 @@ const whitelist = [
     "http://tradable-backend.vercel.app/"
 ]
 
+const corsOrigin = request.headers["origin"]
+
 export const corsOptions = {
     // If environment is development, allow calls from all origins,
     // else, restrict it to Tradable's website only.
@@ -16,10 +19,11 @@ export const corsOptions = {
         process.env.DEVELOPMENT_ENVIRONMENT == "true"
             ? "*"
             : function (origin: any, callback: any) {
-                if (whitelist.indexOf(origin) !== -1) {
+                origin;
+                if (whitelist.indexOf(corsOrigin as string) !== -1) {
                     callback(null, true)
                 } else {
-                    callback(new Error(`${origin} Not allowed by CORS!`))
+                    callback(new Error(`${corsOrigin} Not allowed by CORS!`))
                 }
             },
 
