@@ -2,23 +2,38 @@ import express, { Request, Response } from "express"
 import expressWs from "express-ws"
 import dotenv from "dotenv"
 import cors from "cors"
-import { corsOptions } from "./config/cors-config"
+import { whitelist } from "./config/whitelist"
 import createRouter from "./routes/create"
 import "./db/index"
 import { decryptAPIKey } from "./utils/encrypt-decrypt"
 import ResponseInterface from "./interfaces/response-interface"
 
 dotenv.config()
+const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT } = process.env
 
 const app = express()
 const appWs = expressWs(app).app
 
 app.use(express.json())
 app.use(express.urlencoded())
-app.use(cors(corsOptions))
+app.use(cors({
+    // If environment is development, allow calls from all origins,
+    // else, restrict it to Tradable's website only.
+    origin:
+        // 💡 Remove after Vercel origin is resolved.
+        DEVELOPMENT_ENVIRONMENT == "true"
+            ? "*"
+            : function (origin: any, callback: any) {
+                if (whitelist.indexOf(origin as string) !== -1) {
+                    callback(null, true)
+                } else {
+                    callback(new Error(`${origin} Not allowed by CORS!`))
+                }
+            },
 
-
-const { PORT, AUTH_KEY } = process.env
+    // We basically use just two.
+    methods: ["GET", "POST"]
+}))
 
 // Connection message.
 app.get("/", function (req, res) {

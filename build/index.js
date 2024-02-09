@@ -7,17 +7,35 @@ const express_1 = __importDefault(require("express"));
 const express_ws_1 = __importDefault(require("express-ws"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
-const cors_config_1 = require("./config/cors-config");
+const whitelist_1 = require("./config/whitelist");
 const create_1 = __importDefault(require("./routes/create"));
 require("./db/index");
 const encrypt_decrypt_1 = require("./utils/encrypt-decrypt");
 dotenv_1.default.config();
+const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT } = process.env;
 const app = (0, express_1.default)();
 const appWs = (0, express_ws_1.default)(app).app;
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded());
-app.use((0, cors_1.default)(cors_config_1.corsOptions));
-const { PORT, AUTH_KEY } = process.env;
+app.use((0, cors_1.default)({
+    // If environment is development, allow calls from all origins,
+    // else, restrict it to Tradable's website only.
+    origin: 
+    // 💡 Remove after Vercel origin is resolved.
+    DEVELOPMENT_ENVIRONMENT == "true"
+        ? "*"
+        : function (origin, callback) {
+            origin;
+            if (whitelist_1.whitelist.indexOf(origin) !== -1) {
+                callback(null, true);
+            }
+            else {
+                callback(new Error(`${origin} Not allowed by CORS!`));
+            }
+        },
+    // We basically use just two.
+    methods: ["GET", "POST"]
+}));
 // Connection message.
 app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" });
