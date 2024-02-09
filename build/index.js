@@ -56,4 +56,3 @@ app.use(function (req, res, next) {
 });
 // POST Endpoints.
 app.use("/create", create_1.default);
-exports.default = app;

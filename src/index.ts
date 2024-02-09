@@ -68,5 +68,3 @@ app.use(function (req: Request, res: Response, next: () => void) {
 
 // POST Endpoints.
 app.use("/create", createRouter)
-
-export default app
