@@ -46,7 +46,7 @@ app.use(function (req, res, next) {
     // URLs.
     if (DEVELOPMENT_ENVIRONMENT == undefined) {
         if (!cors_config_1.whitelist.includes(origin)) {
-            const response = { status: 403, msg: `You cannot make calls from ${origin}` };
+            const response = { status: 403, msg: `You cannot make calls from ${origin}.` };
             res.send(response);
             return;
         }

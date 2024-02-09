@@ -53,7 +53,7 @@ app.use(function (req: Request, res: Response, next: () => void) {
     // URLs.
     if (DEVELOPMENT_ENVIRONMENT == undefined) {
         if (!whitelist.includes(origin as string)) {
-            const response: ResponseInterface = { status: 403, msg: `You cannot make calls from ${origin}` }
+            const response: ResponseInterface = { status: 403, msg: `You cannot make calls from ${origin}.` }
             res.send(response)
             return
         }
