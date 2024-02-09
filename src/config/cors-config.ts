@@ -1,7 +1,12 @@
 import dotenv from "dotenv"
 dotenv.config()
 
-const whitelist = ["https://tradable.trade"]
+const whitelist = [
+    "https://tradable.trade",
+    "https://tradable-backend.vercel.app",
+    "http://tradable.trade",
+    "http://tradable-backend.vercel.app"
+]
 
 export const corsOptions = {
     // If environment is development, allow calls from all origins,
