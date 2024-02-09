@@ -42,10 +42,14 @@ app.listen(PORT, function () {
 app.use(function (req, res, next) {
     const encryptedAPIKey = req.headers["api-key"];
     const origin = req.headers["origin"];
-    if (!cors_config_1.whitelist.includes(origin)) {
-        const response = { status: 403, msg: `You cannot make calls from ${origin}` };
-        res.send(response);
-        return;
+    // While not in development, ensure that calls are made from only the whitelisted
+    // URLs.
+    if (DEVELOPMENT_ENVIRONMENT == undefined) {
+        if (!cors_config_1.whitelist.includes(origin)) {
+            const response = { status: 403, msg: `You cannot make calls from ${origin}` };
+            res.send(response);
+            return;
+        }
     }
     if (encryptedAPIKey.length != 292) {
         const response = { status: 403, msg: "Invalid API Key!" };

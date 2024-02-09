@@ -2,10 +2,14 @@ import dotenv from "dotenv"
 dotenv.config()
 
 export const whitelist = [
-    "https://tradable.trade/",
-    "https://tradable-backend.vercel.app/",
+    "http://tradable.trade",
     "http://tradable.trade/",
-    "http://tradable-backend.vercel.app/"
+    "https://tradable.trade",
+    "https://tradable.trade/",
+    "http://tradable-backend.vercel.app",
+    "http://tradable-backend.vercel.app/",
+    "https://tradable-backend.vercel.app",
+    "https://tradable-backend.vercel.app/"
 ]
 
 export const corsOptions = {

@@ -7,10 +7,14 @@ exports.corsOptions = exports.whitelist = void 0;
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 exports.whitelist = [
-    "https://tradable.trade/",
-    "https://tradable-backend.vercel.app/",
+    "http://tradable.trade",
     "http://tradable.trade/",
-    "http://tradable-backend.vercel.app/"
+    "https://tradable.trade",
+    "https://tradable.trade/",
+    "http://tradable-backend.vercel.app",
+    "http://tradable-backend.vercel.app/",
+    "https://tradable-backend.vercel.app",
+    "https://tradable-backend.vercel.app/"
 ];
 exports.corsOptions = {
     // If environment is development, allow calls from all origins,

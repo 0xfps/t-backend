@@ -49,10 +49,14 @@ app.use(function (req: Request, res: Response, next: () => void) {
 
     const origin = req.headers["origin"]
 
-    if (!whitelist.includes(origin as string)) {
-        const response: ResponseInterface = { status: 403, msg: `You cannot make calls from ${origin}` }
-        res.send(response)
-        return
+    // While not in development, ensure that calls are made from only the whitelisted
+    // URLs.
+    if (DEVELOPMENT_ENVIRONMENT == undefined) {
+        if (!whitelist.includes(origin as string)) {
+            const response: ResponseInterface = { status: 403, msg: `You cannot make calls from ${origin}` }
+            res.send(response)
+            return
+        }
     }
 
     if (encryptedAPIKey.length != 292) {
