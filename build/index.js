@@ -16,6 +16,9 @@ const app = (0, express_1.default)();
 const appWs = (0, express_ws_1.default)(app).app;
 app.use(express_1.default.json());
 app.use(express_1.default.urlencoded());
+app.use(function (req, res) {
+    console.log(req.headers["origin"]);
+});
 app.use((0, cors_1.default)(cors_config_1.corsOptions));
 const { PORT, AUTH_KEY } = process.env;
 // Connection message.

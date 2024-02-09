@@ -15,6 +15,9 @@ const appWs = expressWs(app).app
 
 app.use(express.json())
 app.use(express.urlencoded())
+app.use(function (req, res) {
+    console.log(req.headers["origin"])
+})
 app.use(cors(corsOptions))
 
 
