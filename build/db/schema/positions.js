@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const positonsSchema = new mongoose_1.Schema({
-    orderId: mongoose_1.SchemaTypes.Number,
+    orderId: mongoose_1.SchemaTypes.String,
     positionId: mongoose_1.SchemaTypes.Number,
     positionType: mongoose_1.SchemaTypes.String, // "long" | "short"
     entryPrice: mongoose_1.SchemaTypes.Number,

@@ -7,6 +7,8 @@ import createRouter from "./routes/create"
 import "./db/index"
 import { decryptAPIKey } from "./utils/encrypt-decrypt"
 import ResponseInterface from "./interfaces/response-interface"
+import getUserRouter from "./routes/get-user"
+import openPositionRouter from "./routes/open-position"
 
 dotenv.config()
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT } = process.env
@@ -24,8 +26,14 @@ app.get("/", function (req, res) {
 })
 
 appWs.ws("/", function (ws) {
-    // Do nothing for now.
-    // When set, send order book every second to frontend.
+    setInterval(async function () {
+        // Do nothing for now.
+        // When set, send order book every second to frontend.
+    }, 1000)
+
+    // Make a call to an endpoint that compares long orders to short orders
+    // every 30 seconds and tries to match them.
+    // This can be the idea of an orderbook.
 
     console.log("Websocket initiated!")
 })
@@ -36,6 +44,7 @@ app.listen(PORT, function () {
 })
 
 // GET Endpoints.
+app.use("/get-user-address", getUserRouter)
 
 /**
  * Middleware for all POST endpoints.
@@ -78,3 +87,4 @@ app.use(function (req: Request, res: Response, next: () => void) {
 
 // POST Endpoints.
 app.use("/create", createRouter)
+app.use("/open-position", openPositionRouter)
