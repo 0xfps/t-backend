@@ -1,7 +1,7 @@
 import { Schema, SchemaTypes, model, models } from "mongoose"
 
 const shortOrdersSchema = new Schema({
-    orderId: SchemaTypes.Number,
+    orderId: SchemaTypes.String,
     time: SchemaTypes.Date
 })
 

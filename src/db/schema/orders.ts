@@ -1,7 +1,9 @@
 import { Schema, SchemaTypes, model, models } from "mongoose"
 
 const ordersSchema = new Schema({
-    orderId: SchemaTypes.Number,
+    orderId: SchemaTypes.String,
+    aoriOrderId: SchemaTypes.String,
+    // Order object starts here.
     positionType: SchemaTypes.String,   // "long" | "short"
     type: SchemaTypes.String,           // "limit" | "market"
     opener: SchemaTypes.String,
@@ -12,6 +14,7 @@ const ordersSchema = new Schema({
     ticker: SchemaTypes.String,         // tBTC.
     size: SchemaTypes.String,
     price: SchemaTypes.Number,
+    // Ends here.
     time: SchemaTypes.Date
 })
 
