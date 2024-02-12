@@ -1,6 +1,6 @@
 import { Schema, SchemaTypes, model, models } from "mongoose"
 
-const positonsSchema = new Schema({
+const positionsSchema = new Schema({
     orderId: SchemaTypes.String,
     positionId: SchemaTypes.Number,
     positionType: SchemaTypes.String,       // "long" | "short"
@@ -9,5 +9,5 @@ const positonsSchema = new Schema({
     time: SchemaTypes.Date
 })
 
-const positonsModel = models.positonsModel || model("positonsModel", positonsSchema)
-export default positonsModel
+const positionsModel = models.positionsModel || model("positionsModel", positionsSchema)
+export default positionsModel

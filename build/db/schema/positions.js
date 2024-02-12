@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
-const positonsSchema = new mongoose_1.Schema({
+const positionsSchema = new mongoose_1.Schema({
     orderId: mongoose_1.SchemaTypes.String,
     positionId: mongoose_1.SchemaTypes.Number,
     positionType: mongoose_1.SchemaTypes.String, // "long" | "short"
@@ -9,5 +9,5 @@ const positonsSchema = new mongoose_1.Schema({
     liquidationPrice: mongoose_1.SchemaTypes.Number,
     time: mongoose_1.SchemaTypes.Date
 });
-const positonsModel = mongoose_1.models.positonsModel || (0, mongoose_1.model)("positonsModel", positonsSchema);
-exports.default = positonsModel;
+const positionsModel = mongoose_1.models.positionsModel || (0, mongoose_1.model)("positionsModel", positionsSchema);
+exports.default = positionsModel;
