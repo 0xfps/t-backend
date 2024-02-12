@@ -22,6 +22,8 @@ require("./db/index");
 const encrypt_decrypt_1 = require("./utils/encrypt-decrypt");
 const get_user_1 = __importDefault(require("./routes/get-user"));
 const open_position_1 = __importDefault(require("./routes/open-position"));
+const get_long_orders_1 = __importDefault(require("./routes/get-long-orders"));
+const get_short_orders_1 = __importDefault(require("./routes/get-short-orders"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT } = process.env;
 const app = (0, express_1.default)();
@@ -35,11 +37,34 @@ app.get("/", function (req, res) {
 });
 appWs.ws("/", function (ws) {
     setInterval(function () {
+        var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             // Do nothing for now.
             // When set, send order book every second to frontend.
+            const shortsRequest = yield fetch("http://localhost:8080/get-short-orders", {
+                method: "GET",
+                headers: {
+                    "api-key": (_a = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _a !== void 0 ? _a : ""
+                }
+            });
+            const longsRequest = yield fetch("http://localhost:8080/get-long-orders", {
+                method: "GET",
+                headers: {
+                    "api-key": (_b = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _b !== void 0 ? _b : ""
+                }
+            });
+            const longs = yield longsRequest.json();
+            const shorts = yield shortsRequest.json();
+            const data = {
+                longs: longs.data.body,
+                shorts: shorts.data.body
+            };
+            ws.send(JSON.stringify(data));
         });
     }, 1000);
+    // Make a call to an endpoint that compares long orders to short orders
+    // every 30 seconds and tries to match them.
+    // This can be the idea of an orderbook.
     console.log("Websocket initiated!");
 });
 // Start server.
@@ -80,6 +105,9 @@ app.use(function (req, res, next) {
     }
     next();
 });
+// Protected GET endpoints.
+app.use("/get-long-orders", get_long_orders_1.default);
+app.use("/get-short-orders", get_short_orders_1.default);
 // POST Endpoints.
 app.use("/create", create_1.default);
 app.use("/open-position", open_position_1.default);

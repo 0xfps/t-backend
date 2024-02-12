@@ -16,6 +16,8 @@ const constants_1 = require("../utils/constants");
 const limit_order_1 = __importDefault(require("./orders/limit-order"));
 const market_order_1 = __importDefault(require("./orders/market-order"));
 const get_ticker_contract_1 = __importDefault(require("../utils/get-ticker-contract"));
+const get_user_margin_balance_1 = __importDefault(require("../utils/get-user-margin-balance"));
+const user_addreses_1 = __importDefault(require("../db/schema/user-addreses"));
 /**
  * Opening a position is simply making a long or short position
  * in either limit or market types. The process of making
@@ -57,15 +59,36 @@ function openPositionController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { order } = req.body;
         // OrderID and order time are calculated here.
-        const { type, ticker } = order;
+        const { margin, opener, type, ticker } = order;
         // Check if the contract exists for the desired ticker, e.g (tBTC).
         // Tickers are converted to lower case in the function.
-        const [tickerExists,] = yield (0, get_ticker_contract_1.default)(order.ticker);
+        const [tickerExists,] = yield (0, get_ticker_contract_1.default)(ticker);
         // Do not proceed if market is insexistent.
         if (!tickerExists) {
             const response = {
                 status: 404,
                 msg: "Market inexistent!"
+            };
+            res.send(response);
+            return;
+        }
+        // Get parent address to check if user's margin is higher than order margin.
+        const parentAddressEntry = yield user_addreses_1.default.findOne({ tWallet: opener });
+        if (!parentAddressEntry) {
+            const response = {
+                status: 404,
+                msg: "Address not found!"
+            };
+            res.send(response);
+            return;
+        }
+        const parentAddress = parentAddressEntry.user;
+        // Check user's margin balance and compare it with margin.
+        const marginBalance = yield (0, get_user_margin_balance_1.default)(parentAddress);
+        if (marginBalance < margin) {
+            const response = {
+                status: 400,
+                msg: "Invalid request, margin higher than margin balance!"
             };
             res.send(response);
             return;

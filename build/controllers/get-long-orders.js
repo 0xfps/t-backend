@@ -12,18 +12,36 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../../utils/constants");
-const long_limit_order_1 = __importDefault(require("./long/long-limit-order"));
-const short_limit_order_1 = __importDefault(require("./short/short-limit-order"));
-function processLimitOrder(order) {
+const constants_1 = require("../utils/constants");
+const orders_1 = __importDefault(require("../db/schema/orders"));
+function getLongOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { positionType } = order;
-        let success = false, result = {};
-        if (positionType == constants_1.LONG)
-            [success, result] = yield (0, long_limit_order_1.default)(order);
-        if (positionType == constants_1.SHORT)
-            [success, result] = yield (0, short_limit_order_1.default)(order);
-        return [success, result];
+        const longOrders = yield orders_1.default.find({ positionType: constants_1.LONG }).sort({ time: -1 });
+        if (!longOrders) {
+            const response = {
+                status: 200,
+                msg: "OK!",
+                data: {
+                    body: []
+                }
+            };
+            res.send(response);
+        }
+        const result = [];
+        longOrders.forEach(function ({ size, price }) {
+            result.push({
+                size,
+                price
+            });
+        });
+        const response = {
+            status: 200,
+            msg: "OK!",
+            data: {
+                body: result
+            }
+        };
+        res.send(response);
     });
 }
-exports.default = processLimitOrder;
+exports.default = getLongOrdersController;

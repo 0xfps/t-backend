@@ -15,6 +15,7 @@ export type Order = {
     opener: string,
     market: string,
     leverage: number,
+    margin: number,
     assetA: string,
     assetB: string,
     ticker: string,
@@ -22,3 +23,5 @@ export type Order = {
     price: number,
     time: number
 }
+
+export const JSON_RPC_URL = "https://goerli.gateway.tenderly.co"

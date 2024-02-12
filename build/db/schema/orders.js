@@ -9,6 +9,7 @@ const ordersSchema = new mongoose_1.Schema({
     type: mongoose_1.SchemaTypes.String, // "limit" | "market"
     opener: mongoose_1.SchemaTypes.String,
     market: mongoose_1.SchemaTypes.String, // BTC/USD
+    margin: mongoose_1.SchemaTypes.Number,
     leverage: mongoose_1.SchemaTypes.Number,
     assetA: mongoose_1.SchemaTypes.String,
     assetB: mongoose_1.SchemaTypes.String,

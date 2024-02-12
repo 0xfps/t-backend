@@ -9,8 +9,6 @@ import tickersModel from "../db/schema/tickers";
 export default async function getTickerContract(ticker: string): Promise<[boolean, string]> {
     const tickerData = await tickersModel.findOne({ ticker: ticker.toLowerCase() })
 
-    console.log(tickerData)
-
     if (!tickerData) {
         return [false, ""]
     }
