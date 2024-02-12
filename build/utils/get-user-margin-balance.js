@@ -12,18 +12,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../../utils/constants");
-const long_limit_order_1 = __importDefault(require("./long/long-limit-order"));
-const short_limit_order_1 = __importDefault(require("./short/short-limit-order"));
-function processLimitOrder(order) {
+const ethers_1 = require("ethers");
+const constants_1 = require("./constants");
+const contracts_json_1 = __importDefault(require("../config/contracts.json"));
+function getUserMarginBalance(address) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { positionType } = order;
-        let success = false, result = {};
-        if (positionType == constants_1.LONG)
-            [success, result] = yield (0, long_limit_order_1.default)(order);
-        if (positionType == constants_1.SHORT)
-            [success, result] = yield (0, short_limit_order_1.default)(order);
-        return [success, result];
+        const provider = new ethers_1.ethers.JsonRpcProvider(constants_1.JSON_RPC_URL);
+        const tradableSettings = new ethers_1.ethers.Contract(contracts_json_1.default.tradableSettings.address, contracts_json_1.default.tradableSettings.abi, provider);
+        const tradableMarginVault = new ethers_1.ethers.Contract(contracts_json_1.default.tradableMarginVault.address, contracts_json_1.default.tradableMarginVault.abi, provider);
+        const defaultDecimal = Number(yield tradableSettings.getDefaultDecimal());
+        const rawBalance = Number(yield tradableMarginVault.getUserTokenBalance(address));
+        return rawBalance / (10 ** defaultDecimal);
     });
 }
-exports.default = processLimitOrder;
+exports.default = getUserMarginBalance;

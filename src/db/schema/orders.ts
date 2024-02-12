@@ -8,6 +8,7 @@ const ordersSchema = new Schema({
     type: SchemaTypes.String,           // "limit" | "market"
     opener: SchemaTypes.String,
     market: SchemaTypes.String,         // BTC/USD
+    margin: SchemaTypes.Number,
     leverage: SchemaTypes.Number,
     assetA: SchemaTypes.String,
     assetB: SchemaTypes.String,

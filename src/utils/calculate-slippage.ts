@@ -15,12 +15,12 @@ export function calculateSlippage(
     amount: number,
     percentage: number
 ): number {
-    if (amount == 0) return 0
+    if (amount == 0) return 0.0000
 
     const slip = amount * percentage * 0.01
 
-    if (positionType == LONG) return amount - slip
-    if (positionType == SHORT) return amount + slip
+    if (positionType == LONG) return parseFloat((amount - slip).toString())
+    if (positionType == SHORT) return parseFloat((amount + slip).toString())
 
-    return 0
+    return 0.0000
 }

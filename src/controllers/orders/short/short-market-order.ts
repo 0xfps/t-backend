@@ -19,12 +19,12 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
         type: MARKET,
         ticker: order.ticker.toLowerCase(),
         size: order.size,
-        // Get short orders where the selling price is within 20% slippage of the
+        // Get long orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
         price: { $gte: calculateSlippage(SHORT, order.price, 20), $lte: order.price }
     }).sort({ time: -1, price: -1 }) // Sort by most recent first. 🚨 Possible bug.
 
-    // If not long orders matching the user's market order are open, then only
+    // If no long orders matching the user's market order are open, then only
     // add data to database because an order must be made to be taken in Aori.
     if (!openLongOrders || openLongOrders.length == 0) {
         const orderId = getUniqueId(20)
@@ -51,5 +51,6 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
     // If found, take order via Aori, then take order using what's found.
 
     // Make return match.
+    // 🚨🚨🚨🚨🚨🚨🚨🚨
     return [false, {}]
 }

@@ -9,6 +9,8 @@ import { decryptAPIKey } from "./utils/encrypt-decrypt"
 import ResponseInterface from "./interfaces/response-interface"
 import getUserRouter from "./routes/get-user"
 import openPositionRouter from "./routes/open-position"
+import getLongOrdersRouter from "./routes/get-long-orders"
+import getShortOrdersRouter from "./routes/get-short-orders"
 
 dotenv.config()
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT } = process.env
@@ -29,6 +31,29 @@ appWs.ws("/", function (ws) {
     setInterval(async function () {
         // Do nothing for now.
         // When set, send order book every second to frontend.
+        const shortsRequest = await fetch("http://localhost:8080/get-short-orders", {
+            method: "GET",
+            headers: {
+                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY ?? ""
+            }
+        })
+
+        const longsRequest = await fetch("http://localhost:8080/get-long-orders", {
+            method: "GET",
+            headers: {
+                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY ?? ""
+            }
+        })
+
+        const longs = await longsRequest.json()
+        const shorts = await shortsRequest.json()
+
+        const data = {
+            longs: longs.data.body,
+            shorts: shorts.data.body
+        }
+
+        ws.send(JSON.stringify(data))
     }, 1000)
 
     // Make a call to an endpoint that compares long orders to short orders
@@ -84,6 +109,10 @@ app.use(function (req: Request, res: Response, next: () => void) {
 
     next()
 })
+
+// Protected GET endpoints.
+app.use("/get-long-orders", getLongOrdersRouter)
+app.use("/get-short-orders", getShortOrdersRouter)
 
 // POST Endpoints.
 app.use("/create", createRouter)

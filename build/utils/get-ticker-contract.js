@@ -22,7 +22,6 @@ const tickers_1 = __importDefault(require("../db/schema/tickers"));
 function getTickerContract(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
         const tickerData = yield tickers_1.default.findOne({ ticker: ticker.toLowerCase() });
-        console.log(tickerData);
         if (!tickerData) {
             return [false, ""];
         }

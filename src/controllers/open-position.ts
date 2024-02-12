@@ -4,6 +4,8 @@ import processLimitOrder from "./orders/limit-order"
 import processMarketOrder from "./orders/market-order"
 import getTickerContract from "../utils/get-ticker-contract"
 import ResponseInterface from "../interfaces/response-interface"
+import getUserMarginBalance from "../utils/get-user-margin-balance"
+import userAddressesModel from "../db/schema/user-addreses"
 
 /**
  * Opening a position is simply making a long or short position
@@ -46,17 +48,42 @@ export default async function openPositionController(req: Request, res: Response
     const { order } = req.body
 
     // OrderID and order time are calculated here.
-    const { type, ticker }: Order = order
+    const { margin, opener, type, ticker }: Order = order
 
     // Check if the contract exists for the desired ticker, e.g (tBTC).
     // Tickers are converted to lower case in the function.
-    const [tickerExists,] = await getTickerContract(order.ticker)
+    const [tickerExists,] = await getTickerContract(ticker)
 
     // Do not proceed if market is insexistent.
     if (!tickerExists) {
         const response: ResponseInterface = {
             status: 404,
             msg: "Market inexistent!"
+        }
+
+        res.send(response)
+        return
+    }
+
+    // Get parent address to check if user's margin is higher than order margin.
+    const parentAddressEntry = await userAddressesModel.findOne({ tWallet: opener })
+    if (!parentAddressEntry) {
+        const response: ResponseInterface = {
+            status: 404,
+            msg: "Address not found!"
+        }
+        res.send(response)
+        return
+    }
+
+    const parentAddress = parentAddressEntry.user
+    // Check user's margin balance and compare it with margin.
+    const marginBalance = await getUserMarginBalance(parentAddress)
+
+    if (marginBalance < margin) {
+        const response: ResponseInterface = {
+            status: 400,
+            msg: "Invalid request, margin higher than margin balance!"
         }
 
         res.send(response)
