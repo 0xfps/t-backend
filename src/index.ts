@@ -13,6 +13,7 @@ import getLongOrdersRouter from "./routes/get-long-orders"
 import getShortOrdersRouter from "./routes/get-short-orders"
 import closePositionRouter from "./routes/close-position"
 import getUsersPositionsRouter from "./routes/get-users-positions"
+import liquidatePositionRouter from "./routes/liquidate-position"
 
 dotenv.config()
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT } = process.env
@@ -36,14 +37,14 @@ appWs.ws("/", function (ws) {
         const shortsRequest = await fetch("http://localhost:8080/get-short-orders", {
             method: "GET",
             headers: {
-                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY ?? ""
+                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string ?? process.env.ENCRYPTED_PRODUCTION_API_KEY as string
             }
         })
 
         const longsRequest = await fetch("http://localhost:8080/get-long-orders", {
             method: "GET",
             headers: {
-                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY ?? ""
+                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string ?? process.env.ENCRYPTED_PRODUCTION_API_KEY as string
             }
         })
 
@@ -121,3 +122,4 @@ app.use("/get-users-positions", getUsersPositionsRouter)
 app.use("/create", createRouter)
 app.use("/open-position", openPositionRouter)
 app.use("/close-position", closePositionRouter)
+app.use("/liquidate-position", liquidatePositionRouter)
