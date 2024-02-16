@@ -17,6 +17,7 @@ const positions_1 = __importDefault(require("../../../db/schema/positions"));
 const calculate_liquidation_price_1 = __importDefault(require("../../../utils/calculate-liquidation-price"));
 const calculate_margin_ratio_1 = require("../../../utils/calculate-margin-ratio");
 const get_unique_id_1 = require("../../../utils/get-unique-id");
+const liquidate_positions_1 = require("../../liquidator/liquidate-positions");
 /**
  * This function completes two market orders.
  * completingOrder fills the `order`.
@@ -43,6 +44,11 @@ function completeMarketOrder(order, completingOrder) {
         const positionIdOfCompletingOrder = (0, get_unique_id_1.getUniqueId)(20);
         const completingOrderLiquidationPrice = (0, calculate_liquidation_price_1.default)(completingOrder.positionType, entryPrice, completingOrder.leverage, (0, calculate_margin_ratio_1.calculateMarginRatio)(completingOrder.leverage));
         // 💡 Liquidate positions with liquidation prices here.
+        // Liquidate positions.
+        const liquidatablePositions = yield positions_1.default.find({ liquidationPrice: { $lte: entryPrice } });
+        if (liquidatablePositions.length > 0)
+            yield (0, liquidate_positions_1.liquidatePositions)(liquidatablePositions);
+        // Liquidate positions.
         const ordersPosition = yield positions_1.default.create({
             orderId: orderId,
             positionId: positionIdOfOrder,
