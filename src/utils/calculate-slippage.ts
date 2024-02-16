@@ -1,4 +1,4 @@
-import { LONG, PositionTypes, SHORT } from "./constants";
+import { LONG, PositionTypes, SHORT, SPREAD } from "./constants";
 
 /**
  * Calculates slippages for long and short market orders
@@ -10,17 +10,13 @@ import { LONG, PositionTypes, SHORT } from "./constants";
  * @param percentage    Percentage to calculate.
  * @returns 
  */
-export function calculateSlippage(
-    positionType: PositionTypes,
-    amount: number,
-    percentage: number
-): number {
+export function calculateSlippage(positionType: PositionTypes, amount: number): number {
     if (amount == 0) return 0.0000
 
-    const slip = amount * percentage * 0.01
+    const slip = amount * SPREAD * 0.01
 
-    if (positionType == LONG) return parseFloat((amount - slip).toString())
-    if (positionType == SHORT) return parseFloat((amount + slip).toString())
+    if (positionType == LONG) return parseFloat((amount - slip).toFixed(4))
+    if (positionType == SHORT) return parseFloat((amount + slip).toFixed(4))
 
     return 0.0000
 }

@@ -29,8 +29,9 @@ function processShortLimitOrder(order) {
             size: order.size,
             // Get long orders where the selling price is within 20% slippage of the
             // buying price of the market and the selling price.
-            price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.SHORT, order.price, 20), $lte: order.price }
-        }).sort({ time: -1, price: -1 }); // Sort by most recent first. 🚨 Possible bug.
+            price: { $gte: order.price, $lte: (0, calculate_slippage_1.calculateSlippage)(constants_1.SHORT, order.price) },
+            filled: false
+        }).sort({ time: 1, price: -1 }); // Sort by first post first. 🚨 Possible bug.
         // If no long orders matching the user's market order are open, then only
         // add data to database because an order must be made to be taken in Aori.
         if (!openLongOrders || openLongOrders.length == 0) {
@@ -39,7 +40,7 @@ function processShortLimitOrder(order) {
             const aoriOrderId = `${orderId}-${(0, get_unique_id_1.getUniqueId)(20)}`;
             const time = new Date().getTime();
             const createdOrder = yield orders_1.default.create(Object.assign(Object.assign({ orderId,
-                aoriOrderId }, order), { time }));
+                aoriOrderId }, order), { filled: false, fillingOrders: [], time }));
             if (!createdOrder) {
                 const response = {
                     status: 400,

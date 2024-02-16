@@ -16,6 +16,12 @@ const orders_1 = __importDefault(require("../../../db/schema/orders"));
 const calculate_slippage_1 = require("../../../utils/calculate-slippage");
 const constants_1 = require("../../../utils/constants");
 const get_unique_id_1 = require("../../../utils/get-unique-id");
+/**
+ * Process a long limit order.
+ *
+ * @param order Order.
+ * @returns
+ */
 function processLongLimitOrder(order) {
     return __awaiter(this, void 0, void 0, function* () {
         // Check in short orders to see if there are any orders matching within 20% slippage
@@ -29,8 +35,9 @@ function processLongLimitOrder(order) {
             size: order.size,
             // Get short orders where the selling price is within 20% slippage of the
             // buying price of the market and the selling price.
-            price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.LONG, order.price, 20), $lte: order.price }
-        }).sort({ time: -1, price: -1 }); // Sort by most recent first. 🚨 Possible bug.
+            price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.LONG, order.price), $lte: order.price },
+            filled: false
+        }).sort({ time: 1, price: 1 }); // Sort by first post first. 🚨 Possible bug.
         // If not short orders matching the user's market order are open, then
         // add data to database and then make order.
         if (!openShortOrders || openShortOrders.length == 0) {
@@ -39,7 +46,7 @@ function processLongLimitOrder(order) {
             const aoriOrderId = `${orderId}-${(0, get_unique_id_1.getUniqueId)(20)}`;
             const time = new Date().getTime();
             const createdOrder = yield orders_1.default.create(Object.assign(Object.assign({ orderId,
-                aoriOrderId }, order), { time }));
+                aoriOrderId }, order), { filled: false, fillingOrders: [], time }));
             if (!createdOrder) {
                 const response = {
                     status: 400,
@@ -47,7 +54,6 @@ function processLongLimitOrder(order) {
                 };
                 return [false, response];
             }
-            // Make order via Aori.
         }
         // If found, make order via Aori, then take order using what's found.
         // Make return match.

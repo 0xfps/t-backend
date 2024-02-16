@@ -16,6 +16,7 @@ const orders_1 = __importDefault(require("../../../db/schema/orders"));
 const calculate_slippage_1 = require("../../../utils/calculate-slippage");
 const constants_1 = require("../../../utils/constants");
 const get_unique_id_1 = require("../../../utils/get-unique-id");
+const complete_market_order_1 = __importDefault(require("../complete-order/complete-market-order"));
 /**
  * Long market order process.
  *
@@ -35,8 +36,9 @@ function processShortMarketOrder(order) {
             size: order.size,
             // Get long orders where the selling price is within 20% slippage of the
             // buying price of the market and the selling price.
-            price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.SHORT, order.price, 20), $lte: order.price }
-        }).sort({ time: -1, price: -1 }); // Sort by most recent first. 🚨 Possible bug.
+            price: { $gte: order.price, $lte: (0, calculate_slippage_1.calculateSlippage)(constants_1.SHORT, order.price) },
+            filled: false
+        }).sort({ time: 1, price: -1 }); // Sort by first post first. 🚨 Possible bug.
         // If no long orders matching the user's market order are open, then only
         // add data to database because an order must be made to be taken in Aori.
         if (!openLongOrders || openLongOrders.length == 0) {
@@ -53,11 +55,24 @@ function processShortMarketOrder(order) {
                 };
                 return [false, response];
             }
+            return [true, "Order Created!"];
         }
-        // If found, take order via Aori, then take order using what's found.
-        // Make return match.
-        // 🚨🚨🚨🚨🚨🚨🚨🚨
-        return [false, {}];
+        if (!openLongOrders || openLongOrders.length == 0) {
+            return [true, "Order Created!"];
+        }
+        /**
+         * If an order is found on the short side, it is expected to fill the long
+         * as it is market.
+         * An open order is found.
+         * An order is filled.
+         * Two positions are created. One for long, one for short.
+         */
+        const matchingOrder = openLongOrders[0];
+        const [completed, reason] = yield (0, complete_market_order_1.default)(order, matchingOrder);
+        if (!completed) {
+            return [false, { respose: reason }];
+        }
+        return [true, { respose: "OK!" }];
     });
 }
 exports.default = processShortMarketOrder;

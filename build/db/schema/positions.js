@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const positionsSchema = new mongoose_1.Schema({
     orderId: mongoose_1.SchemaTypes.String,
-    positionId: mongoose_1.SchemaTypes.Number,
+    positionId: mongoose_1.SchemaTypes.String,
     positionType: mongoose_1.SchemaTypes.String, // "long" | "short"
     entryPrice: mongoose_1.SchemaTypes.Number,
     liquidationPrice: mongoose_1.SchemaTypes.Number,

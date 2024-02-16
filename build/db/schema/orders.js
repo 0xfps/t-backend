@@ -17,6 +17,9 @@ const ordersSchema = new mongoose_1.Schema({
     size: mongoose_1.SchemaTypes.String,
     price: mongoose_1.SchemaTypes.Number,
     // Ends here.
+    // Orders that filled this order.
+    filled: mongoose_1.SchemaTypes.Boolean,
+    fillingOrders: mongoose_1.SchemaTypes.Array,
     time: mongoose_1.SchemaTypes.Date
 });
 const ordersModel = mongoose_1.models.ordersModel || (0, mongoose_1.model)("ordersModel", ordersSchema);

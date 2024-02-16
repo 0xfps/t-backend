@@ -9,6 +9,10 @@ export const MARKET = "market"
 export type Types = "limit" | "market"
 export type PositionTypes = "long" | "short"
 
+// Maximum slippage percentage allowed for long and short positions.
+// 2%, in this case.
+export const SPREAD = 2
+
 export type Order = {
     positionType: PositionTypes,
     type: Types,

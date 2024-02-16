@@ -1,7 +1,7 @@
 import ordersModel from "../../../db/schema/orders";
 import ResponseInterface from "../../../interfaces/response-interface";
 import { calculateSlippage } from "../../../utils/calculate-slippage";
-import { LIMIT, LONG, Order, SHORT } from "../../../utils/constants";
+import { LIMIT, LONG, Order, SHORT, SPREAD } from "../../../utils/constants";
 import { getUniqueId } from "../../../utils/get-unique-id";
 
 export default async function processShortLimitOrder(order: Order): Promise<[boolean, {}]> {
@@ -16,8 +16,9 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         size: order.size,
         // Get long orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
-        price: { $gte: calculateSlippage(SHORT, order.price, 20), $lte: order.price }
-    }).sort({ time: -1, price: -1 }) // Sort by most recent first. 🚨 Possible bug.
+        price: { $gte: order.price, $lte: calculateSlippage(SHORT, order.price) },
+        filled: false
+    }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
 
     // If no long orders matching the user's market order are open, then only
     // add data to database because an order must be made to be taken in Aori.
@@ -31,6 +32,8 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
             orderId,
             aoriOrderId,
             ...order,
+            filled: false,
+            fillingOrders: [],
             time
         })
 

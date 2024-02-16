@@ -2,7 +2,7 @@ import { Schema, SchemaTypes, model, models } from "mongoose"
 
 const positionsSchema = new Schema({
     orderId: SchemaTypes.String,
-    positionId: SchemaTypes.Number,
+    positionId: SchemaTypes.String,
     positionType: SchemaTypes.String,       // "long" | "short"
     entryPrice: SchemaTypes.Number,
     liquidationPrice: SchemaTypes.Number,
