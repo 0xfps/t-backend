@@ -42,9 +42,11 @@ function completeMarketOrder(order, completingOrder) {
         const orderLiquidationPrice = (0, calculate_liquidation_price_1.default)(order.positionType, entryPrice, order.leverage, (0, calculate_margin_ratio_1.calculateMarginRatio)(order.leverage));
         const positionIdOfCompletingOrder = (0, get_unique_id_1.getUniqueId)(20);
         const completingOrderLiquidationPrice = (0, calculate_liquidation_price_1.default)(completingOrder.positionType, entryPrice, completingOrder.leverage, (0, calculate_margin_ratio_1.calculateMarginRatio)(completingOrder.leverage));
+        // 💡 Liquidate positions with liquidation prices here.
         const ordersPosition = yield positions_1.default.create({
             orderId: orderId,
             positionId: positionIdOfOrder,
+            opener: order.opener,
             positionType: order.positionType, // "long" | "short"
             entryPrice: entryPrice,
             liquidationPrice: orderLiquidationPrice,
@@ -53,6 +55,7 @@ function completeMarketOrder(order, completingOrder) {
         const completingOrdersPosition = yield positions_1.default.create({
             orderId: completingOrder.orderId,
             positionId: positionIdOfCompletingOrder,
+            opener: completingOrder.opener,
             positionType: completingOrder.positionType, // "long" | "short"
             entryPrice: entryPrice,
             liquidationPrice: completingOrderLiquidationPrice,
@@ -68,8 +71,6 @@ function completeMarketOrder(order, completingOrder) {
         if (!updateOrdersPosition || !updateCompletingOrdersPosition) {
             return [false, "Complete market order error 1."];
         }
-        console.log("Order: ", orderId);
-        console.log("Completing Order: ", completingOrder.orderId);
         return [true, ""];
     });
 }

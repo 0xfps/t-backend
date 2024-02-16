@@ -8,5 +8,6 @@ exports.SHORT = "short";
 exports.LIMIT = "limit";
 exports.MARKET = "market";
 // Maximum slippage percentage allowed for long and short positions.
+// 2%, in this case.
 exports.SPREAD = 2;
 exports.JSON_RPC_URL = "https://goerli.gateway.tenderly.co";

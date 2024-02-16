@@ -70,7 +70,7 @@ function processLongMarketOrder(order) {
         const matchingOrder = openShortOrders[0];
         const [completed, reason] = yield (0, complete_market_order_1.default)(order, matchingOrder);
         if (!completed) {
-            return [false, { respose: reason }];
+            return [false, { result: reason }];
         }
         return [true, { respose: "OK!" }];
     });

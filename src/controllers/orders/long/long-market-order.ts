@@ -68,7 +68,7 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
     const [completed, reason] = await completeMarketOrder(order, matchingOrder)
 
     if (!completed) {
-        return [false, { respose: reason }]
+        return [false, { result: reason }]
     }
 
     return [true, { respose: "OK!" }]

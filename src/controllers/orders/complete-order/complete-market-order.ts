@@ -13,7 +13,6 @@ import { getUniqueId } from "../../../utils/get-unique-id";
  * @param shortOrder 
  */
 export default async function completeMarketOrder(order: Order, completingOrder: any): Promise<[boolean, string]> {
-    
     // Create a new filled order for order.
     const orderId = getUniqueId(20)
     // 32, making it more unique and trackable, if desired.
@@ -50,9 +49,12 @@ export default async function completeMarketOrder(order: Order, completingOrder:
         calculateMarginRatio(completingOrder.leverage)
     )
 
+    // 💡 Liquidate positions with liquidation prices here.
+
     const ordersPosition = await positionsModel.create({
         orderId: orderId,
         positionId: positionIdOfOrder,
+        opener: order.opener,
         positionType: order.positionType,       // "long" | "short"
         entryPrice: entryPrice,
         liquidationPrice: orderLiquidationPrice,
@@ -62,6 +64,7 @@ export default async function completeMarketOrder(order: Order, completingOrder:
     const completingOrdersPosition = await positionsModel.create({
         orderId: completingOrder.orderId,
         positionId: positionIdOfCompletingOrder,
+        opener: completingOrder.opener,
         positionType: completingOrder.positionType,       // "long" | "short"
         entryPrice: entryPrice,
         liquidationPrice: completingOrderLiquidationPrice,
