@@ -12,17 +12,29 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const orders_1 = __importDefault(require("../db/schema/orders"));
-function calculateTwap(orderIds, size) {
+exports.liquidatePositions = void 0;
+const dotenv_1 = __importDefault(require("dotenv"));
+const constants_1 = require("../../utils/constants");
+dotenv_1.default.config();
+const { ENCRYPTED_DEVELOPMENT_API_KEY, ENCRYPTED_PRODUCTION_API_KEY, ENVIRONMENT_URL } = process.env;
+const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080";
+function liquidatePositions(positionIds) {
     return __awaiter(this, void 0, void 0, function* () {
-        let TWP = 0;
-        orderIds.forEach(function (orderId) {
+        positionIds.forEach(function (positionId) {
+            var _a;
             return __awaiter(this, void 0, void 0, function* () {
-                const { size, price } = yield orders_1.default.findOne({ orderId: orderId });
-                TWP += parseInt(size) * parseInt(price);
+                const body = {
+                    positionId: positionId
+                };
+                yield fetch(`${URL}/liquidate-position`, {
+                    method: constants_1.POST,
+                    headers: {
+                        "api-key": (_a = ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _a !== void 0 ? _a : ENCRYPTED_PRODUCTION_API_KEY
+                    },
+                    body: JSON.stringify(body)
+                });
             });
         });
-        return parseFloat((TWP / size).toFixed(4));
     });
 }
-exports.default = calculateTwap;
+exports.liquidatePositions = liquidatePositions;

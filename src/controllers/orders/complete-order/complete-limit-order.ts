@@ -5,6 +5,7 @@ import { calculateMarginRatio } from "../../../utils/calculate-margin-ratio";
 import calculateTwap from "../../../utils/calculate-twap";
 import { Order } from "../../../utils/constants";
 import { getUniqueId } from "../../../utils/get-unique-id";
+import { liquidatePositions } from "../../liquidator/liquidate-positions";
 
 /**
  * This function completes two market orders.
@@ -50,6 +51,11 @@ export default async function completeLimitOrder(order: any, completingOrders: a
                 )
 
                 // 💡 Liquidate positions with liquidation prices here.
+                // Liquidate positions.
+                const liquidatablePositions = await positionsModel.find({ liquidationPrice: { $lte: entryPrice } })
+                if (liquidatablePositions.length > 0)
+                    await liquidatePositions(liquidatablePositions)
+                // Liquidate positions.
 
                 const completingOrdersPosition = await positionsModel.create({
                     orderId: completingOrder.orderId,
@@ -100,6 +106,11 @@ export default async function completeLimitOrder(order: any, completingOrders: a
                     )
 
                     // 💡 Liquidate positions with liquidation prices here.
+                    // Liquidate positions.
+                    const liquidatablePositions = await positionsModel.find({ liquidationPrice: { $lte: entryPrice } })
+                    if (liquidatablePositions.length > 0)
+                        await liquidatePositions(liquidatablePositions)
+                    // Liquidate positions.
 
                     // const ordersPosition = await positionsModel.create({
                     //     orderId: order.orderId,

@@ -27,8 +27,12 @@ const get_short_orders_1 = __importDefault(require("./routes/get-short-orders"))
 const close_position_1 = __importDefault(require("./routes/close-position"));
 const get_users_orders_1 = __importDefault(require("./routes/get-users-orders"));
 const liquidate_position_1 = __importDefault(require("./routes/liquidate-position"));
+const get_users_positions_1 = __importDefault(require("./routes/get-users-positions"));
+const orders_1 = __importDefault(require("./db/schema/orders"));
+const constants_1 = require("./utils/constants");
+const match_limit_1 = __importDefault(require("./controllers/matcher/match-limit"));
 dotenv_1.default.config();
-const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT } = process.env;
+const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
 const appWs = (0, express_ws_1.default)(app).app;
 app.use(express_1.default.json());
@@ -39,19 +43,20 @@ app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" });
 });
 appWs.ws("/", function (ws) {
+    const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080";
     setInterval(function () {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             // Do nothing for now.
             // When set, send order book every second to frontend.
-            const shortsRequest = yield fetch("http://localhost:8080/get-short-orders", {
-                method: "GET",
+            const shortsRequest = yield fetch(`${URL}/get-short-orders`, {
+                method: constants_1.GET,
                 headers: {
                     "api-key": (_a = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _a !== void 0 ? _a : process.env.ENCRYPTED_PRODUCTION_API_KEY
                 }
             });
-            const longsRequest = yield fetch("http://localhost:8080/get-long-orders", {
-                method: "GET",
+            const longsRequest = yield fetch(`${URL}/get-long-orders`, {
+                method: constants_1.GET,
                 headers: {
                     "api-key": (_b = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _b !== void 0 ? _b : process.env.ENCRYPTED_PRODUCTION_API_KEY
                 }
@@ -65,6 +70,16 @@ appWs.ws("/", function (ws) {
             ws.send(JSON.stringify(data));
         });
     }, 1000);
+    // I don't know if this can function as a matchin engine.
+    setInterval(function () {
+        return __awaiter(this, void 0, void 0, function* () {
+            // Do nothing for now.
+            // When set, send order book every second to frontend.
+            const allLongLimitOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.LONG, filled: false }).sort({ time: 1, price: -1 });
+            const allShortLimitOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.SHORT, filled: false }).sort({ time: 1, price: -1 });
+            yield (0, match_limit_1.default)(allLongLimitOrders, allShortLimitOrders);
+        });
+    }, 3000);
     // Make a call to an endpoint that compares long orders to short orders
     // every 30 seconds and tries to match them.
     // This can be the idea of an orderbook.
@@ -112,6 +127,7 @@ app.use(function (req, res, next) {
 app.use("/get-long-orders", get_long_orders_1.default);
 app.use("/get-short-orders", get_short_orders_1.default);
 app.use("/get-users-orders", get_users_orders_1.default);
+app.use("/get-users-positions", get_users_positions_1.default);
 // POST Endpoints.
 app.use("/create", create_1.default);
 app.use("/open-position", open_position_1.default);

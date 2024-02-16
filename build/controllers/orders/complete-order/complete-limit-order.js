@@ -18,6 +18,7 @@ const calculate_liquidation_price_1 = __importDefault(require("../../../utils/ca
 const calculate_margin_ratio_1 = require("../../../utils/calculate-margin-ratio");
 const calculate_twap_1 = __importDefault(require("../../../utils/calculate-twap"));
 const get_unique_id_1 = require("../../../utils/get-unique-id");
+const liquidate_positions_1 = require("../../liquidator/liquidate-positions");
 /**
  * This function completes two market orders.
  * completingOrder fills the `order`.
@@ -53,9 +54,12 @@ function completeLimitOrder(order, completingOrders) {
                         const timeOfPositionCreation = new Date().getTime();
                         const positionIdOfCompletingOrder = (0, get_unique_id_1.getUniqueId)(20);
                         const completingOrderLiquidationPrice = (0, calculate_liquidation_price_1.default)(completingOrder.positionType, entryPrice, completingOrderLeverage, (0, calculate_margin_ratio_1.calculateMarginRatio)(completingOrderLeverage));
-                        console.log("EP1", entryPrice);
-                        console.log("LP1", completingOrderLiquidationPrice);
                         // 💡 Liquidate positions with liquidation prices here.
+                        // Liquidate positions.
+                        const liquidatablePositions = yield positions_1.default.find({ liquidationPrice: { $lte: entryPrice } });
+                        if (liquidatablePositions.length > 0)
+                            yield (0, liquidate_positions_1.liquidatePositions)(liquidatablePositions);
+                        // Liquidate positions.
                         const completingOrdersPosition = yield positions_1.default.create({
                             orderId: completingOrder.orderId,
                             positionId: positionIdOfCompletingOrder,
@@ -82,16 +86,17 @@ function completeLimitOrder(order, completingOrders) {
                         if (completingOrder.size + totalFilledSize == totalOrderSize) {
                             const { size, fillingOrders } = yield orders_1.default.findOne({ orderId: order.orderId });
                             // Update order to be filled.
-                            console.log(fillingOrders);
-                            console.log(order);
                             const entryPrice = yield (0, calculate_twap_1.default)(fillingOrders, parseInt(size));
                             const timeOfPositionCreation = new Date().getTime();
                             const orderLeverage = parseInt(order.leverage);
                             const positionIdOfOrder = (0, get_unique_id_1.getUniqueId)(20);
                             const orderLiquidationPrice = (0, calculate_liquidation_price_1.default)(order.positionType, entryPrice, orderLeverage, (0, calculate_margin_ratio_1.calculateMarginRatio)(orderLeverage));
-                            console.log("EP2", entryPrice);
-                            console.log("LP2", orderLiquidationPrice);
                             // 💡 Liquidate positions with liquidation prices here.
+                            // Liquidate positions.
+                            const liquidatablePositions = yield positions_1.default.find({ liquidationPrice: { $lte: entryPrice } });
+                            if (liquidatablePositions.length > 0)
+                                yield (0, liquidate_positions_1.liquidatePositions)(liquidatablePositions);
+                            // Liquidate positions.
                             // const ordersPosition = await positionsModel.create({
                             //     orderId: order.orderId,
                             //     positionId: positionIdOfOrder,
