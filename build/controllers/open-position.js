@@ -99,10 +99,19 @@ function openPositionController(req, res) {
         if (type == constants_1.MARKET)
             [success, result] = yield (0, market_order_1.default)(order);
         if (!success) {
-            // Return errors.
-            console.log("Result ::", result);
+            const response = {
+                status: 400,
+                msg: "Error"
+            };
+            res.send(response);
+            return;
         }
-        // Return success.
+        const response = {
+            status: 200,
+            msg: "OK!",
+            data: result
+        };
+        res.send(response);
     });
 }
 exports.default = openPositionController;

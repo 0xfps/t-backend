@@ -25,7 +25,8 @@ const open_position_1 = __importDefault(require("./routes/open-position"));
 const get_long_orders_1 = __importDefault(require("./routes/get-long-orders"));
 const get_short_orders_1 = __importDefault(require("./routes/get-short-orders"));
 const close_position_1 = __importDefault(require("./routes/close-position"));
-const get_users_positions_1 = __importDefault(require("./routes/get-users-positions"));
+const get_users_orders_1 = __importDefault(require("./routes/get-users-orders"));
+const liquidate_position_1 = __importDefault(require("./routes/liquidate-position"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT } = process.env;
 const app = (0, express_1.default)();
@@ -46,13 +47,13 @@ appWs.ws("/", function (ws) {
             const shortsRequest = yield fetch("http://localhost:8080/get-short-orders", {
                 method: "GET",
                 headers: {
-                    "api-key": (_a = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _a !== void 0 ? _a : ""
+                    "api-key": (_a = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _a !== void 0 ? _a : process.env.ENCRYPTED_PRODUCTION_API_KEY
                 }
             });
             const longsRequest = yield fetch("http://localhost:8080/get-long-orders", {
                 method: "GET",
                 headers: {
-                    "api-key": (_b = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _b !== void 0 ? _b : ""
+                    "api-key": (_b = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _b !== void 0 ? _b : process.env.ENCRYPTED_PRODUCTION_API_KEY
                 }
             });
             const longs = yield longsRequest.json();
@@ -110,8 +111,9 @@ app.use(function (req, res, next) {
 // Protected GET endpoints.
 app.use("/get-long-orders", get_long_orders_1.default);
 app.use("/get-short-orders", get_short_orders_1.default);
-app.use("/get-users-positions", get_users_positions_1.default);
+app.use("/get-users-orders", get_users_orders_1.default);
 // POST Endpoints.
 app.use("/create", create_1.default);
 app.use("/open-position", open_position_1.default);
 app.use("/close-position", close_position_1.default);
+app.use("/liquidate-position", liquidate_position_1.default);

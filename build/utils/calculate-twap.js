@@ -12,36 +12,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../utils/constants");
 const orders_1 = __importDefault(require("../db/schema/orders"));
-function getLongOrdersController(req, res) {
+function calculateTwap(orderIds, size) {
     return __awaiter(this, void 0, void 0, function* () {
-        const longOrders = yield orders_1.default.find({ positionType: constants_1.LONG }).sort({ time: 1 });
-        if (!longOrders) {
-            const response = {
-                status: 200,
-                msg: "OK!",
-                data: {
-                    body: []
-                }
-            };
-            res.send(response);
-        }
-        const result = [];
-        longOrders.forEach(function ({ size, price }) {
-            result.push({
-                size,
-                price
+        let TWP = 0;
+        orderIds.forEach(function (orderId) {
+            return __awaiter(this, void 0, void 0, function* () {
+                const { size, price } = yield orders_1.default.findOne({ orderId: orderId });
+                TWP += parseInt(size) * parseInt(price);
             });
         });
-        const response = {
-            status: 200,
-            msg: "OK!",
-            data: {
-                body: result
-            }
-        };
-        res.send(response);
+        console.log("TWP", TWP);
+        return parseFloat((TWP / size).toFixed(4));
     });
 }
-exports.default = getLongOrdersController;
+exports.default = calculateTwap;

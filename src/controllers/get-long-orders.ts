@@ -4,7 +4,7 @@ import ordersModel from "../db/schema/orders"
 import ResponseInterface from "../interfaces/response-interface"
 
 export default async function getLongOrdersController(req: Request, res: Response) {
-    const longOrders = await ordersModel.find({ positionType: LONG }).sort({ time: -1 })
+    const longOrders = await ordersModel.find({ positionType: LONG }).sort({ time: 1 })
     if (!longOrders) {
         const response: ResponseInterface = {
             status: 200,

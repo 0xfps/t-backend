@@ -16,6 +16,9 @@ const ordersSchema = new Schema({
     size: SchemaTypes.String,
     price: SchemaTypes.Number,
     // Ends here.
+    // Orders that filled this order.
+    filled: SchemaTypes.Boolean,
+    fillingOrders: SchemaTypes.Array,
     time: SchemaTypes.Date
 })
 

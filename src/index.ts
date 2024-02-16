@@ -12,8 +12,9 @@ import openPositionRouter from "./routes/open-position"
 import getLongOrdersRouter from "./routes/get-long-orders"
 import getShortOrdersRouter from "./routes/get-short-orders"
 import closePositionRouter from "./routes/close-position"
-import getUsersPositionsRouter from "./routes/get-users-positions"
+import getUsersOrdersRouter from "./routes/get-users-orders"
 import liquidatePositionRouter from "./routes/liquidate-position"
+import getUsersPositionsRouter from "./routes/get-users-positions"
 
 dotenv.config()
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT } = process.env
@@ -116,6 +117,7 @@ app.use(function (req: Request, res: Response, next: () => void) {
 // Protected GET endpoints.
 app.use("/get-long-orders", getLongOrdersRouter)
 app.use("/get-short-orders", getShortOrdersRouter)
+app.use("/get-users-orders", getUsersOrdersRouter)
 app.use("/get-users-positions", getUsersPositionsRouter)
 
 // POST Endpoints.

@@ -1,8 +1,9 @@
 import ordersModel from "../../../db/schema/orders"
 import ResponseInterface from "../../../interfaces/response-interface"
 import { calculateSlippage } from "../../../utils/calculate-slippage"
-import { LONG, MARKET, Order, SHORT } from "../../../utils/constants"
+import { LONG, MARKET, Order, SHORT, SPREAD } from "../../../utils/constants"
 import { getUniqueId } from "../../../utils/get-unique-id"
+import completeMarketOrder from "../complete-order/complete-market-order"
 /**
  * Long market order process.
  * 
@@ -21,8 +22,9 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
         size: order.size,
         // Get short orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
-        price: { $gte: calculateSlippage(LONG, order.price, 20), $lte: order.price }
-    }).sort({ time: -1, price: -1 }) // Sort by most recent first. 🚨 Possible bug.
+        price: { $gte: calculateSlippage(LONG, order.price), $lte: order.price },
+        filled: false
+    }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
 
     // If not short orders matching the user's market order are open, then
     // add data to database and then make order.
@@ -44,15 +46,30 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
                 status: 400,
                 msg: "Error creating order!"
             }
+            
             return [false, response]
         }
 
-        // Make order via Aori.
+        return [true, "Order Created!"]
     }
 
-    // If found, make order via Aori, then take order using what's found.
+    if (!openShortOrders || openShortOrders.length == 0) {
+        return [true, "Order Created!"]
+    }
 
-    // Make return match.
-    // 🚨🚨🚨🚨🚨🚨🚨🚨
-    return [false, {}]
+    /**
+     * If an order is found on the short side, it is expected to fill the long
+     * as it is market.
+     * An open order is found.
+     * An order is filled.
+     * Two positions are created. One for long, one for short.
+     */
+    const matchingOrder = openShortOrders[0]
+    const [completed, reason] = await completeMarketOrder(order, matchingOrder)
+
+    if (!completed) {
+        return [false, { result: reason }]
+    }
+
+    return [true, { respose: "OK!" }]
 }

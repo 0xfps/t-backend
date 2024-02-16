@@ -1,9 +1,16 @@
 import ordersModel from "../../../db/schema/orders";
 import ResponseInterface from "../../../interfaces/response-interface";
 import { calculateSlippage } from "../../../utils/calculate-slippage";
-import { LIMIT, LONG, Order, SHORT } from "../../../utils/constants";
+import { LIMIT, LONG, Order, SHORT, SPREAD } from "../../../utils/constants";
 import { getUniqueId } from "../../../utils/get-unique-id";
+import completeLimitOrder from "../complete-order/complete-limit-order";
 
+/**
+ * Process a long limit order.
+ * 
+ * @param order Order.
+ * @returns 
+ */
 export default async function processLongLimitOrder(order: Order): Promise<[boolean, {}]> {
     // Check in short orders to see if there are any orders matching within 20% slippage
     // of order price and order size.
@@ -13,41 +20,42 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
         // Can one fill a market order with a limit order?
         type: LIMIT,
         ticker: order.ticker.toLowerCase(),
-        size: order.size,
+        // No need for order size, it's an aggregation.
         // Get short orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
-        price: { $gte: calculateSlippage(LONG, order.price, 20), $lte: order.price }
-    }).sort({ time: -1, price: -1 }) // Sort by most recent first. 🚨 Possible bug.
+        price: { $gte: calculateSlippage(LONG, order.price), $lte: order.price },
+        filled: false
+    }).sort({ time: 1, price: 1 }) // Sort by first post first. 🚨 Possible bug.
 
     // If not short orders matching the user's market order are open, then
     // add data to database and then make order.
-    if (!openShortOrders || openShortOrders.length == 0) {
-        const orderId = getUniqueId(20)
-        // 32, making it more unique and trackable, if desired.
-        const aoriOrderId = `${orderId}-${getUniqueId(20)}`
-        const time = new Date().getTime()
+    const orderId = getUniqueId(20)
+    // 32, making it more unique and trackable, if desired.
+    const aoriOrderId = `${orderId}-${getUniqueId(20)}`
+    const time = new Date().getTime()
 
-        const createdOrder = await ordersModel.create({
-            orderId,
-            aoriOrderId,
-            ...order,
-            time
-        })
+    const createdOrder = await ordersModel.create({
+        orderId,
+        aoriOrderId,
+        ...order,
+        filled: false,
+        fillingOrders: [],
+        time
+    })
 
-        if (!createdOrder) {
-            const response: ResponseInterface = {
-                status: 400,
-                msg: "Error creating order!"
-            }
-            return [false, response]
+    if (!createdOrder) {
+        const response: ResponseInterface = {
+            status: 400,
+            msg: "Error creating order!"
         }
-
-        // Make order via Aori.
+        return [false, response]
     }
 
-    // If found, make order via Aori, then take order using what's found.
+    if (!openShortOrders || openShortOrders.length == 0) {
+        return [true, "Order Created!"]
+    }
 
-    // Make return match.
-    // 🚨🚨🚨🚨🚨🚨🚨🚨
-    return [false, {}]
+    const [completed, reason] = await completeLimitOrder(createdOrder, openShortOrders)
+
+    return [completed, reason]
 }

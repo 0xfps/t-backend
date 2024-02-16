@@ -12,36 +12,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const constants_1 = require("../utils/constants");
 const orders_1 = __importDefault(require("../db/schema/orders"));
-function getLongOrdersController(req, res) {
+function getUsersOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const longOrders = yield orders_1.default.find({ positionType: constants_1.LONG }).sort({ time: 1 });
-        if (!longOrders) {
+        const { address } = req.body;
+        const addressOrders = yield orders_1.default.find({ opener: address }).sort({ time: -1 });
+        if (!addressOrders) {
             const response = {
-                status: 200,
-                msg: "OK!",
-                data: {
-                    body: []
-                }
+                status: 404,
+                msg: "Orders from opener not found!"
             };
             res.send(response);
         }
-        const result = [];
-        longOrders.forEach(function ({ size, price }) {
-            result.push({
-                size,
-                price
-            });
-        });
         const response = {
             status: 200,
             msg: "OK!",
-            data: {
-                body: result
-            }
+            data: addressOrders
         };
         res.send(response);
     });
 }
-exports.default = getLongOrdersController;
+exports.default = getUsersOrdersController;

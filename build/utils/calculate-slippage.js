@@ -12,14 +12,14 @@ const constants_1 = require("./constants");
  * @param percentage    Percentage to calculate.
  * @returns
  */
-function calculateSlippage(positionType, amount, percentage) {
+function calculateSlippage(positionType, amount) {
     if (amount == 0)
         return 0.0000;
-    const slip = amount * percentage * 0.01;
+    const slip = amount * constants_1.SPREAD * 0.01;
     if (positionType == constants_1.LONG)
-        return parseFloat((amount - slip).toString());
+        return parseFloat((amount - slip).toFixed(4));
     if (positionType == constants_1.SHORT)
-        return parseFloat((amount + slip).toString());
+        return parseFloat((amount + slip).toFixed(4));
     return 0.0000;
 }
 exports.calculateSlippage = calculateSlippage;

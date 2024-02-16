@@ -99,9 +99,19 @@ export default async function openPositionController(req: Request, res: Response
         [success, result] = await processMarketOrder(order)
 
     if (!success) {
-        // Return errors.
-        console.log("Result ::", result)
+        const response: ResponseInterface = {
+            status: 400,
+            msg: "Error"
+        }
+        res.send(response)
+        return
     }
 
-    // Return success.
+    const response: ResponseInterface = {
+        status: 200,
+        msg: "OK!",
+        data: result
+    }
+
+    res.send(response)
 }
