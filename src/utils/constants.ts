@@ -9,6 +9,9 @@ export const MARKET = "market"
 export type Types = "limit" | "market"
 export type PositionTypes = "long" | "short"
 
+export const GET = "GET"
+export const POST = "GET"
+
 // Maximum slippage percentage allowed for long and short positions.
 // 2%, in this case.
 export const SPREAD = 2
@@ -24,8 +27,7 @@ export type Order = {
     assetB: string,
     ticker: string,
     size: number,
-    price: number,
-    time: number
+    price: number
 }
 
 export const JSON_RPC_URL = "https://goerli.gateway.tenderly.co"

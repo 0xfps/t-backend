@@ -22,7 +22,6 @@ function calculateTwap(orderIds, size) {
                 TWP += parseInt(size) * parseInt(price);
             });
         });
-        console.log("TWP", TWP);
         return parseFloat((TWP / size).toFixed(4));
     });
 }

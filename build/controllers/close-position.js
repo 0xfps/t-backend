@@ -13,7 +13,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const positions_1 = __importDefault(require("../db/schema/positions"));
+const constants_1 = require("../utils/constants");
 const orders_1 = __importDefault(require("../db/schema/orders"));
+const market_order_1 = __importDefault(require("./orders/market-order"));
 /**
  * Closes a position specified by the positionId.
  *
@@ -34,7 +36,7 @@ function closePositionController(req, res) {
             };
             res.send(response);
         }
-        const { type, orderId } = positionEntry.positionType;
+        const { positionType, orderId } = positionEntry;
         const orderEntry = yield orders_1.default.findOne({ orderId: orderId });
         if (!orderEntry) {
             const response = {
@@ -43,8 +45,58 @@ function closePositionController(req, res) {
             };
             res.send(response);
         }
-        // Continue.
-        // if (type == LONG) await processLongMarketOrder
+        const { type, opener, market, margin, leverage, assetA, assetB, ticker, size } = orderEntry;
+        const lastMarketPrice = (yield positions_1.default.find({}).sort({ time: -1 })).entryPrice;
+        let success = false, result = {};
+        // All are sold off as market orders.
+        // If long position, sell as short.
+        // If short, long.
+        if (positionType == constants_1.LONG) {
+            const newOrder = {
+                positionType: constants_1.SHORT,
+                type: constants_1.MARKET,
+                opener: opener,
+                market: market,
+                leverage: leverage,
+                margin: margin,
+                assetA: assetA,
+                assetB: assetB,
+                ticker: ticker,
+                size: size,
+                price: lastMarketPrice
+            }; // Don't remove this ";".
+            [success, result] = yield (0, market_order_1.default)(newOrder);
+        }
+        if (positionType == constants_1.SHORT) {
+            const newOrder = {
+                positionType: constants_1.LONG,
+                type: constants_1.MARKET,
+                opener: opener,
+                market: market,
+                leverage: leverage,
+                margin: margin,
+                assetA: assetA,
+                assetB: assetB,
+                ticker: ticker,
+                size: size,
+                price: lastMarketPrice
+            }; // Don't remove this ";".
+            [success, result] = yield (0, market_order_1.default)(newOrder);
+        }
+        if (!success) {
+            const response = {
+                status: 400,
+                msg: "Error"
+            };
+            res.send(response);
+            return;
+        }
+        const response = {
+            status: 200,
+            msg: "OK!",
+            data: result
+        };
+        res.send(response);
     });
 }
 exports.default = closePositionController;

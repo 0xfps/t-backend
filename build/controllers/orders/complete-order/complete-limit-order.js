@@ -53,8 +53,6 @@ function completeLimitOrder(order, completingOrders) {
                         const timeOfPositionCreation = new Date().getTime();
                         const positionIdOfCompletingOrder = (0, get_unique_id_1.getUniqueId)(20);
                         const completingOrderLiquidationPrice = (0, calculate_liquidation_price_1.default)(completingOrder.positionType, entryPrice, completingOrderLeverage, (0, calculate_margin_ratio_1.calculateMarginRatio)(completingOrderLeverage));
-                        console.log("EP1", entryPrice);
-                        console.log("LP1", completingOrderLiquidationPrice);
                         // 💡 Liquidate positions with liquidation prices here.
                         const completingOrdersPosition = yield positions_1.default.create({
                             orderId: completingOrder.orderId,
@@ -82,15 +80,11 @@ function completeLimitOrder(order, completingOrders) {
                         if (completingOrder.size + totalFilledSize == totalOrderSize) {
                             const { size, fillingOrders } = yield orders_1.default.findOne({ orderId: order.orderId });
                             // Update order to be filled.
-                            console.log(fillingOrders);
-                            console.log(order);
                             const entryPrice = yield (0, calculate_twap_1.default)(fillingOrders, parseInt(size));
                             const timeOfPositionCreation = new Date().getTime();
                             const orderLeverage = parseInt(order.leverage);
                             const positionIdOfOrder = (0, get_unique_id_1.getUniqueId)(20);
                             const orderLiquidationPrice = (0, calculate_liquidation_price_1.default)(order.positionType, entryPrice, orderLeverage, (0, calculate_margin_ratio_1.calculateMarginRatio)(orderLeverage));
-                            console.log("EP2", entryPrice);
-                            console.log("LP2", orderLiquidationPrice);
                             // 💡 Liquidate positions with liquidation prices here.
                             // const ordersPosition = await positionsModel.create({
                             //     orderId: order.orderId,

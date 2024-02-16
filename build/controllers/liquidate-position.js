@@ -8,7 +8,14 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
+const dotenv_1 = __importDefault(require("dotenv"));
+dotenv_1.default.config();
+const { ENVIRONMENT_URL } = process.env;
+const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080";
 function liquidatePositionController(req, res) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
@@ -16,14 +23,28 @@ function liquidatePositionController(req, res) {
         const body = {
             positionId: positionId
         };
-        const liquidationCall = yield fetch("http://localhost:8080/close-position", {
+        const liquidationCall = yield fetch(`${URL}/close-position`, {
             method: "POST",
             headers: {
                 "api-key": (_a = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _a !== void 0 ? _a : process.env.ENCRYPTED_PRODUCTION_API_KEY
             },
             body: JSON.stringify(body)
         });
-        const response = yield liquidationCall.json();
+        const resp = yield liquidationCall.json();
+        if (resp.status != 200) {
+            const response = {
+                status: resp.status,
+                msg: "Error"
+            };
+            res.send(response);
+            return;
+        }
+        const response = {
+            status: resp.status,
+            msg: resp.msg,
+            data: resp.data
+        };
+        res.send(response);
     });
 }
 exports.default = liquidatePositionController;

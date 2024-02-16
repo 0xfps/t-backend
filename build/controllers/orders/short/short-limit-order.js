@@ -48,8 +48,6 @@ function processShortLimitOrder(order) {
             };
             return [false, response];
         }
-        console.log(openLongOrders);
-        console.log(openLongOrders.length);
         if (!openLongOrders || openLongOrders.length == 0) {
             return [true, "Order Created!"];
         }

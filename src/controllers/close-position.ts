@@ -1,9 +1,9 @@
 import { Request, Response } from "express";
 import positionsModel from "../db/schema/positions"
 import ResponseInterface from "../interfaces/response-interface";
-import { LONG } from "../utils/constants";
-import processLongMarketOrder from "./orders/long/long-market-order";
+import { LONG, MARKET, Order, SHORT } from "../utils/constants";
 import ordersModel from "../db/schema/orders";
+import processMarketOrder from "./orders/market-order";
 
 /**
  * Closes a position specified by the positionId.
@@ -29,7 +29,7 @@ export default async function closePositionController(req: Request, res: Respons
         res.send(response)
     }
 
-    const { type, orderId } = positionEntry.positionType
+    const { positionType, orderId } = positionEntry
 
     const orderEntry = await ordersModel.findOne({ orderId: orderId })
 
@@ -42,6 +42,75 @@ export default async function closePositionController(req: Request, res: Respons
         res.send(response)
     }
 
-    // Continue.
-    // if (type == LONG) await processLongMarketOrder
+    const {
+        type,
+        opener,
+        market,
+        margin,
+        leverage,
+        assetA,
+        assetB,
+        ticker,
+        size
+    } = orderEntry
+
+    const lastMarketPrice: any = ((await positionsModel.find({}).sort({ time: -1 })) as any).entryPrice
+
+    let success = false, result = {}
+
+    // All are sold off as market orders.
+    // If long position, sell as short.
+    // If short, long.
+    if (positionType == LONG) {
+        const newOrder: Order = {
+            positionType: SHORT,
+            type: MARKET,
+            opener: opener,
+            market: market,
+            leverage: leverage,
+            margin: margin,
+            assetA: assetA,
+            assetB: assetB,
+            ticker: ticker,
+            size: size,
+            price: lastMarketPrice
+        }; // Don't remove this ";".
+
+        [success, result] = await processMarketOrder(newOrder)
+    }
+
+    if (positionType == SHORT) {
+        const newOrder: Order = {
+            positionType: LONG,
+            type: MARKET,
+            opener: opener,
+            market: market,
+            leverage: leverage,
+            margin: margin,
+            assetA: assetA,
+            assetB: assetB,
+            ticker: ticker,
+            size: size,
+            price: lastMarketPrice
+        }; // Don't remove this ";".
+
+        [success, result] = await processMarketOrder(newOrder)
+    }
+
+    if (!success) {
+        const response: ResponseInterface = {
+            status: 400,
+            msg: "Error"
+        }
+        res.send(response)
+        return
+    }
+
+    const response: ResponseInterface = {
+        status: 200,
+        msg: "OK!",
+        data: result
+    }
+
+    res.send(response)
 }
