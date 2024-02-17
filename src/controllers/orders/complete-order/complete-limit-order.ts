@@ -112,25 +112,25 @@ export default async function completeLimitOrder(order: any, completingOrders: a
                         await liquidatePositions(liquidatablePositions)
                     // Liquidate positions.
 
-                    // const ordersPosition = await positionsModel.create({
-                    //     orderId: order.orderId,
-                    //     positionId: positionIdOfOrder,
-                    //     opener: order.opener,
-                    //     positionType: order.positionType,       // "long" | "short"
-                    //     entryPrice: entryPrice,
-                    //     liquidationPrice: orderLiquidationPrice,
-                    //     time: timeOfPositionCreation
-                    // })
+                    const ordersPosition = await positionsModel.create({
+                        orderId: order.orderId,
+                        positionId: positionIdOfOrder,
+                        opener: order.opener,
+                        positionType: order.positionType,       // "long" | "short"
+                        entryPrice: entryPrice,
+                        liquidationPrice: orderLiquidationPrice,
+                        time: timeOfPositionCreation
+                    })
 
-                    // const updateOrdersPosition = await ordersModel.updateOne(
-                    //     { orderId: order.orderId },
-                    //     { filled: true }
-                    // )
+                    const updateOrdersPosition = await ordersModel.updateOne(
+                        { orderId: order.orderId },
+                        { filled: true }
+                    )
 
-                    // if (!ordersPosition || !updateOrdersPosition) {
-                    //     status = false
-                    //     return [false, "Complete limit order error 1."]
-                    // }
+                    if (!ordersPosition || !updateOrdersPosition) {
+                        status = false
+                        return [false, "Complete limit order error 1."]
+                    }
                 }
 
                 totalFilledSize += completingOrderSize

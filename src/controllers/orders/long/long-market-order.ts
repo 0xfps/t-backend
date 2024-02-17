@@ -57,6 +57,8 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
         return [true, "Order Created!"]
     }
 
+    // 💡 Reduce user's margin.
+
     /**
      * If an order is found on the short side, it is expected to fill the long
      * as it is market.

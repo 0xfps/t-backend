@@ -50,6 +50,8 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         return [true, "Order Created!"]
     }
 
+    // 💡 Reduce user's margin.
+
     const [completed, reason] = await completeLimitOrder(createdOrder, openLongOrders)
 
     return [completed, { result: reason }]
