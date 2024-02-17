@@ -1,7 +1,9 @@
 import ordersModel from "../../../db/schema/orders";
+import userAddressesModel from "../../../db/schema/user-addreses";
 import ResponseInterface from "../../../interfaces/response-interface";
 import { calculateSlippage } from "../../../utils/calculate-slippage";
 import { LIMIT, LONG, Order, SHORT, SPREAD } from "../../../utils/constants";
+import decrementMargin from "../../../utils/decrement-margin";
 import { getUniqueId } from "../../../utils/get-unique-id";
 import completeLimitOrder from "../complete-order/complete-limit-order";
 
@@ -56,6 +58,8 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
     }
 
     // 💡 Reduce user's margin.
+    const { user } = await userAddressesModel.findOne({ tWallet: opener })
+    await decrementMargin(user, order.margin)
 
     const [completed, reason] = await completeLimitOrder(createdOrder, openShortOrders)
 

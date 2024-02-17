@@ -23,6 +23,7 @@ function getUsersPositionsController(req, res) {
                 msg: "Positions from opener not found!"
             };
             res.send(response);
+            return;
         }
         const response = {
             status: 200,

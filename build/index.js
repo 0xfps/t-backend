@@ -31,6 +31,7 @@ const get_users_positions_1 = __importDefault(require("./routes/get-users-positi
 const orders_1 = __importDefault(require("./db/schema/orders"));
 const constants_1 = require("./utils/constants");
 const match_limit_1 = __importDefault(require("./controllers/matcher/match-limit"));
+const cancel_order_1 = __importDefault(require("./routes/cancel-order"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
@@ -132,4 +133,5 @@ app.use("/get-users-positions", get_users_positions_1.default);
 app.use("/create", create_1.default);
 app.use("/open-position", open_position_1.default);
 app.use("/close-position", close_position_1.default);
+app.use("/cancel-order", cancel_order_1.default);
 app.use("/liquidate-position", liquidate_position_1.default);

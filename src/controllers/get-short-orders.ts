@@ -15,6 +15,7 @@ export default async function getShortOrdersController(req: Request, res: Respon
         }
 
         res.send(response)
+        return
     }
 
     const result: Object[] = []

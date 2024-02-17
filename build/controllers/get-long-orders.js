@@ -26,6 +26,7 @@ function getLongOrdersController(req, res) {
                 }
             };
             res.send(response);
+            return;
         }
         const result = [];
         longOrders.forEach(function ({ size, price }) {

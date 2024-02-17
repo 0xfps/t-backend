@@ -12,6 +12,7 @@ export default async function getUsersOrdersController(req: Request, res: Respon
         }
 
         res.send(response)
+        return
     }
 
     const response: ResponseInterface = {

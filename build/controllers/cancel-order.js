@@ -13,36 +13,41 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
-const constants_1 = require("../utils/constants");
-function getShortOrdersController(req, res) {
+function cancelOrderController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const shortOrders = yield orders_1.default.find({ positionType: constants_1.SHORT }).sort({ time: 1 });
-        if (!shortOrders) {
+        const { orderId } = req.body;
+        const orderEntry = yield orders_1.default.findOne({ orderId: orderId });
+        if (!orderEntry) {
             const response = {
-                status: 200,
-                msg: "OK!",
-                data: {
-                    body: []
-                }
+                status: 404,
+                msg: "Order not found!"
             };
             res.send(response);
             return;
         }
-        const result = [];
-        shortOrders.forEach(function ({ size, price }) {
-            result.push({
-                size,
-                price
-            });
-        });
+        if (orderEntry.filled == true || (orderEntry.fillingOrders).length > 0) {
+            const response = {
+                status: 400,
+                msg: "Can't delete order as it is getting filled!"
+            };
+            res.send(response);
+            return;
+        }
+        const deleteOrder = orders_1.default.deleteOne({ orderId: orderId });
+        if (!deleteOrder) {
+            const response = {
+                status: 400,
+                msg: "Order could not be deleted!"
+            };
+            res.send(response);
+            return;
+        }
+        // Refund
         const response = {
             status: 200,
-            msg: "OK!",
-            data: {
-                body: result
-            }
+            msg: "Order deleted!"
         };
         res.send(response);
     });
 }
-exports.default = getShortOrdersController;
+exports.default = cancelOrderController;

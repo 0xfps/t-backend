@@ -13,8 +13,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../../../db/schema/orders"));
+const user_addreses_1 = __importDefault(require("../../../db/schema/user-addreses"));
 const calculate_slippage_1 = require("../../../utils/calculate-slippage");
 const constants_1 = require("../../../utils/constants");
+const decrement_margin_1 = __importDefault(require("../../../utils/decrement-margin"));
 const get_unique_id_1 = require("../../../utils/get-unique-id");
 const complete_limit_order_1 = __importDefault(require("../complete-order/complete-limit-order"));
 function processShortLimitOrder(order) {
@@ -51,6 +53,9 @@ function processShortLimitOrder(order) {
         if (!openLongOrders || openLongOrders.length == 0) {
             return [true, "Order Created!"];
         }
+        // 💡 Reduce user's margin.
+        const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
+        yield (0, decrement_margin_1.default)(user, order.margin);
         const [completed, reason] = yield (0, complete_limit_order_1.default)(createdOrder, openLongOrders);
         return [completed, { result: reason }];
     });

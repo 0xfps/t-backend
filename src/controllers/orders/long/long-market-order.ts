@@ -1,7 +1,9 @@
 import ordersModel from "../../../db/schema/orders"
+import userAddressesModel from "../../../db/schema/user-addreses"
 import ResponseInterface from "../../../interfaces/response-interface"
 import { calculateSlippage } from "../../../utils/calculate-slippage"
 import { LONG, MARKET, Order, SHORT, SPREAD } from "../../../utils/constants"
+import decrementMargin from "../../../utils/decrement-margin"
 import { getUniqueId } from "../../../utils/get-unique-id"
 import completeMarketOrder from "../complete-order/complete-market-order"
 /**
@@ -58,6 +60,8 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
     }
 
     // 💡 Reduce user's margin.
+    const { user } = await userAddressesModel.findOne({ tWallet: opener })
+    await decrementMargin(user, order.margin)
 
     /**
      * If an order is found on the short side, it is expected to fill the long

@@ -15,6 +15,7 @@ export default async function getLongOrdersController(req: Request, res: Respons
         }
 
         res.send(response)
+        return
     }
 
     const result: Object[] = []
