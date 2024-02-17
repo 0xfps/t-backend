@@ -43,17 +43,13 @@ export default async function closePositionController(req: Request, res: Respons
     }
 
     const {
-        type,
-        opener,
-        market,
         margin,
         leverage,
-        assetA,
-        assetB,
-        ticker,
+        price: initialPrice,
         size
     } = orderEntry
 
+    const tradingAmount = margin * leverage
     const lastMarketPrice: any = ((await positionsModel.find({}).sort({ time: -1 })) as any).entryPrice
 
     let success = false, result = {}
@@ -61,43 +57,29 @@ export default async function closePositionController(req: Request, res: Respons
     // All are sold off as market orders.
     // If long position, sell as short.
     // If short, long.
+    // More info at:
+    // https://pippenguin.com/forex/learn-forex/calculate-profit-forex/#:~:text=To%20calculate%20forex%20profit%2C%20subtract,Trade%20Size%20%C3%97%20Pip%20Value.
     if (positionType == LONG) {
-        const newOrder: Order = {
-            positionType: SHORT,
-            type: MARKET,
-            opener: opener,
-            market: market,
-            leverage: leverage,
-            margin: margin,
-            assetA: assetA,
-            assetB: assetB,
-            ticker: ticker,
-            size: size,
-            price: lastMarketPrice
-        }; // Don't remove this ";".
+        const profit = (lastMarketPrice - initialPrice) * size * leverage
 
-        [success, result] = await processMarketOrder(newOrder)
+        if (profit > 0) {
+            // 💡 Increment user's margin.
+        }
     }
 
+    // Math culled from:
+    // https://leverage.trading/short-selling-calculator/
     if (positionType == SHORT) {
-        const newOrder: Order = {
-            positionType: LONG,
-            type: MARKET,
-            opener: opener,
-            market: market,
-            leverage: leverage,
-            margin: margin,
-            assetA: assetA,
-            assetB: assetB,
-            ticker: ticker,
-            size: size,
-            price: lastMarketPrice
-        }; // Don't remove this ";".
+        const profit = (initialPrice - lastMarketPrice) * size * leverage
 
-        [success, result] = await processMarketOrder(newOrder)
+        if (profit > 0) {
+            // 💡 Increment user's margin.
+        }
     }
 
-    if (!success) {
+    const deletedPosition = await positionsModel.deleteOne({ positionId: positionId })
+
+    if (!success || !deletedPosition) {
         const response: ResponseInterface = {
             status: 400,
             msg: "Error"
@@ -109,7 +91,9 @@ export default async function closePositionController(req: Request, res: Respons
     const response: ResponseInterface = {
         status: 200,
         msg: "OK!",
-        data: result
+        data: {
+            result: "Good."
+        }
     }
 
     res.send(response)
