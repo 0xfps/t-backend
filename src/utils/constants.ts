@@ -1,3 +1,5 @@
+import config from "../config/contracts.json"
+
 // Position types.
 export const LONG = "long"
 export const SHORT = "short"
@@ -30,4 +32,13 @@ export type Order = {
     price: number
 }
 
-export const JSON_RPC_URL = "https://goerli.gateway.tenderly.co"
+export const JSON_RPC_URL = "https://api.avax-test.network/ext/bc/C/rpc"
+
+export const TRADABLE_MARGIN_VAULT_ABI = config.tradableMarginVault.abi
+export const TRADABLE_MARGIN_VAULT_ADDRESS = config.tradableMarginVault.address
+
+export const TRADABLE_SETTINGS_ABI = config.tradableSettings.abi
+export const TRADABLE_SETTINGS_ADDRESS = config.tradableSettings.address
+
+export const TRADABLE_MARGIN_HANDLER_ABI = config.tradableMarginHandler.abi
+export const TRADABLE_MARGIN_HANDLER_ADDRESS = config.tradableMarginHandler.address

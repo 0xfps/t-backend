@@ -15,7 +15,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const positions_1 = __importDefault(require("../db/schema/positions"));
 const constants_1 = require("../utils/constants");
 const orders_1 = __importDefault(require("../db/schema/orders"));
-const market_order_1 = __importDefault(require("./orders/market-order"));
+const user_addreses_1 = __importDefault(require("../db/schema/user-addreses"));
+const increment_margin_1 = __importDefault(require("../utils/increment-margin"));
 /**
  * Closes a position specified by the positionId.
  *
@@ -35,6 +36,7 @@ function closePositionController(req, res) {
                 msg: "Position not found!"
             };
             res.send(response);
+            return;
         }
         const { positionType, orderId } = positionEntry;
         const orderEntry = yield orders_1.default.findOne({ orderId: orderId });
@@ -44,46 +46,36 @@ function closePositionController(req, res) {
                 msg: "Order not found for position!"
             };
             res.send(response);
+            return;
         }
-        const { type, opener, market, margin, leverage, assetA, assetB, ticker, size } = orderEntry;
+        const { margin, leverage, opener, price: initialPrice, size } = orderEntry;
+        const tradingAmount = margin * leverage;
         const lastMarketPrice = (yield positions_1.default.find({}).sort({ time: -1 })).entryPrice;
         let success = false, result = {};
+        const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
         // All are sold off as market orders.
         // If long position, sell as short.
         // If short, long.
+        // More info at:
+        // https://pippenguin.com/forex/learn-forex/calculate-profit-forex/#:~:text=To%20calculate%20forex%20profit%2C%20subtract,Trade%20Size%20%C3%97%20Pip%20Value.
         if (positionType == constants_1.LONG) {
-            const newOrder = {
-                positionType: constants_1.SHORT,
-                type: constants_1.MARKET,
-                opener: opener,
-                market: market,
-                leverage: leverage,
-                margin: margin,
-                assetA: assetA,
-                assetB: assetB,
-                ticker: ticker,
-                size: size,
-                price: lastMarketPrice
-            }; // Don't remove this ";".
-            [success, result] = yield (0, market_order_1.default)(newOrder);
+            const profit = (lastMarketPrice - initialPrice) * size * leverage;
+            if (profit > 0) {
+                // 💡 Increment user's margin.
+                yield (0, increment_margin_1.default)(user, profit);
+            }
         }
+        // Math culled from:
+        // https://leverage.trading/short-selling-calculator/
         if (positionType == constants_1.SHORT) {
-            const newOrder = {
-                positionType: constants_1.LONG,
-                type: constants_1.MARKET,
-                opener: opener,
-                market: market,
-                leverage: leverage,
-                margin: margin,
-                assetA: assetA,
-                assetB: assetB,
-                ticker: ticker,
-                size: size,
-                price: lastMarketPrice
-            }; // Don't remove this ";".
-            [success, result] = yield (0, market_order_1.default)(newOrder);
+            const profit = (initialPrice - lastMarketPrice) * size * leverage;
+            if (profit > 0) {
+                // 💡 Increment user's margin.
+                yield (0, increment_margin_1.default)(user, profit);
+            }
         }
-        if (!success) {
+        const deletedPosition = yield positions_1.default.deleteOne({ positionId: positionId });
+        if (!success || !deletedPosition) {
             const response = {
                 status: 400,
                 msg: "Error"
@@ -94,7 +86,9 @@ function closePositionController(req, res) {
         const response = {
             status: 200,
             msg: "OK!",
-            data: result
+            data: {
+                result: "Good."
+            }
         };
         res.send(response);
     });

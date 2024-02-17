@@ -18,6 +18,7 @@ import getUsersPositionsRouter from "./routes/get-users-positions"
 import ordersModel from "./db/schema/orders"
 import { GET, LONG, MARKET, POST, SHORT } from "./utils/constants"
 import match from "./controllers/matcher/match-limit"
+import cancelOrderRouter from "./routes/cancel-order"
 
 dotenv.config()
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env
@@ -138,4 +139,5 @@ app.use("/get-users-positions", getUsersPositionsRouter)
 app.use("/create", createRouter)
 app.use("/open-position", openPositionRouter)
 app.use("/close-position", closePositionRouter)
+app.use("/cancel-order", cancelOrderRouter)
 app.use("/liquidate-position", liquidatePositionRouter)

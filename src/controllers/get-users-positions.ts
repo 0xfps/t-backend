@@ -12,6 +12,7 @@ export default async function getUsersPositionsController(req: Request, res: Res
         }
 
         res.send(response)
+        return
     }
 
     const response: ResponseInterface = {

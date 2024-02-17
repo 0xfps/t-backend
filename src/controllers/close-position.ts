@@ -4,6 +4,8 @@ import ResponseInterface from "../interfaces/response-interface";
 import { LONG, MARKET, Order, SHORT } from "../utils/constants";
 import ordersModel from "../db/schema/orders";
 import processMarketOrder from "./orders/market-order";
+import userAddressesModel from "../db/schema/user-addreses";
+import incrementMargin from "../utils/increment-margin";
 
 /**
  * Closes a position specified by the positionId.
@@ -27,6 +29,7 @@ export default async function closePositionController(req: Request, res: Respons
         }
 
         res.send(response)
+        return
     }
 
     const { positionType, orderId } = positionEntry
@@ -40,11 +43,13 @@ export default async function closePositionController(req: Request, res: Respons
         }
 
         res.send(response)
+        return
     }
 
     const {
         margin,
         leverage,
+        opener,
         price: initialPrice,
         size
     } = orderEntry
@@ -53,6 +58,8 @@ export default async function closePositionController(req: Request, res: Respons
     const lastMarketPrice: any = ((await positionsModel.find({}).sort({ time: -1 })) as any).entryPrice
 
     let success = false, result = {}
+
+    const { user } = await userAddressesModel.findOne({ tWallet: opener })
 
     // All are sold off as market orders.
     // If long position, sell as short.
@@ -64,6 +71,7 @@ export default async function closePositionController(req: Request, res: Respons
 
         if (profit > 0) {
             // 💡 Increment user's margin.
+            await incrementMargin(user, profit)
         }
     }
 
@@ -74,6 +82,7 @@ export default async function closePositionController(req: Request, res: Respons
 
         if (profit > 0) {
             // 💡 Increment user's margin.
+            await incrementMargin(user, profit)
         }
     }
 

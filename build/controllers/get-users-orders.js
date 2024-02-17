@@ -23,6 +23,7 @@ function getUsersOrdersController(req, res) {
                 msg: "Orders from opener not found!"
             };
             res.send(response);
+            return;
         }
         const response = {
             status: 200,

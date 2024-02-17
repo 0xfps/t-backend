@@ -1,6 +1,6 @@
 {
     "tradableSettings": {
-        "address": "0x9FDc747709100a71fEf101810C5DA5a51F076B15",
+        "address": "0xe3d03CB5AF9AAAe3FE16c77c63e5627e10675894",
         "abi": [
             {
                 "inputs": [
@@ -1215,7 +1215,7 @@
         ]
     },
     "tradableMarginVault": {
-        "address": "0xdB675Bc2b7929Fed7D09e94d21c9be4186b4AA31",
+        "address": "0x9af84a56B0b2444Fa2367C13862B652567CD0A1b",
         "abi": [
             {
                 "inputs": [
@@ -1270,6 +1270,44 @@
                 "anonymous": false,
                 "inputs": [
                     {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "previousOwner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferStarted",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "previousOwner",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferred",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
                         "indexed": false,
                         "internalType": "address",
                         "name": "sender",
@@ -1317,6 +1355,13 @@
                 "type": "event"
             },
             {
+                "inputs": [],
+                "name": "acceptOwnership",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
                 "inputs": [
                     {
                         "internalType": "address",
@@ -1361,6 +1406,24 @@
                         "internalType": "address",
                         "name": "user",
                         "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "decrementMargin",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
                     }
                 ],
                 "name": "getUserTokenBalance",
@@ -1372,6 +1435,24 @@
                     }
                 ],
                 "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "incrementMargin",
+                "outputs": [],
+                "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
@@ -1461,6 +1542,19 @@
             },
             {
                 "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
                 "name": "ownerContract",
                 "outputs": [
                     {
@@ -1470,6 +1564,26 @@
                     }
                 ],
                 "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "pendingOwner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "renounceOwnership",
+                "outputs": [],
+                "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
@@ -1496,6 +1610,19 @@
                     }
                 ],
                 "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newOwner",
+                        "type": "address"
+                    }
+                ],
+                "name": "transferOwnership",
+                "outputs": [],
+                "stateMutability": "nonpayable",
                 "type": "function"
             },
             {
@@ -1535,6 +1662,1356 @@
                     }
                 ],
                 "name": "updateWithdrawableBalance",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ]
+    },
+    "tradableMarginHandler": {
+        "address": "0x3e714Ff4e4B3e6db39699D5998Dd3887d643BA58",
+        "abi": [
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_settingsProvider",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "_vault",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "_gelatoRelay1Balance",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "indexed": false,
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "DepositIntoMarketMakerPositionValidated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "_forwarder",
+                        "type": "address"
+                    }
+                ],
+                "name": "ForwarderAdded",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "_forwarder",
+                        "type": "address"
+                    }
+                ],
+                "name": "ForwarderRemoved",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "enum ITradableSettings.UserType",
+                        "name": "userType",
+                        "type": "uint8"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "MarginDepositValidated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "enum ITradableSettings.UserType",
+                        "name": "userType",
+                        "type": "uint8"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "receiver",
+                        "type": "address"
+                    }
+                ],
+                "name": "MarginWithdrawalToAddressValidated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "enum ITradableSettings.UserType",
+                        "name": "userType",
+                        "type": "uint8"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "token",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "MarginWithdrawalValidated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "indexed": false,
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "MarketMakerPositionCreated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "_oldOwner_",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "_newOwner_",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnerChanged",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "indexed": false,
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "StakeFromMarginAccountInitiated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "enum ITradableSettings.UserType",
+                        "name": "userType",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "UserMarginAccountCreated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "enum ITradableSettings.UserType",
+                        "name": "userType",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "UserTypeChanged",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "indexed": false,
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "WithdrawnFromMarketMakerPosition",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "PERCENTAGE_PRECISION",
+                "outputs": [
+                    {
+                        "internalType": "uint16",
+                        "name": "",
+                        "type": "uint16"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "_owner_",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_forwarder",
+                        "type": "address"
+                    }
+                ],
+                "name": "addForwarder",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "allowedStakingProvider",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "attemptLiquidation",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "balanceVault",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_newOwner_",
+                        "type": "address"
+                    }
+                ],
+                "name": "changeOwner",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "enum ITradableSettings.UserType",
+                        "name": "userType",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "changeUserType",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "createMarketMakerPosition",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "createMarketMakerPositionForUser",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "decrementMargin",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "depositIntoMarketMakerPosition",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "depositIntoMarketMakerPositionForUser",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "depositValidation",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "forwarder",
+                        "type": "address"
+                    }
+                ],
+                "name": "forwarders",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "isForwarder",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "getMarketMakerPosition",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "marginBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "collateralAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "volumeAccumulated",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "tradingFeesAccumulated",
+                                "type": "uint256"
+                            },
+                            {
+                                "components": [
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "price",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "uint16",
+                                        "name": "rewardPercentage",
+                                        "type": "uint16"
+                                    },
+                                    {
+                                        "internalType": "uint16",
+                                        "name": "collateralPercentage",
+                                        "type": "uint16"
+                                    },
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "volume",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "completionDuration",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "bool",
+                                        "name": "isActive",
+                                        "type": "bool"
+                                    }
+                                ],
+                                "internalType": "struct ITradableSettings.MarketMakingTier",
+                                "name": "tier",
+                                "type": "tuple"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "timestamp",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isInstantiated",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isLiquidated",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct TradableMarginHandler.MarketMakerPosition",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "getMarketMakerPositions",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "marginBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "collateralAmount",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "volumeAccumulated",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "tradingFeesAccumulated",
+                                "type": "uint256"
+                            },
+                            {
+                                "components": [
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "price",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "uint16",
+                                        "name": "rewardPercentage",
+                                        "type": "uint16"
+                                    },
+                                    {
+                                        "internalType": "uint16",
+                                        "name": "collateralPercentage",
+                                        "type": "uint16"
+                                    },
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "volume",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "uint256",
+                                        "name": "completionDuration",
+                                        "type": "uint256"
+                                    },
+                                    {
+                                        "internalType": "bool",
+                                        "name": "isActive",
+                                        "type": "bool"
+                                    }
+                                ],
+                                "internalType": "struct ITradableSettings.MarketMakingTier",
+                                "name": "tier",
+                                "type": "tuple"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "timestamp",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isInstantiated",
+                                "type": "bool"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isLiquidated",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct TradableMarginHandler.MarketMakerPosition[]",
+                        "name": "",
+                        "type": "tuple[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    }
+                ],
+                "name": "getUser",
+                "outputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "user",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "reserveBalance",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "enum ITradableSettings.UserType",
+                                "name": "userType",
+                                "type": "uint8"
+                            }
+                        ],
+                        "internalType": "struct TradableMarginHandler.User",
+                        "name": "",
+                        "type": "tuple"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "incrementMargin",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "isPositionLiquidatable",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "forwarder",
+                        "type": "address"
+                    }
+                ],
+                "name": "isTrustedForwarder",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "receiver",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "dstVault",
+                        "type": "address"
+                    }
+                ],
+                "name": "marginWithdrawalToAddress",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_forwarder",
+                        "type": "address"
+                    }
+                ],
+                "name": "removeForwarder",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newStakingProvider",
+                        "type": "address"
+                    }
+                ],
+                "name": "setAllowedStakingProvider",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newSettingsProvider",
+                        "type": "address"
+                    }
+                ],
+                "name": "setSettingsProvider",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "newVault",
+                        "type": "address"
+                    }
+                ],
+                "name": "setVault",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "settingsProvider",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "stakeFromMarginBalance",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdrawFromMarketMakerPosition",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "positionId",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdrawFromMarketMakerPositionForUser",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "user",
+                        "type": "address"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "address",
+                                "name": "token",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint8",
+                                "name": "decimals",
+                                "type": "uint8"
+                            },
+                            {
+                                "internalType": "bool",
+                                "name": "isActive",
+                                "type": "bool"
+                            }
+                        ],
+                        "internalType": "struct ITradableSettings.AcceptedToken",
+                        "name": "selectedToken",
+                        "type": "tuple"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amount",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "dstVault",
+                        "type": "address"
+                    }
+                ],
+                "name": "withdrawalValidation",
                 "outputs": [],
                 "stateMutability": "nonpayable",
                 "type": "function"
