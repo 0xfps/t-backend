@@ -13,6 +13,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
+const user_addreses_1 = __importDefault(require("../db/schema/user-addreses"));
+const increment_margin_1 = __importDefault(require("../utils/increment-margin"));
 function cancelOrderController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { orderId } = req.body;
@@ -33,6 +35,9 @@ function cancelOrderController(req, res) {
             res.send(response);
             return;
         }
+        const { user } = yield user_addreses_1.default.findOne({ tWallet: orderEntry.opener });
+        // 💡 Increment user's margin.
+        yield (0, increment_margin_1.default)(user, orderEntry.margin);
         const deleteOrder = orders_1.default.deleteOne({ orderId: orderId });
         if (!deleteOrder) {
             const response = {
@@ -42,7 +47,6 @@ function cancelOrderController(req, res) {
             res.send(response);
             return;
         }
-        // Refund
         const response = {
             status: 200,
             msg: "Order deleted!"
