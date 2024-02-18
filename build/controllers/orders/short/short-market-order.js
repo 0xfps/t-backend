@@ -64,7 +64,7 @@ function processShortMarketOrder(order) {
         }
         // 💡 Reduce user's margin.
         const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
-        yield (0, decrement_margin_1.default)(user, order.margin);
+        yield (0, decrement_margin_1.default)(user, order.margin * (10 ** 8));
         /**
          * If an order is found on the short side, it is expected to fill the long
          * as it is market.

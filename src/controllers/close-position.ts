@@ -71,7 +71,7 @@ export default async function closePositionController(req: Request, res: Respons
 
         if (profit > 0) {
             // 💡 Increment user's margin.
-            await incrementMargin(user, profit)
+            await incrementMargin(user, profit * (10 ** 8))
         }
     }
 
@@ -82,7 +82,7 @@ export default async function closePositionController(req: Request, res: Respons
 
         if (profit > 0) {
             // 💡 Increment user's margin.
-            await incrementMargin(user, profit)
+            await incrementMargin(user, profit * (10 ** 8))
         }
     }
 

@@ -59,7 +59,7 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
 
     // 💡 Reduce user's margin.
     const { user } = await userAddressesModel.findOne({ tWallet: opener })
-    await decrementMargin(user, order.margin)
+    await decrementMargin(user, order.margin * (10 ** 8))
 
     const [completed, reason] = await completeLimitOrder(createdOrder, openShortOrders)
 

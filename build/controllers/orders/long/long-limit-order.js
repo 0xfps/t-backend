@@ -61,7 +61,7 @@ function processLongLimitOrder(order) {
         }
         // 💡 Reduce user's margin.
         const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
-        yield (0, decrement_margin_1.default)(user, order.margin);
+        yield (0, decrement_margin_1.default)(user, order.margin * (10 ** 8));
         const [completed, reason] = yield (0, complete_limit_order_1.default)(createdOrder, openShortOrders);
         return [completed, reason];
     });
