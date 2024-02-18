@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import ordersModel from "../db/schema/orders";
 import ResponseInterface from "../interfaces/response-interface";
+import userAddressesModel from "../db/schema/user-addreses";
+import incrementMargin from "../utils/increment-margin";
 
 export default async function cancelOrderController(req: Request, res: Response) {
     const { orderId } = req.body
@@ -26,6 +28,10 @@ export default async function cancelOrderController(req: Request, res: Response)
         return
     }
 
+    const { user } = await userAddressesModel.findOne({ tWallet: orderEntry.opener })
+    // 💡 Increment user's margin.
+    await incrementMargin(user, orderEntry.margin)
+
     const deleteOrder = ordersModel.deleteOne({ orderId: orderId })
     if (!deleteOrder) {
         const response: ResponseInterface = {
@@ -36,8 +42,6 @@ export default async function cancelOrderController(req: Request, res: Response)
         res.send(response)
         return
     }
-
-    // Refund
 
     const response: ResponseInterface = {
         status: 200,
