@@ -61,7 +61,7 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
 
     // 💡 Reduce user's margin.
     const { user } = await userAddressesModel.findOne({ tWallet: opener })
-    await decrementMargin(user, order.margin)
+    await decrementMargin(user, order.margin * (10 ** 8))
 
     /**
      * If an order is found on the short side, it is expected to fill the long

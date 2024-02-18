@@ -62,7 +62,7 @@ function closePositionController(req, res) {
             const profit = (lastMarketPrice - initialPrice) * size * leverage;
             if (profit > 0) {
                 // 💡 Increment user's margin.
-                yield (0, increment_margin_1.default)(user, profit);
+                yield (0, increment_margin_1.default)(user, profit * (10 ** 8));
             }
         }
         // Math culled from:
@@ -71,7 +71,7 @@ function closePositionController(req, res) {
             const profit = (initialPrice - lastMarketPrice) * size * leverage;
             if (profit > 0) {
                 // 💡 Increment user's margin.
-                yield (0, increment_margin_1.default)(user, profit);
+                yield (0, increment_margin_1.default)(user, profit * (10 ** 8));
             }
         }
         const deletedPosition = yield positions_1.default.deleteOne({ positionId: positionId });
