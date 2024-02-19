@@ -35,20 +35,21 @@ app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" })
 })
 
-appWs.ws("/", function (ws) {
+appWs.ws("/market-data/:ticker", function (ws, req) {
     const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080"
+    const { ticker } = req.params
 
     setInterval(async function () {
         // Do nothing for now.
         // When set, send order book every second to frontend.
-        const shortsRequest = await fetch(`${URL}/get-short-orders`, {
+        const shortsRequest = await fetch(`${URL}/get-short-orders/${ticker}`, {
             method: GET,
             headers: {
                 "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string ?? process.env.ENCRYPTED_PRODUCTION_API_KEY as string
             }
         })
 
-        const longsRequest = await fetch(`${URL}/get-long-orders`, {
+        const longsRequest = await fetch(`${URL}/get-long-orders/${ticker}`, {
             method: GET,
             headers: {
                 "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string ?? process.env.ENCRYPTED_PRODUCTION_API_KEY as string

@@ -4,7 +4,8 @@ import { SHORT } from "../utils/constants"
 import ResponseInterface from "../interfaces/response-interface"
 
 export default async function getShortOrdersController(req: Request, res: Response) {
-    const shortOrders = await ordersModel.find({ positionType: SHORT }).sort({ time: 1 })
+    const { ticker } = req.params
+    const shortOrders = await ordersModel.find({ positionType: SHORT, ticker: ticker }).sort({ time: 1 })
     if (!shortOrders) {
         const response: ResponseInterface = {
             status: 200,

@@ -43,20 +43,21 @@ app.use((0, cors_1.default)(cors_config_1.corsOptions));
 app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" });
 });
-appWs.ws("/", function (ws) {
+appWs.ws("/market-data/:ticker", function (ws, req) {
     const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080";
+    const { ticker } = req.params;
     setInterval(function () {
         var _a, _b;
         return __awaiter(this, void 0, void 0, function* () {
             // Do nothing for now.
             // When set, send order book every second to frontend.
-            const shortsRequest = yield fetch(`${URL}/get-short-orders`, {
+            const shortsRequest = yield fetch(`${URL}/get-short-orders/${ticker}`, {
                 method: constants_1.GET,
                 headers: {
                     "api-key": (_a = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _a !== void 0 ? _a : process.env.ENCRYPTED_PRODUCTION_API_KEY
                 }
             });
-            const longsRequest = yield fetch(`${URL}/get-long-orders`, {
+            const longsRequest = yield fetch(`${URL}/get-long-orders/${ticker}`, {
                 method: constants_1.GET,
                 headers: {
                     "api-key": (_b = process.env.ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _b !== void 0 ? _b : process.env.ENCRYPTED_PRODUCTION_API_KEY

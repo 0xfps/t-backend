@@ -16,7 +16,8 @@ const constants_1 = require("../utils/constants");
 const orders_1 = __importDefault(require("../db/schema/orders"));
 function getLongOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const longOrders = yield orders_1.default.find({ positionType: constants_1.LONG }).sort({ time: 1 });
+        const { ticker } = req.params;
+        const longOrders = yield orders_1.default.find({ positionType: constants_1.LONG, ticker: ticker }).sort({ time: 1 });
         if (!longOrders) {
             const response = {
                 status: 200,
