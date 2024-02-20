@@ -106,17 +106,18 @@ app.use("/get-user-address", getUserRouter)
 app.use(function (req: Request, res: Response, next: () => void) {
     const encryptedAPIKey: string = req.headers["api-key"] as string
 
-    const origin = req.headers["origin"]
+    // 🚨 I removed this for testing.
+    // const origin = req.headers["origin"]
 
     // While not in development, ensure that calls are made from only the whitelisted
     // URLs.
-    if (DEVELOPMENT_ENVIRONMENT == undefined) {
-        if (!whitelist.includes(origin as string)) {
-            const response: ResponseInterface = { status: 403, msg: `You cannot make calls from ${origin}.` }
-            res.send(response)
-            return
-        }
-    }
+    // if (DEVELOPMENT_ENVIRONMENT == undefined) {
+    //     if (!whitelist.includes(origin as string)) {
+    //         const response: ResponseInterface = { status: 403, msg: `You cannot make calls from ${origin}.` }
+    //         res.send(response)
+    //         return
+    //     }
+    // }
 
     if (encryptedAPIKey.length != 292) {
         const response: ResponseInterface = { status: 403, msg: "Invalid API Key!" }
