@@ -38,7 +38,7 @@ function closePositionController(req, res) {
             res.send(response);
             return;
         }
-        const { positionType, orderId } = positionEntry;
+        const { positionType, orderId, fundingRate } = positionEntry;
         const orderEntry = yield orders_1.default.findOne({ orderId: orderId });
         if (!orderEntry) {
             const response = {
@@ -59,7 +59,8 @@ function closePositionController(req, res) {
         // More info at:
         // https://pippenguin.com/forex/learn-forex/calculate-profit-forex/#:~:text=To%20calculate%20forex%20profit%2C%20subtract,Trade%20Size%20%C3%97%20Pip%20Value.
         if (positionType == constants_1.LONG) {
-            const profit = (lastMarketPrice - initialPrice) * size * leverage;
+            const totalProfit = (lastMarketPrice - initialPrice) * size * leverage;
+            const profit = totalProfit + ((fundingRate / totalProfit) * 100);
             if (profit > 0) {
                 // 💡 Increment user's margin.
                 yield (0, increment_margin_1.default)(user, profit * (10 ** 8));
@@ -68,7 +69,8 @@ function closePositionController(req, res) {
         // Math culled from:
         // https://leverage.trading/short-selling-calculator/
         if (positionType == constants_1.SHORT) {
-            const profit = (initialPrice - lastMarketPrice) * size * leverage;
+            const totalProfit = (initialPrice - lastMarketPrice) * size * leverage;
+            const profit = totalProfit + ((fundingRate / totalProfit) * 100);
             if (profit > 0) {
                 // 💡 Increment user's margin.
                 yield (0, increment_margin_1.default)(user, profit * (10 ** 8));
