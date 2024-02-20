@@ -19,6 +19,8 @@ import ordersModel from "./db/schema/orders"
 import { GET, LONG, MARKET, POST, SHORT } from "./utils/constants"
 import match from "./controllers/matcher/match-limit"
 import cancelOrderRouter from "./routes/cancel-order"
+import getFundingRateTimeLeft from "./utils/get-funding-rate-time-left"
+import fundingRate from "./utils/funding-rate"
 
 dotenv.config()
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env
@@ -35,7 +37,7 @@ app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" })
 })
 
-appWs.ws("/market-data/:ticker", function (ws, req) {
+appWs.ws("/market-data/:ticker", async function (ws, req) {
     const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080"
     const { ticker } = req.params
 
@@ -67,18 +69,21 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
         ws.send(JSON.stringify(data))
     }, 1000)
 
-    // I don't know if this can function as a matchin engine.
+    // Make a call to an endpoint that compares long orders to short orders
+    // every 5 seconds and tries to match them.
+    // This can be the idea of an orderbook.
+    // I don't know if this can function as a matching engine.
     setInterval(async function () {
         // Do nothing for now.
         // When set, send order book every second to frontend.
         const allLongLimitOrders = await ordersModel.find({ type: MARKET, positionType: LONG, filled: false }).sort({ time: 1, price: -1 })
         const allShortLimitOrders = await ordersModel.find({ type: MARKET, positionType: SHORT, filled: false }).sort({ time: 1, price: -1 })
         await match(allLongLimitOrders, allShortLimitOrders)
-    }, 3000)
+    }, 5000)
 
-    // Make a call to an endpoint that compares long orders to short orders
-    // every 30 seconds and tries to match them.
-    // This can be the idea of an orderbook.
+    setInterval(async function () {
+        await fundingRate(ticker)
+    }, await getFundingRateTimeLeft(ticker))
 
     console.log("Websocket initiated!")
 })

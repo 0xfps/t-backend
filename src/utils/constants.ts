@@ -18,6 +18,9 @@ export const POST = "GET"
 // 2%, in this case.
 export const SPREAD = 2
 
+export const EIGHT_HOURS = 1000 * 60 * 60 * 8
+export const BINANCE_API = "https://api.binance.com"
+
 export type Order = {
     positionType: PositionTypes,
     type: Types,
