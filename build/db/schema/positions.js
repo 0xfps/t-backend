@@ -8,6 +8,7 @@ const positionsSchema = new mongoose_1.Schema({
     positionType: mongoose_1.SchemaTypes.String, // "long" | "short"
     entryPrice: mongoose_1.SchemaTypes.Number,
     liquidationPrice: mongoose_1.SchemaTypes.Number,
+    fundingRate: mongoose_1.SchemaTypes.Number,
     time: mongoose_1.SchemaTypes.Date
 });
 const positionsModel = mongoose_1.models.positionsModel || (0, mongoose_1.model)("positionsModel", positionsSchema);

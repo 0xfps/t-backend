@@ -3,5 +3,5 @@ import getShortOrdersController from "../controllers/get-short-orders"
 
 const getShortOrdersRouter: Router = Router()
 
-getShortOrdersRouter.get("/", getShortOrdersController)
+getShortOrdersRouter.get("/:ticker", getShortOrdersController)
 export default getShortOrdersRouter

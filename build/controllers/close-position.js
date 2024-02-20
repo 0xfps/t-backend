@@ -50,7 +50,7 @@ function closePositionController(req, res) {
         }
         const { margin, leverage, opener, price: initialPrice, size } = orderEntry;
         const tradingAmount = margin * leverage;
-        const lastMarketPrice = (yield positions_1.default.find({}).sort({ time: -1 })).entryPrice;
+        const lastMarketPrice = (yield positions_1.default.find({}).sort({ time: -1 }))[0].entryPrice;
         let success = false, result = {};
         const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
         // All are sold off as market orders.

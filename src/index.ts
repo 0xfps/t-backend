@@ -19,6 +19,8 @@ import ordersModel from "./db/schema/orders"
 import { GET, LONG, MARKET, POST, SHORT } from "./utils/constants"
 import match from "./controllers/matcher/match-limit"
 import cancelOrderRouter from "./routes/cancel-order"
+import getFundingRateTimeLeft from "./utils/get-funding-rate-time-left"
+import fundingRate from "./utils/funding-rate"
 
 dotenv.config()
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env
@@ -35,20 +37,21 @@ app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" })
 })
 
-appWs.ws("/", function (ws) {
+appWs.ws("/market-data/:ticker", async function (ws, req) {
     const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080"
+    const { ticker } = req.params
 
     setInterval(async function () {
         // Do nothing for now.
         // When set, send order book every second to frontend.
-        const shortsRequest = await fetch(`${URL}/get-short-orders`, {
+        const shortsRequest = await fetch(`${URL}/get-short-orders/${ticker}`, {
             method: GET,
             headers: {
                 "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string ?? process.env.ENCRYPTED_PRODUCTION_API_KEY as string
             }
         })
 
-        const longsRequest = await fetch(`${URL}/get-long-orders`, {
+        const longsRequest = await fetch(`${URL}/get-long-orders/${ticker}`, {
             method: GET,
             headers: {
                 "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string ?? process.env.ENCRYPTED_PRODUCTION_API_KEY as string
@@ -66,18 +69,21 @@ appWs.ws("/", function (ws) {
         ws.send(JSON.stringify(data))
     }, 1000)
 
-    // I don't know if this can function as a matchin engine.
+    // Make a call to an endpoint that compares long orders to short orders
+    // every 5 seconds and tries to match them.
+    // This can be the idea of an orderbook.
+    // I don't know if this can function as a matching engine.
     setInterval(async function () {
         // Do nothing for now.
         // When set, send order book every second to frontend.
         const allLongLimitOrders = await ordersModel.find({ type: MARKET, positionType: LONG, filled: false }).sort({ time: 1, price: -1 })
         const allShortLimitOrders = await ordersModel.find({ type: MARKET, positionType: SHORT, filled: false }).sort({ time: 1, price: -1 })
         await match(allLongLimitOrders, allShortLimitOrders)
-    }, 3000)
+    }, 5000)
 
-    // Make a call to an endpoint that compares long orders to short orders
-    // every 30 seconds and tries to match them.
-    // This can be the idea of an orderbook.
+    setInterval(async function () {
+        await fundingRate(ticker)
+    }, await getFundingRateTimeLeft(ticker))
 
     console.log("Websocket initiated!")
 })

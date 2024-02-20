@@ -16,7 +16,8 @@ const orders_1 = __importDefault(require("../db/schema/orders"));
 const constants_1 = require("../utils/constants");
 function getShortOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const shortOrders = yield orders_1.default.find({ positionType: constants_1.SHORT }).sort({ time: 1 });
+        const { ticker } = req.params;
+        const shortOrders = yield orders_1.default.find({ positionType: constants_1.SHORT, ticker: ticker }).sort({ time: 1 });
         if (!shortOrders) {
             const response = {
                 status: 200,

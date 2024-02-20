@@ -55,7 +55,7 @@ export default async function closePositionController(req: Request, res: Respons
     } = orderEntry
 
     const tradingAmount = margin * leverage
-    const lastMarketPrice: any = ((await positionsModel.find({}).sort({ time: -1 })) as any).entryPrice
+    const lastMarketPrice: any = ((await positionsModel.find({}).sort({ time: -1 })) as any)[0].entryPrice
 
     let success = false, result = {}
 
