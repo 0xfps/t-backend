@@ -16,11 +16,11 @@ const funding_rates_1 = __importDefault(require("../db/schema/funding-rates"));
 const constants_1 = require("./constants");
 function getFundingRateTimeLeft(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { timeOfLastFunding } = yield funding_rates_1.default.findOne({ ticker: ticker });
-        if (!timeOfLastFunding) {
+        const fundingRates = yield funding_rates_1.default.findOne({ ticker: ticker });
+        if (!fundingRates) {
             return constants_1.EIGHT_HOURS;
         }
-        const timeLeftTo8Hours = (timeOfLastFunding + constants_1.EIGHT_HOURS) - new Date().getTime();
+        const timeLeftTo8Hours = (fundingRates.timeOfLastFunding + constants_1.EIGHT_HOURS) - new Date().getTime();
         return timeLeftTo8Hours;
     });
 }
