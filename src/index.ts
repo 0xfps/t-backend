@@ -23,6 +23,7 @@ import getFundingRateTimeLeft from "./utils/get-funding-rate-time-left"
 import fundingRate from "./utils/funding-rate"
 import getUsersOpenOrdersRouter from "./routes/get-users-open-orders"
 import getUsersFilledOrdersRouter from "./routes/get-users-filled-orders"
+import getOrderRouter from "./routes/get-order"
 
 dotenv.config()
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env
@@ -98,6 +99,7 @@ app.listen(PORT, function () {
 // GET Endpoints.
 app.use("/get-user-address", getUserRouter)
 // GET endpoints.
+app.use("/get-order", getOrderRouter)
 app.use("/get-long-orders", getLongOrdersRouter)
 app.use("/get-short-orders", getShortOrdersRouter)
 app.use("/get-users-orders", getUsersOrdersRouter)
