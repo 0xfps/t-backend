@@ -50,14 +50,14 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
         const shortsRequest = await fetch(`${URL}/get-short-orders/${ticker}`, {
             method: GET,
             headers: {
-                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string ?? process.env.ENCRYPTED_PRODUCTION_API_KEY as string
+                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string || process.env.ENCRYPTED_PRODUCTION_API_KEY as string
             }
         })
 
         const longsRequest = await fetch(`${URL}/get-long-orders/${ticker}`, {
             method: GET,
             headers: {
-                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string ?? process.env.ENCRYPTED_PRODUCTION_API_KEY as string
+                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string || process.env.ENCRYPTED_PRODUCTION_API_KEY as string
             }
         })
 
