@@ -34,6 +34,8 @@ const match_limit_1 = __importDefault(require("./controllers/matcher/match-limit
 const cancel_order_1 = __importDefault(require("./routes/cancel-order"));
 const get_funding_rate_time_left_1 = __importDefault(require("./utils/get-funding-rate-time-left"));
 const funding_rate_1 = __importDefault(require("./utils/funding-rate"));
+const get_users_open_orders_1 = __importDefault(require("./routes/get-users-open-orders"));
+const get_users_filled_orders_1 = __importDefault(require("./routes/get-users-filled-orders"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
@@ -106,6 +108,8 @@ app.use("/get-user-address", get_user_1.default);
 app.use("/get-long-orders", get_long_orders_1.default);
 app.use("/get-short-orders", get_short_orders_1.default);
 app.use("/get-users-orders", get_users_orders_1.default);
+app.use("/get-users-open-orders", get_users_open_orders_1.default);
+app.use("/get-users-filled-orders", get_users_filled_orders_1.default);
 app.use("/get-users-positions", get_users_positions_1.default);
 /**
  * Middleware for all POST endpoints.

@@ -21,6 +21,8 @@ import match from "./controllers/matcher/match-limit"
 import cancelOrderRouter from "./routes/cancel-order"
 import getFundingRateTimeLeft from "./utils/get-funding-rate-time-left"
 import fundingRate from "./utils/funding-rate"
+import getUsersOpenOrdersRouter from "./routes/get-users-open-orders"
+import getUsersFilledOrdersRouter from "./routes/get-users-filled-orders"
 
 dotenv.config()
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env
@@ -99,6 +101,8 @@ app.use("/get-user-address", getUserRouter)
 app.use("/get-long-orders", getLongOrdersRouter)
 app.use("/get-short-orders", getShortOrdersRouter)
 app.use("/get-users-orders", getUsersOrdersRouter)
+app.use("/get-users-open-orders", getUsersOpenOrdersRouter)
+app.use("/get-users-filled-orders", getUsersFilledOrdersRouter)
 app.use("/get-users-positions", getUsersPositionsRouter)
 
 /**
