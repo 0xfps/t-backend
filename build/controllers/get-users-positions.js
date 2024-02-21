@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const positions_1 = __importDefault(require("../db/schema/positions"));
 function getUsersPositionsController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { address } = req.body;
+        const { address } = req.params;
         const addressPositions = yield positions_1.default.find({ opener: address }).sort({ time: -1 });
         if (!addressPositions) {
             const response = {

@@ -102,7 +102,7 @@ app.listen(PORT, function () {
 });
 // GET Endpoints.
 app.use("/get-user-address", get_user_1.default);
-// Protected GET endpoints.
+// GET endpoints.
 app.use("/get-long-orders", get_long_orders_1.default);
 app.use("/get-short-orders", get_short_orders_1.default);
 app.use("/get-users-orders", get_users_orders_1.default);
