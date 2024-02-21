@@ -41,6 +41,7 @@ function processShortMarketOrder(order) {
             price: { $gte: order.price, $lte: (0, calculate_slippage_1.calculateSlippage)(constants_1.SHORT, order.price) },
             filled: false
         }).sort({ time: 1, price: -1 }); // Sort by first post first. 🚨 Possible bug.
+        const { user } = yield user_addreses_1.default.findOne({ tWallet: order.opener });
         // If no long orders matching the user's market order are open, then only
         // add data to database because an order must be made to be taken in Aori.
         if (!openLongOrders || openLongOrders.length == 0) {
@@ -57,14 +58,14 @@ function processShortMarketOrder(order) {
                 };
                 return [false, response];
             }
+            // 💡 Reduce user's margin.
+            yield (0, decrement_margin_1.default)(user, order.margin);
             return [true, "Order Created!"];
         }
         if (!openLongOrders || openLongOrders.length == 0) {
+            yield (0, decrement_margin_1.default)(user, order.margin);
             return [true, "Order Created!"];
         }
-        // 💡 Reduce user's margin.
-        const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
-        yield (0, decrement_margin_1.default)(user, order.margin * (10 ** 8));
         /**
          * If an order is found on the short side, it is expected to fill the long
          * as it is market.
@@ -77,6 +78,8 @@ function processShortMarketOrder(order) {
         if (!completed) {
             return [false, { result: reason }];
         }
+        yield (0, decrement_margin_1.default)(user, order.margin);
+        // 💡 Reduce user's margin.
         return [true, { respose: "OK!" }];
     });
 }

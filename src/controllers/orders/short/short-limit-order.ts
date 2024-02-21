@@ -23,6 +23,8 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         filled: false
     }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
 
+    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
+
     // If no long orders matching the user's market order are open, then only
     // add data to database because an order must be made to be taken in Aori.
     const orderId = getUniqueId(20)
@@ -49,12 +51,12 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
     }
 
     if (!openLongOrders || openLongOrders.length == 0) {
+        await decrementMargin(user, order.margin)
         return [true, "Order Created!"]
     }
 
     // 💡 Reduce user's margin.
-    const { user } = await userAddressesModel.findOne({ tWallet: opener })
-    await decrementMargin(user, order.margin * (10 ** 8))
+    await decrementMargin(user, order.margin)
 
     const [completed, reason] = await completeLimitOrder(createdOrder, openLongOrders)
 

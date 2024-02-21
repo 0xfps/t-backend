@@ -28,6 +28,8 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
         filled: false
     }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
 
+    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
+
     // If no long orders matching the user's market order are open, then only
     // add data to database because an order must be made to be taken in Aori.
     if (!openLongOrders || openLongOrders.length == 0) {
@@ -52,16 +54,17 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
             return [false, response]
         }
 
+        // 💡 Reduce user's margin.
+        await decrementMargin(user, order.margin)
+
         return [true, "Order Created!"]
     }
 
     if (!openLongOrders || openLongOrders.length == 0) {
+        await decrementMargin(user, order.margin)
+
         return [true, "Order Created!"]
     }
-
-    // 💡 Reduce user's margin.
-    const { user } = await userAddressesModel.findOne({ tWallet: opener })
-    await decrementMargin(user, order.margin * (10 ** 8))
 
     /**
      * If an order is found on the short side, it is expected to fill the long
@@ -70,6 +73,7 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
      * An order is filled.
      * Two positions are created. One for long, one for short.
      */
+
     const matchingOrder = openLongOrders[0]
     const [completed, reason] = await completeMarketOrder(order, matchingOrder)
 
@@ -77,5 +81,8 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
         return [false, { result: reason }]
     }
 
+    await decrementMargin(user, order.margin)
+
+    // 💡 Reduce user's margin.
     return [true, { respose: "OK!" }]
 }

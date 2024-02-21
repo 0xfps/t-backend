@@ -6,24 +6,32 @@ import {
     TRADABLE_MARGIN_VAULT_ABI,
     TRADABLE_MARGIN_VAULT_ADDRESS
 } from "./constants";
+import dotenv from "dotenv"
+
+dotenv.config()
 
 export default async function incrementMargin(address: string, amount: number): Promise<boolean> {
     const provider = new ethers.JsonRpcProvider(JSON_RPC_URL)
+    const signer = new ethers.Wallet(process.env.PRIVATE_KEY as string, provider)
+
     const tradableMarginVault = new ethers.Contract(
         TRADABLE_MARGIN_VAULT_ADDRESS,
         TRADABLE_MARGIN_VAULT_ABI,
-        provider
+        signer
     )
 
     const tradableMarginHandler = new ethers.Contract(
         TRADABLE_MARGIN_HANDLER_ADDRESS,
         TRADABLE_MARGIN_HANDLER_ABI,
-        provider
+        signer
     )
 
     const value = BigInt(amount * (10 ** 8))
-    const tx1 = await tradableMarginVault.incrementMargin(address, value)
-    const tx2 = await tradableMarginHandler.incrementMargin(address, value)
+    const tx1 = await tradableMarginVault.incrementMargin.populateTransaction(address, value)
+    const tx2 = await tradableMarginHandler.incrementMargin.populateTransaction(address, value)
+
+    await signer.sendTransaction(tx1)
+    await signer.sendTransaction(tx2)
 
     if (!tx1 || !tx2) {
         return false

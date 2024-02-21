@@ -41,6 +41,7 @@ function processLongMarketOrder(order) {
             price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.LONG, order.price), $lte: order.price },
             filled: false
         }).sort({ time: 1, price: -1 }); // Sort by first post first. 🚨 Possible bug.
+        const { user } = yield user_addreses_1.default.findOne({ tWallet: order.opener });
         // If not short orders matching the user's market order are open, then
         // add data to database and then make order.
         if (!openShortOrders || openShortOrders.length == 0) {
@@ -62,9 +63,6 @@ function processLongMarketOrder(order) {
         if (!openShortOrders || openShortOrders.length == 0) {
             return [true, "Order Created!"];
         }
-        // 💡 Reduce user's margin.
-        const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
-        yield (0, decrement_margin_1.default)(user, order.margin * (10 ** 8));
         /**
          * If an order is found on the short side, it is expected to fill the long
          * as it is market.
@@ -77,6 +75,8 @@ function processLongMarketOrder(order) {
         if (!completed) {
             return [false, { result: reason }];
         }
+        // 💡 Reduce user's margin.
+        yield (0, decrement_margin_1.default)(user, order.margin);
         return [true, { respose: "OK!" }];
     });
 }
