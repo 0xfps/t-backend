@@ -20,11 +20,14 @@ function decrementMargin(address, amount) {
     return __awaiter(this, void 0, void 0, function* () {
         const provider = new ethers_1.ethers.JsonRpcProvider(constants_1.JSON_RPC_URL);
         const signer = new ethers_1.ethers.Wallet(process.env.PRIVATE_KEY, provider);
+        const nonce = yield provider.getTransactionCount(signer.address);
         const tradableMarginVault = new ethers_1.ethers.Contract(constants_1.TRADABLE_MARGIN_VAULT_ADDRESS, constants_1.TRADABLE_MARGIN_VAULT_ABI, signer);
         const tradableMarginHandler = new ethers_1.ethers.Contract(constants_1.TRADABLE_MARGIN_HANDLER_ADDRESS, constants_1.TRADABLE_MARGIN_HANDLER_ABI, signer);
         const value = BigInt(amount * (10 ** 8));
         const tx1 = yield tradableMarginVault.decrementMargin.populateTransaction(address, value);
         const tx2 = yield tradableMarginHandler.decrementMargin.populateTransaction(address, value);
+        yield signer.sendTransaction(Object.assign(Object.assign({}, tx1), { nonce: nonce + 30 }));
+        yield signer.sendTransaction(Object.assign(Object.assign({}, tx2), { nonce: nonce + 40 }));
         yield signer.sendTransaction(tx1);
         yield signer.sendTransaction(tx2);
         if (!tx1 || !tx2) {

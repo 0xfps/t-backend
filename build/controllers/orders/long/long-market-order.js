@@ -58,9 +58,11 @@ function processLongMarketOrder(order) {
                 };
                 return [false, response];
             }
+            yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
             return [true, "Order Created!"];
         }
         if (!openShortOrders || openShortOrders.length == 0) {
+            yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
             return [true, "Order Created!"];
         }
         /**
@@ -76,7 +78,7 @@ function processLongMarketOrder(order) {
             return [false, { result: reason }];
         }
         // 💡 Reduce user's margin.
-        yield (0, decrement_margin_1.default)(user, order.margin);
+        yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
         return [true, { respose: "OK!" }];
     });
 }
