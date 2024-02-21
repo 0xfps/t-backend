@@ -95,6 +95,10 @@ app.listen(PORT, function () {
 
 // GET Endpoints.
 app.use("/get-user-address", getUserRouter)
+app.use("/get-long-orders", getLongOrdersRouter)
+app.use("/get-short-orders", getShortOrdersRouter)
+app.use("/get-users-orders", getUsersOrdersRouter)
+app.use("/get-users-positions", getUsersPositionsRouter)
 
 /**
  * Middleware for all POST endpoints.
@@ -135,12 +139,6 @@ app.use(function (req: Request, res: Response, next: () => void) {
 
     next()
 })
-
-// Protected GET endpoints.
-app.use("/get-long-orders", getLongOrdersRouter)
-app.use("/get-short-orders", getShortOrdersRouter)
-app.use("/get-users-orders", getUsersOrdersRouter)
-app.use("/get-users-positions", getUsersPositionsRouter)
 
 // POST Endpoints.
 app.use("/create", createRouter)
