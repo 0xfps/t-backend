@@ -18,7 +18,6 @@ const market_order_1 = __importDefault(require("./orders/market-order"));
 const get_ticker_contract_1 = __importDefault(require("../utils/get-ticker-contract"));
 const get_user_margin_balance_1 = __importDefault(require("../utils/get-user-margin-balance"));
 const user_addreses_1 = __importDefault(require("../db/schema/user-addreses"));
-const decrement_margin_1 = __importDefault(require("../utils/decrement-margin"));
 /**
  * Opening a position is simply making a long or short position
  * in either limit or market types. The process of making
@@ -107,8 +106,6 @@ function openPositionController(req, res) {
             res.send(response);
             return;
         }
-        // Replace with Tradable address.
-        yield (0, decrement_margin_1.default)("0x5e078E6b545cF88aBD5BB58d27488eF8BE0D2593", fee);
         const response = {
             status: 200,
             msg: "OK!",

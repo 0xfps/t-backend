@@ -13,6 +13,7 @@ dotenv.config()
 export default async function incrementMargin(address: string, amount: number): Promise<boolean> {
     const provider = new ethers.JsonRpcProvider(JSON_RPC_URL)
     const signer = new ethers.Wallet(process.env.PRIVATE_KEY as string, provider)
+    const nonce = await provider.getTransactionCount(signer.address)
 
     const tradableMarginVault = new ethers.Contract(
         TRADABLE_MARGIN_VAULT_ADDRESS,
@@ -27,11 +28,12 @@ export default async function incrementMargin(address: string, amount: number): 
     )
 
     const value = BigInt(amount * (10 ** 8))
+
     const tx1 = await tradableMarginVault.incrementMargin.populateTransaction(address, value)
     const tx2 = await tradableMarginHandler.incrementMargin.populateTransaction(address, value)
 
-    await signer.sendTransaction(tx1)
-    await signer.sendTransaction(tx2)
+    await signer.sendTransaction({ ...tx1, nonce: nonce + 10 })
+    await signer.sendTransaction({ ...tx2, nonce: nonce + 20 })
 
     if (!tx1 || !tx2) {
         return false

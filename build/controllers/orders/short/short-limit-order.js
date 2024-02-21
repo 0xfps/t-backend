@@ -52,11 +52,11 @@ function processShortLimitOrder(order) {
             return [false, response];
         }
         if (!openLongOrders || openLongOrders.length == 0) {
-            yield (0, decrement_margin_1.default)(user, order.margin);
+            yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
             return [true, "Order Created!"];
         }
         // 💡 Reduce user's margin.
-        yield (0, decrement_margin_1.default)(user, order.margin);
+        yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
         const [completed, reason] = yield (0, complete_limit_order_1.default)(createdOrder, openLongOrders);
         return [completed, { result: reason }];
     });

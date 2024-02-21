@@ -59,11 +59,11 @@ function processShortMarketOrder(order) {
                 return [false, response];
             }
             // 💡 Reduce user's margin.
-            yield (0, decrement_margin_1.default)(user, order.margin);
+            yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
             return [true, "Order Created!"];
         }
         if (!openLongOrders || openLongOrders.length == 0) {
-            yield (0, decrement_margin_1.default)(user, order.margin);
+            yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
             return [true, "Order Created!"];
         }
         /**
@@ -78,7 +78,7 @@ function processShortMarketOrder(order) {
         if (!completed) {
             return [false, { result: reason }];
         }
-        yield (0, decrement_margin_1.default)(user, order.margin);
+        yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
         // 💡 Reduce user's margin.
         return [true, { respose: "OK!" }];
     });

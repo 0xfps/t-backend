@@ -9,7 +9,8 @@
   "scripts": {
     "build": "tsc",
     "dev": "tsc && node ./build/index.js",
-    "start": "node ./build/index.js"
+    "start": "node ./build/index.js",
+    "push": "npm run build && git add . && git commit -m '✨✨✨✨' && git push origin funding-rate"
   },
   "dependencies": {
     "@types/cors": "^2.8.17",

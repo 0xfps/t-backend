@@ -108,9 +108,6 @@ export default async function openPositionController(req: Request, res: Response
         return
     }
 
-    // Replace with Tradable address.
-    await incrementMargin("0x5e078E6b545cF88aBD5BB58d27488eF8BE0D2593", fee)
-
     const response: ResponseInterface = {
         status: 200,
         msg: "OK!",
