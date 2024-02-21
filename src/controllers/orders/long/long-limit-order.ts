@@ -56,12 +56,12 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
     }
 
     if (!openShortOrders || openShortOrders.length == 0) {
-        await decrementMargin(user, order.margin)
+        await decrementMargin(user, (order.margin + order.fee))
         return [true, "Order Created!"]
     }
 
     // 💡 Reduce user's margin.
-    await decrementMargin(user, order.margin)
+    await decrementMargin(user, (order.margin + order.fee))
     const [completed, reason] = await completeLimitOrder(createdOrder, openShortOrders)
 
     return [completed, reason]
