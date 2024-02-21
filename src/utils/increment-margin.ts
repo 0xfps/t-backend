@@ -32,8 +32,8 @@ export default async function incrementMargin(address: string, amount: number): 
     const tx1 = await tradableMarginVault.incrementMargin.populateTransaction(address, value)
     const tx2 = await tradableMarginHandler.incrementMargin.populateTransaction(address, value)
 
-    await signer.sendTransaction({ ...tx1, nonce: nonce + 10 })
-    await signer.sendTransaction({ ...tx2, nonce: nonce + 20 })
+    await (await signer.sendTransaction({ ...tx1, nonce: nonce + 10 })).wait()
+    await (await signer.sendTransaction({ ...tx2, nonce: nonce + 20 })).wait()
 
     if (!tx1 || !tx2) {
         return false

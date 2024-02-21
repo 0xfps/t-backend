@@ -32,11 +32,8 @@ export default async function decrementMargin(address: string, amount: number): 
     const tx1 = await tradableMarginVault.decrementMargin.populateTransaction(address, value)
     const tx2 = await tradableMarginHandler.decrementMargin.populateTransaction(address, value)
 
-    await signer.sendTransaction({ ...tx1, nonce: nonce + 30 })
-    await signer.sendTransaction({ ...tx2, nonce: nonce + 40 })
-
-    await signer.sendTransaction(tx1)
-    await signer.sendTransaction(tx2)
+    await (await signer.sendTransaction({ ...tx1, nonce: nonce + 30 })).wait()
+    await (await signer.sendTransaction({ ...tx2, nonce: nonce + 40 })).wait()
 
     if (!tx1 || !tx2) {
         return false
