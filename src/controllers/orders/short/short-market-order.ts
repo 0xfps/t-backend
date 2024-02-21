@@ -55,13 +55,13 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
         }
 
         // 💡 Reduce user's margin.
-        await decrementMargin(user, order.margin)
+        await decrementMargin(user, (order.margin + order.fee))
 
         return [true, "Order Created!"]
     }
 
     if (!openLongOrders || openLongOrders.length == 0) {
-        await decrementMargin(user, order.margin)
+        await decrementMargin(user, (order.margin + order.fee))
 
         return [true, "Order Created!"]
     }
@@ -81,7 +81,7 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
         return [false, { result: reason }]
     }
 
-    await decrementMargin(user, order.margin)
+    await decrementMargin(user, (order.margin + order.fee))
 
     // 💡 Reduce user's margin.
     return [true, { respose: "OK!" }]

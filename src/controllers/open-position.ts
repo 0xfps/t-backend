@@ -6,7 +6,7 @@ import getTickerContract from "../utils/get-ticker-contract"
 import ResponseInterface from "../interfaces/response-interface"
 import getUserMarginBalance from "../utils/get-user-margin-balance"
 import userAddressesModel from "../db/schema/user-addreses"
-import decrementMargin from "../utils/decrement-margin"
+import incrementMargin from "../utils/increment-margin"
 
 /**
  * Opening a position is simply making a long or short position
@@ -109,7 +109,7 @@ export default async function openPositionController(req: Request, res: Response
     }
 
     // Replace with Tradable address.
-    await decrementMargin("0x5e078E6b545cF88aBD5BB58d27488eF8BE0D2593", fee)
+    await incrementMargin("0x5e078E6b545cF88aBD5BB58d27488eF8BE0D2593", fee)
 
     const response: ResponseInterface = {
         status: 200,
