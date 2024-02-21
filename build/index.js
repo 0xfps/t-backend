@@ -38,7 +38,7 @@ const get_users_open_orders_1 = __importDefault(require("./routes/get-users-open
 const get_users_filled_orders_1 = __importDefault(require("./routes/get-users-filled-orders"));
 const get_order_1 = __importDefault(require("./routes/get-order"));
 dotenv_1.default.config();
-const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env;
+const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
 const appWs = (0, express_ws_1.default)(app).app;
 app.use(express_1.default.json());
@@ -52,6 +52,8 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
     return __awaiter(this, void 0, void 0, function* () {
         const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080";
         const { ticker } = req.params;
+        console.log(URL);
+        console.log(ticker);
         setInterval(function () {
             return __awaiter(this, void 0, void 0, function* () {
                 // Do nothing for now.
@@ -59,9 +61,11 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
                 const shortsRequest = yield fetch(`${URL}/get-short-orders/${ticker}`, {
                     method: constants_1.GET
                 });
+                console.log("SR", shortsRequest);
                 const longsRequest = yield fetch(`${URL}/get-long-orders/${ticker}`, {
                     method: constants_1.GET
                 });
+                console.log("LR", longsRequest);
                 const longs = yield longsRequest.json();
                 const shorts = yield shortsRequest.json();
                 const data = {
