@@ -63,7 +63,7 @@ function closePositionController(req, res) {
             const profit = totalProfit + ((fundingRate / totalProfit) * 100);
             if (profit > 0) {
                 // 💡 Increment user's margin.
-                yield (0, increment_margin_1.default)(user, profit * (10 ** 8));
+                yield (0, increment_margin_1.default)(user, profit);
             }
         }
         // Math culled from:
@@ -73,7 +73,7 @@ function closePositionController(req, res) {
             const profit = totalProfit + ((fundingRate / totalProfit) * 100);
             if (profit > 0) {
                 // 💡 Increment user's margin.
-                yield (0, increment_margin_1.default)(user, profit * (10 ** 8));
+                yield (0, increment_margin_1.default)(user, profit);
             }
         }
         const deletedPosition = yield positions_1.default.deleteOne({ positionId: positionId });

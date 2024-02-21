@@ -28,6 +28,8 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
         filled: false
     }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
 
+    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
+
     // If not short orders matching the user's market order are open, then
     // add data to database and then make order.
     if (!openShortOrders || openShortOrders.length == 0) {
@@ -48,7 +50,7 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
                 status: 400,
                 msg: "Error creating order!"
             }
-            
+
             return [false, response]
         }
 
@@ -58,10 +60,6 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
     if (!openShortOrders || openShortOrders.length == 0) {
         return [true, "Order Created!"]
     }
-
-    // 💡 Reduce user's margin.
-    const { user } = await userAddressesModel.findOne({ tWallet: opener })
-    await decrementMargin(user, order.margin * (10 ** 8))
 
     /**
      * If an order is found on the short side, it is expected to fill the long
@@ -76,6 +74,9 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
     if (!completed) {
         return [false, { result: reason }]
     }
+
+    // 💡 Reduce user's margin.
+    await decrementMargin(user, order.margin)
 
     return [true, { respose: "OK!" }]
 }

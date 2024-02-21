@@ -41,6 +41,7 @@ function processLongLimitOrder(order) {
             price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.LONG, order.price), $lte: order.price },
             filled: false
         }).sort({ time: 1, price: 1 }); // Sort by first post first. 🚨 Possible bug.
+        const { user } = yield user_addreses_1.default.findOne({ tWallet: order.opener });
         // If not short orders matching the user's market order are open, then
         // add data to database and then make order.
         const orderId = (0, get_unique_id_1.getUniqueId)(20);
@@ -57,11 +58,11 @@ function processLongLimitOrder(order) {
             return [false, response];
         }
         if (!openShortOrders || openShortOrders.length == 0) {
+            yield (0, decrement_margin_1.default)(user, order.margin);
             return [true, "Order Created!"];
         }
         // 💡 Reduce user's margin.
-        const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
-        yield (0, decrement_margin_1.default)(user, order.margin * (10 ** 8));
+        yield (0, decrement_margin_1.default)(user, order.margin);
         const [completed, reason] = yield (0, complete_limit_order_1.default)(createdOrder, openShortOrders);
         return [completed, reason];
     });

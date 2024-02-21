@@ -29,6 +29,8 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
         filled: false
     }).sort({ time: 1, price: 1 }) // Sort by first post first. 🚨 Possible bug.
 
+    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
+
     // If not short orders matching the user's market order are open, then
     // add data to database and then make order.
     const orderId = getUniqueId(20)
@@ -54,13 +56,12 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
     }
 
     if (!openShortOrders || openShortOrders.length == 0) {
+        await decrementMargin(user, order.margin)
         return [true, "Order Created!"]
     }
 
     // 💡 Reduce user's margin.
-    const { user } = await userAddressesModel.findOne({ tWallet: opener })
-    await decrementMargin(user, order.margin * (10 ** 8))
-
+    await decrementMargin(user, order.margin)
     const [completed, reason] = await completeLimitOrder(createdOrder, openShortOrders)
 
     return [completed, reason]

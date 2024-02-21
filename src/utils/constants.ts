@@ -28,6 +28,7 @@ export type Order = {
     market: string,
     leverage: number,
     margin: number,
+    fee: number,
     assetA: string,
     assetB: string,
     ticker: string,
