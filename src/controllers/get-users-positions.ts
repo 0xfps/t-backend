@@ -3,7 +3,7 @@ import ResponseInterface from "../interfaces/response-interface";
 import positionsModel from "../db/schema/positions";
 
 export default async function getUsersPositionsController(req: Request, res: Response) {
-    const { address } = req.body
+    const { address } = req.params
     const addressPositions = await positionsModel.find({ opener: address }).sort({ time: -1 })
     if (!addressPositions) {
         const response: ResponseInterface = {
