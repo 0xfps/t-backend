@@ -36,6 +36,7 @@ const get_funding_rate_time_left_1 = __importDefault(require("./utils/get-fundin
 const funding_rate_1 = __importDefault(require("./utils/funding-rate"));
 const get_users_open_orders_1 = __importDefault(require("./routes/get-users-open-orders"));
 const get_users_filled_orders_1 = __importDefault(require("./routes/get-users-filled-orders"));
+const get_order_1 = __importDefault(require("./routes/get-order"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
@@ -105,6 +106,7 @@ app.listen(PORT, function () {
 // GET Endpoints.
 app.use("/get-user-address", get_user_1.default);
 // GET endpoints.
+app.use("/get-order", get_order_1.default);
 app.use("/get-long-orders", get_long_orders_1.default);
 app.use("/get-short-orders", get_short_orders_1.default);
 app.use("/get-users-orders", get_users_orders_1.default);
