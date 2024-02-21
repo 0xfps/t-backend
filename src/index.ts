@@ -48,17 +48,11 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
         // Do nothing for now.
         // When set, send order book every second to frontend.
         const shortsRequest = await fetch(`${URL}/get-short-orders/${ticker}`, {
-            method: GET,
-            headers: {
-                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string || process.env.ENCRYPTED_PRODUCTION_API_KEY as string
-            }
+            method: GET
         })
 
         const longsRequest = await fetch(`${URL}/get-long-orders/${ticker}`, {
-            method: GET,
-            headers: {
-                "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY as string || process.env.ENCRYPTED_PRODUCTION_API_KEY as string
-            }
+            method: GET
         })
 
         const longs = await longsRequest.json()
@@ -68,6 +62,8 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
             longs: longs.data.body,
             shorts: shorts.data.body
         }
+
+        console.log(data)
 
         ws.send(JSON.stringify(data))
     }, 1000)

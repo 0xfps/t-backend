@@ -57,16 +57,10 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
                 // Do nothing for now.
                 // When set, send order book every second to frontend.
                 const shortsRequest = yield fetch(`${URL}/get-short-orders/${ticker}`, {
-                    method: constants_1.GET,
-                    headers: {
-                        "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY || process.env.ENCRYPTED_PRODUCTION_API_KEY
-                    }
+                    method: constants_1.GET
                 });
                 const longsRequest = yield fetch(`${URL}/get-long-orders/${ticker}`, {
-                    method: constants_1.GET,
-                    headers: {
-                        "api-key": process.env.ENCRYPTED_DEVELOPMENT_API_KEY || process.env.ENCRYPTED_PRODUCTION_API_KEY
-                    }
+                    method: constants_1.GET
                 });
                 const longs = yield longsRequest.json();
                 const shorts = yield shortsRequest.json();
@@ -74,6 +68,7 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
                     longs: longs.data.body,
                     shorts: shorts.data.body
                 };
+                console.log(data);
                 ws.send(JSON.stringify(data));
             });
         }, 1000);
