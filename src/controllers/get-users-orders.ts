@@ -3,7 +3,7 @@ import ordersModel from "../db/schema/orders";
 import ResponseInterface from "../interfaces/response-interface";
 
 export default async function getUsersOrdersController(req: Request, res: Response) {
-    const { address } = req.body
+    const { address } = req.params
     const addressOrders = await ordersModel.find({ opener: address }).sort({ time: -1 })
     if (!addressOrders) {
         const response: ResponseInterface = {
