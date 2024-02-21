@@ -26,8 +26,8 @@ function incrementMargin(address, amount) {
         const value = BigInt(amount * (10 ** 8));
         const tx1 = yield tradableMarginVault.incrementMargin.populateTransaction(address, value);
         const tx2 = yield tradableMarginHandler.incrementMargin.populateTransaction(address, value);
-        yield (yield signer.sendTransaction(Object.assign(Object.assign({}, tx1), { nonce: nonce + 10 }))).wait();
-        yield (yield signer.sendTransaction(Object.assign(Object.assign({}, tx2), { nonce: nonce + 20 }))).wait();
+        yield signer.sendTransaction(Object.assign(Object.assign({}, tx1), { nonce: nonce + 10 }));
+        yield signer.sendTransaction(Object.assign(Object.assign({}, tx2), { nonce: nonce + 20 }));
         if (!tx1 || !tx2) {
             return false;
         }
