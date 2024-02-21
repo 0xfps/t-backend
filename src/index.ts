@@ -26,7 +26,7 @@ import getUsersFilledOrdersRouter from "./routes/get-users-filled-orders"
 import getOrderRouter from "./routes/get-order"
 
 dotenv.config()
-const { PORT, AUTH_KEY, DEVELOPMENT_ENVIRONMENT, ENVIRONMENT_URL } = process.env
+const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env
 
 const app = express()
 const appWs = expressWs(app).app
@@ -44,6 +44,9 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
     const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080"
     const { ticker } = req.params
 
+    console.log(URL)
+    console.log(ticker)
+
     setInterval(async function () {
         // Do nothing for now.
         // When set, send order book every second to frontend.
@@ -51,9 +54,13 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
             method: GET
         })
 
+        console.log("SR", shortsRequest)
+
         const longsRequest = await fetch(`${URL}/get-long-orders/${ticker}`, {
             method: GET
         })
+
+        console.log("LR", longsRequest)
 
         const longs = await longsRequest.json()
         const shorts = await shortsRequest.json()
