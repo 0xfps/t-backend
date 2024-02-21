@@ -102,10 +102,6 @@ app.listen(PORT, function () {
 });
 // GET Endpoints.
 app.use("/get-user-address", get_user_1.default);
-app.use("/get-long-orders", get_long_orders_1.default);
-app.use("/get-short-orders", get_short_orders_1.default);
-app.use("/get-users-orders", get_users_orders_1.default);
-app.use("/get-users-positions", get_users_positions_1.default);
 /**
  * Middleware for all POST endpoints.
  * All post endpoints secure themselves by decrypting the API key
@@ -139,6 +135,11 @@ app.use(function (req, res, next) {
     }
     next();
 });
+// Protected GET endpoints.
+app.use("/get-long-orders", get_long_orders_1.default);
+app.use("/get-short-orders", get_short_orders_1.default);
+app.use("/get-users-orders", get_users_orders_1.default);
+app.use("/get-users-positions", get_users_positions_1.default);
 // POST Endpoints.
 app.use("/create", create_1.default);
 app.use("/open-position", open_position_1.default);

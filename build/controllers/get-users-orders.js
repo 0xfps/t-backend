@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
 function getUsersOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { address } = req.body;
+        const { address } = req.params;
         const addressOrders = yield orders_1.default.find({ opener: address }).sort({ time: -1 });
         if (!addressOrders) {
             const response = {
