@@ -42,6 +42,8 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
             orderId,
             aoriOrderId,
             ...order,
+            filled: false,
+            fillingOrders: [],
             time
         })
 
