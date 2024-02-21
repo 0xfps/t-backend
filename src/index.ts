@@ -111,6 +111,11 @@ app.use("/get-users-positions", getUsersPositionsRouter)
  * ensure a match. On any mismatch, the access is restricted.
  */
 app.use(function (req: Request, res: Response, next: () => void) {
+    if (req.method == GET) {
+        next()
+        return
+    }
+
     const encryptedAPIKey: string = req.headers["api-key"] as string
 
     // 🚨 I removed this for testing.

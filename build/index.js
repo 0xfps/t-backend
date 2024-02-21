@@ -115,6 +115,10 @@ app.use("/get-users-positions", get_users_positions_1.default);
  * ensure a match. On any mismatch, the access is restricted.
  */
 app.use(function (req, res, next) {
+    if (req.method == constants_1.GET) {
+        next();
+        return;
+    }
     const encryptedAPIKey = req.headers["api-key"];
     // 🚨 I removed this for testing.
     // const origin = req.headers["origin"]
