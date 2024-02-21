@@ -6,6 +6,7 @@ import getTickerContract from "../utils/get-ticker-contract"
 import ResponseInterface from "../interfaces/response-interface"
 import getUserMarginBalance from "../utils/get-user-margin-balance"
 import userAddressesModel from "../db/schema/user-addreses"
+import decrementMargin from "../utils/decrement-margin"
 
 /**
  * Opening a position is simply making a long or short position
@@ -48,7 +49,7 @@ export default async function openPositionController(req: Request, res: Response
     const { order } = req.body
 
     // OrderID and order time are calculated here.
-    const { margin, opener, type, ticker }: Order = order
+    const { margin, opener, type, ticker, fee }: Order = order
 
     // Check if the contract exists for the desired ticker, e.g (tBTC).
     // Tickers are converted to lower case in the function.
@@ -80,10 +81,10 @@ export default async function openPositionController(req: Request, res: Response
     // Check user's margin balance and compare it with margin.
     const marginBalance = await getUserMarginBalance(parentAddress)
 
-    if (marginBalance < margin) {
+    if (marginBalance < (margin + fee)) {
         const response: ResponseInterface = {
             status: 400,
-            msg: "Invalid request, margin higher than margin balance!"
+            msg: "Invalid request, margin and fees higher than margin balance!"
         }
 
         res.send(response)
@@ -106,6 +107,9 @@ export default async function openPositionController(req: Request, res: Response
         res.send(response)
         return
     }
+
+    // Replace with Tradable address.
+    await decrementMargin("0x5e078E6b545cF88aBD5BB58d27488eF8BE0D2593", fee)
 
     const response: ResponseInterface = {
         status: 200,

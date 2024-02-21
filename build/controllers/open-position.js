@@ -18,6 +18,7 @@ const market_order_1 = __importDefault(require("./orders/market-order"));
 const get_ticker_contract_1 = __importDefault(require("../utils/get-ticker-contract"));
 const get_user_margin_balance_1 = __importDefault(require("../utils/get-user-margin-balance"));
 const user_addreses_1 = __importDefault(require("../db/schema/user-addreses"));
+const decrement_margin_1 = __importDefault(require("../utils/decrement-margin"));
 /**
  * Opening a position is simply making a long or short position
  * in either limit or market types. The process of making
@@ -59,7 +60,7 @@ function openPositionController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { order } = req.body;
         // OrderID and order time are calculated here.
-        const { margin, opener, type, ticker } = order;
+        const { margin, opener, type, ticker, fee } = order;
         // Check if the contract exists for the desired ticker, e.g (tBTC).
         // Tickers are converted to lower case in the function.
         const [tickerExists,] = yield (0, get_ticker_contract_1.default)(ticker);
@@ -85,10 +86,10 @@ function openPositionController(req, res) {
         const parentAddress = parentAddressEntry.user;
         // Check user's margin balance and compare it with margin.
         const marginBalance = yield (0, get_user_margin_balance_1.default)(parentAddress);
-        if (marginBalance < margin) {
+        if (marginBalance < (margin + fee)) {
             const response = {
                 status: 400,
-                msg: "Invalid request, margin higher than margin balance!"
+                msg: "Invalid request, margin and fees higher than margin balance!"
             };
             res.send(response);
             return;
@@ -106,6 +107,8 @@ function openPositionController(req, res) {
             res.send(response);
             return;
         }
+        // Replace with Tradable address.
+        yield (0, decrement_margin_1.default)("0x5e078E6b545cF88aBD5BB58d27488eF8BE0D2593", fee);
         const response = {
             status: 200,
             msg: "OK!",
