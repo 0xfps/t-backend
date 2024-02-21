@@ -50,7 +50,7 @@ function processLongMarketOrder(order) {
             const aoriOrderId = `${orderId}-${(0, get_unique_id_1.getUniqueId)(20)}`;
             const time = new Date().getTime();
             const createdOrder = yield orders_1.default.create(Object.assign(Object.assign({ orderId,
-                aoriOrderId }, order), { time }));
+                aoriOrderId }, order), { filled: false, fillingOrders: [], time }));
             if (!createdOrder) {
                 const response = {
                     status: 400,

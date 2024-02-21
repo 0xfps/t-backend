@@ -42,6 +42,8 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
             orderId,
             aoriOrderId,
             ...order,
+            filled: false,
+            fillingOrders: [],
             time
         })
 
