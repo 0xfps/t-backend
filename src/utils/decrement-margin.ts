@@ -35,9 +35,6 @@ export default async function decrementMargin(address: string, amount: number): 
     await (await signer.sendTransaction({ ...tx1, nonce: nonce + 30 })).wait()
     await (await signer.sendTransaction({ ...tx2, nonce: nonce + 40 })).wait()
 
-    await signer.sendTransaction(tx1)
-    await signer.sendTransaction(tx2)
-
     if (!tx1 || !tx2) {
         return false
     }
