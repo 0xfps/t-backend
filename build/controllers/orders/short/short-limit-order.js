@@ -52,11 +52,15 @@ function processShortLimitOrder(order) {
             return [false, response];
         }
         if (!openLongOrders || openLongOrders.length == 0) {
-            yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
-            return [true, "Order Created!"];
+            // 💡 Reduce user's margin.
+            const decremented = yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
+            return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."];
         }
         // 💡 Reduce user's margin.
-        yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
+        const decremented = yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
+        if (!decremented) {
+            return [false, "Margin could not be deducted."];
+        }
         const [completed, reason] = yield (0, complete_limit_order_1.default)(createdOrder, openLongOrders);
         return [completed, { result: reason }];
     });

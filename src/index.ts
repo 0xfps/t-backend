@@ -40,12 +40,22 @@ app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" })
 })
 
+appWs.ws("/", async function (ws, req) {
+    setInterval(function () {
+        ws.send("Hi there, welcome!")
+    }, 1000)
+})
+
+appWs.ws("/hi/:ty", async function (ws, req) {
+    const { ty } = req.params
+    setInterval(function () {
+        ws.send(`Hi there, welcome, ${ty}!`)
+    }, 1000)
+})
+
 appWs.ws("/market-data/:ticker", async function (ws, req) {
     const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080"
     const { ticker } = req.params
-
-    console.log(URL)
-    console.log(ticker)
 
     setInterval(async function () {
         // Do nothing for now.
@@ -54,13 +64,9 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
             method: GET
         })
 
-        console.log("SR", shortsRequest)
-
         const longsRequest = await fetch(`${URL}/get-long-orders/${ticker}`, {
             method: GET
         })
-
-        console.log("LR", longsRequest)
 
         const longs = await longsRequest.json()
         const shorts = await shortsRequest.json()
@@ -69,8 +75,6 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
             longs: longs.data.body,
             shorts: shorts.data.body
         }
-
-        console.log(data)
 
         ws.send(JSON.stringify(data))
     }, 1000)
@@ -101,7 +105,6 @@ app.listen(PORT, function () {
 
 // GET Endpoints.
 app.use("/get-user-address", getUserRouter)
-// GET endpoints.
 app.use("/get-order", getOrderRouter)
 app.use("/get-long-orders", getLongOrdersRouter)
 app.use("/get-short-orders", getShortOrdersRouter)
@@ -118,11 +121,6 @@ app.use("/get-users-positions", getUsersPositionsRouter)
  * ensure a match. On any mismatch, the access is restricted.
  */
 app.use(function (req: Request, res: Response, next: () => void) {
-    if (req.method == GET) {
-        next()
-        return
-    }
-
     const encryptedAPIKey: string = req.headers["api-key"] as string
 
     // 🚨 I removed this for testing.

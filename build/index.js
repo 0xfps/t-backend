@@ -48,12 +48,25 @@ app.use((0, cors_1.default)(cors_config_1.corsOptions));
 app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" });
 });
+appWs.ws("/", function (ws, req) {
+    return __awaiter(this, void 0, void 0, function* () {
+        setInterval(function () {
+            ws.send("Hi there, welcome!");
+        }, 1000);
+    });
+});
+appWs.ws("/hi/:ty", function (ws, req) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { ty } = req.params;
+        setInterval(function () {
+            ws.send(`Hi there, welcome, ${ty}!`);
+        }, 1000);
+    });
+});
 appWs.ws("/market-data/:ticker", function (ws, req) {
     return __awaiter(this, void 0, void 0, function* () {
         const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080";
         const { ticker } = req.params;
-        console.log(URL);
-        console.log(ticker);
         setInterval(function () {
             return __awaiter(this, void 0, void 0, function* () {
                 // Do nothing for now.
@@ -61,18 +74,15 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
                 const shortsRequest = yield fetch(`${URL}/get-short-orders/${ticker}`, {
                     method: constants_1.GET
                 });
-                console.log("SR", shortsRequest);
                 const longsRequest = yield fetch(`${URL}/get-long-orders/${ticker}`, {
                     method: constants_1.GET
                 });
-                console.log("LR", longsRequest);
                 const longs = yield longsRequest.json();
                 const shorts = yield shortsRequest.json();
                 const data = {
                     longs: longs.data.body,
                     shorts: shorts.data.body
                 };
-                console.log(data);
                 ws.send(JSON.stringify(data));
             });
         }, 1000);
@@ -103,7 +113,6 @@ app.listen(PORT, function () {
 });
 // GET Endpoints.
 app.use("/get-user-address", get_user_1.default);
-// GET endpoints.
 app.use("/get-order", get_order_1.default);
 app.use("/get-long-orders", get_long_orders_1.default);
 app.use("/get-short-orders", get_short_orders_1.default);
@@ -119,10 +128,6 @@ app.use("/get-users-positions", get_users_positions_1.default);
  * ensure a match. On any mismatch, the access is restricted.
  */
 app.use(function (req, res, next) {
-    if (req.method == constants_1.GET) {
-        next();
-        return;
-    }
     const encryptedAPIKey = req.headers["api-key"];
     // 🚨 I removed this for testing.
     // const origin = req.headers["origin"]

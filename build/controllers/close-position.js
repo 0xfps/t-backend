@@ -49,7 +49,6 @@ function closePositionController(req, res) {
             return;
         }
         const { margin, leverage, opener, price: initialPrice, size } = orderEntry;
-        const tradingAmount = margin * leverage;
         const lastMarketPrice = (yield positions_1.default.find({}).sort({ time: -1 }))[0].entryPrice;
         let success = false, result = {};
         const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
@@ -63,7 +62,15 @@ function closePositionController(req, res) {
             const profit = totalProfit + ((fundingRate / totalProfit) * 100);
             if (profit > 0) {
                 // 💡 Increment user's margin.
-                yield (0, increment_margin_1.default)(user, profit);
+                const incremented = yield (0, increment_margin_1.default)(user, profit);
+                if (!incremented) {
+                    const response = {
+                        status: 400,
+                        msg: "Could not increment margin with profit."
+                    };
+                    res.send(response);
+                    return;
+                }
             }
         }
         // Math culled from:
@@ -71,9 +78,15 @@ function closePositionController(req, res) {
         if (positionType == constants_1.SHORT) {
             const totalProfit = (initialPrice - lastMarketPrice) * size * leverage;
             const profit = totalProfit + ((fundingRate / totalProfit) * 100);
-            if (profit > 0) {
-                // 💡 Increment user's margin.
-                yield (0, increment_margin_1.default)(user, profit);
+            // 💡 Increment user's margin.
+            const incremented = yield (0, increment_margin_1.default)(user, profit);
+            if (!incremented) {
+                const response = {
+                    status: 400,
+                    msg: "Could not increment margin with profit."
+                };
+                res.send(response);
+                return;
             }
         }
         const deletedPosition = yield positions_1.default.deleteOne({ positionId: positionId });
