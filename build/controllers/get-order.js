@@ -16,7 +16,7 @@ const orders_1 = __importDefault(require("../db/schema/orders"));
 function getOrderController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { orderId } = req.params;
-        const order = yield orders_1.default.find({ orderId: orderId }).sort({ time: 1 });
+        const order = yield orders_1.default.findOne({ orderId: orderId });
         if (!order) {
             const response = {
                 status: 404,

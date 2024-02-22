@@ -36,8 +36,6 @@ function completeLimitOrder(order, completingOrders) {
             let totalFilledSize = parseInt(order.fillingOrders.reduce(function (total, fillingOrder) {
                 return total + fillingOrder.size;
             }, 0));
-            // Get the remaining size to be filled.
-            const fillingDifference = totalOrderSize - totalFilledSize;
             // Iterate and fill the order up if the size of the order to fill the
             // initial order, when added to the current size is still below the
             // total size.
