@@ -14,8 +14,8 @@ exports.MARKET = "market";
 exports.GET = "GET";
 exports.POST = "GET";
 // Maximum slippage percentage allowed for long and short positions.
-// 2%, in this case.
-exports.SPREAD = 2;
+// 5%, in this case.
+exports.SPREAD = 5;
 exports.EIGHT_HOURS = 1000 * 60 * 60 * 8;
 exports.BINANCE_API = "https://api.binance.com";
 exports.JSON_RPC_URL = "https://rpc.ankr.com/avalanche_fuji";

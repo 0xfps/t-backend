@@ -30,9 +30,19 @@ export default async function cancelOrderController(req: Request, res: Response)
 
     const { user } = await userAddressesModel.findOne({ tWallet: orderEntry.opener })
     // 💡 Increment user's margin.
-    await incrementMargin(user, orderEntry.margin)
+    const incremented = await incrementMargin(user, orderEntry.margin)
 
-    const deleteOrder = ordersModel.deleteOne({ orderId: orderId })
+    if (!incremented) {
+        const response: ResponseInterface = {
+            status: 400,
+            msg: "Could not increment your margin!"
+        }
+
+        res.send(response)
+        return
+    }
+
+    const deleteOrder = await ordersModel.deleteOne({ orderId: orderId })
     if (!deleteOrder) {
         const response: ResponseInterface = {
             status: 400,
