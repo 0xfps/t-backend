@@ -40,10 +40,23 @@ app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" })
 })
 
+appWs.ws("/", async function (ws, req) {
+    setInterval(function () {
+        ws.send("Hi there, welcome!")
+    }, 1000)
+})
+
+appWs.ws("/hi/:ty", async function (ws, req) {
+    const { ty } = req.params
+    setInterval(function () {
+        ws.send(`Hi there, welcome, ${ty}!`)
+    }, 1000)
+})
+
 appWs.ws("/market-data/:ticker", async function (ws, req) {
     const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080"
     const { ticker } = req.params
-    
+
     setInterval(async function () {
         // Do nothing for now.
         // When set, send order book every second to frontend.

@@ -48,6 +48,21 @@ app.use((0, cors_1.default)(cors_config_1.corsOptions));
 app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" });
 });
+appWs.ws("/", function (ws, req) {
+    return __awaiter(this, void 0, void 0, function* () {
+        setInterval(function () {
+            ws.send("Hi there, welcome!");
+        }, 1000);
+    });
+});
+appWs.ws("/hi/:ty", function (ws, req) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const { ty } = req.params;
+        setInterval(function () {
+            ws.send(`Hi there, welcome, ${ty}!`);
+        }, 1000);
+    });
+});
 appWs.ws("/market-data/:ticker", function (ws, req) {
     return __awaiter(this, void 0, void 0, function* () {
         const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080";
