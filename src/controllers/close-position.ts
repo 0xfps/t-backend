@@ -54,7 +54,6 @@ export default async function closePositionController(req: Request, res: Respons
         size
     } = orderEntry
 
-    const tradingAmount = margin * leverage
     const lastMarketPrice: any = ((await positionsModel.find({}).sort({ time: -1 })) as any)[0].entryPrice
 
     let success = false, result = {}
@@ -72,7 +71,16 @@ export default async function closePositionController(req: Request, res: Respons
 
         if (profit > 0) {
             // 💡 Increment user's margin.
-            await incrementMargin(user, profit)
+            const incremented = await incrementMargin(user, profit)
+            if (!incremented) {
+                const response: ResponseInterface = {
+                    status: 400,
+                    msg: "Could not increment margin with profit."
+                }
+                res.send(response)
+
+                return
+            }
         }
     }
 
@@ -82,9 +90,16 @@ export default async function closePositionController(req: Request, res: Respons
         const totalProfit = (initialPrice - lastMarketPrice) * size * leverage
         const profit = totalProfit + ((fundingRate / totalProfit) * 100)
 
-        if (profit > 0) {
-            // 💡 Increment user's margin.
-            await incrementMargin(user, profit)
+        // 💡 Increment user's margin.
+        const incremented = await incrementMargin(user, profit)
+        if (!incremented) {
+            const response: ResponseInterface = {
+                status: 400,
+                msg: "Could not increment margin with profit."
+            }
+            res.send(response)
+
+            return
         }
     }
 

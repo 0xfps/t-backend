@@ -55,15 +55,17 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
 
             return [false, response]
         }
-        
-        await decrementMargin(user, (order.margin + order.fee))
 
-        return [true, "Order Created!"]
+        // 💡 Reduce user's margin.
+        const decremented = await decrementMargin(user, (order.margin + order.fee))
+        return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."]
     }
 
-    if (!openShortOrders || openShortOrders.length == 0) {
-        await decrementMargin(user, (order.margin + order.fee))
-        return [true, "Order Created!"]
+    // 💡 Reduce user's margin.
+    const decremented = await decrementMargin(user, (order.margin + order.fee))
+    
+    if (!decremented) {
+        return [false, "Margin could not be deducted."]
     }
 
     /**
@@ -79,9 +81,6 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
     if (!completed) {
         return [false, { result: reason }]
     }
-
-    // 💡 Reduce user's margin.
-    await decrementMargin(user, (order.margin + order.fee))
 
     return [true, { respose: "OK!" }]
 }

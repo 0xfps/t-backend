@@ -36,7 +36,7 @@ export type Order = {
     price: number
 }
 
-export const JSON_RPC_URL = "https://api.avax-test.network/ext/bc/C/rpc"
+export const JSON_RPC_URL = "https://rpc.ankr.com/avalanche_fuji"
 
 export const TRADABLE_MARGIN_VAULT_ABI = config.tradableMarginVault.abi
 export const TRADABLE_MARGIN_VAULT_ADDRESS = config.tradableMarginVault.address

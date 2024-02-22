@@ -51,12 +51,17 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
     }
 
     if (!openLongOrders || openLongOrders.length == 0) {
-        await decrementMargin(user, (order.margin + order.fee))
-        return [true, "Order Created!"]
+        // 💡 Reduce user's margin.
+        const decremented = await decrementMargin(user, (order.margin + order.fee))
+        return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."]
     }
 
     // 💡 Reduce user's margin.
-    await decrementMargin(user, (order.margin + order.fee))
+    const decremented = await decrementMargin(user, (order.margin + order.fee))
+
+    if (!decremented) {
+        return [false, "Margin could not be deducted."]
+    }
 
     const [completed, reason] = await completeLimitOrder(createdOrder, openLongOrders)
 

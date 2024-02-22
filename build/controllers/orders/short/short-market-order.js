@@ -59,12 +59,13 @@ function processShortMarketOrder(order) {
                 return [false, response];
             }
             // 💡 Reduce user's margin.
-            yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
-            return [true, "Order Created!"];
+            const decremented = yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
+            return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."];
         }
-        if (!openLongOrders || openLongOrders.length == 0) {
-            yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
-            return [true, "Order Created!"];
+        // 💡 Reduce user's margin.
+        const decremented = yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
+        if (!decremented) {
+            return [false, "Margin could not be deducted."];
         }
         /**
          * If an order is found on the short side, it is expected to fill the long
@@ -78,8 +79,6 @@ function processShortMarketOrder(order) {
         if (!completed) {
             return [false, { result: reason }];
         }
-        yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
-        // 💡 Reduce user's margin.
         return [true, { respose: "OK!" }];
     });
 }
