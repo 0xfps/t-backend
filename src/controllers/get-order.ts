@@ -4,7 +4,7 @@ import ResponseInterface from "../interfaces/response-interface"
 
 export default async function getOrderController(req: Request, res: Response) {
     const { orderId } = req.params
-    const order = await ordersModel.find({ orderId: orderId }).sort({ time: 1 })
+    const order = await ordersModel.findOne({ orderId: orderId })
     if (!order) {
         const response: ResponseInterface = {
             status: 404,
