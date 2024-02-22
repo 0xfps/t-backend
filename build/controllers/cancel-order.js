@@ -37,8 +37,16 @@ function cancelOrderController(req, res) {
         }
         const { user } = yield user_addreses_1.default.findOne({ tWallet: orderEntry.opener });
         // 💡 Increment user's margin.
-        yield (0, increment_margin_1.default)(user, orderEntry.margin);
-        const deleteOrder = orders_1.default.deleteOne({ orderId: orderId });
+        const incremented = yield (0, increment_margin_1.default)(user, orderEntry.margin);
+        if (!incremented) {
+            const response = {
+                status: 400,
+                msg: "Could not increment your margin!"
+            };
+            res.send(response);
+            return;
+        }
+        const deleteOrder = yield orders_1.default.deleteOne({ orderId: orderId });
         if (!deleteOrder) {
             const response = {
                 status: 400,
