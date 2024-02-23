@@ -59,7 +59,7 @@ function completelyFillOrder(filledOrder, fillingOrder) {
         }
         const orderInPartialPosition = yield partial_positions_1.default.findOne({ orderId: filledOrder.orderId });
         if (orderInPartialPosition) {
-            const update = partial_positions_1.default.deleteOne({ order: filledOrder.orderId });
+            const update = yield partial_positions_1.default.deleteOne({ order: filledOrder.orderId });
             if (!update) {
                 return [false, "Could not delete partial order!"];
             }

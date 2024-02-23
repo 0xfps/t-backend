@@ -10,9 +10,9 @@ import { liquidatePositions } from "../../liquidator/liquidate-positions"
 
 export default async function partiallyFillOrder(filledOrder: any, fillingOrder: any): Promise<[boolean, string]> {
     // Get the filling orders for the current order being filled.
-    const { size, fillingOrders, sizeLeft } = await ordersModel.findOne({ orderId: filledOrder.orderId })
+    const { size, sizeLeft } = await ordersModel.findOne({ orderId: filledOrder.orderId })
     // Get the entry price from the orders filling the stuff previously and the current one to fill it.
-    const entryPrice = await calculateTwap([...fillingOrders, fillingOrder.orderId], parseFloat(size))
+    const entryPrice = await calculateTwap([...filledOrder.fillingOrders, fillingOrder.orderId], parseFloat(size))
     const timeOfPositionCreation = new Date().getTime()
     const leverage = parseInt(filledOrder.leverage)
     const positionIdOfOrder = getUniqueId(20)

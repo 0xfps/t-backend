@@ -59,7 +59,7 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
 
     const orderInPartialPosition = await partialPositionsModel.findOne({ orderId: filledOrder.orderId })
     if (orderInPartialPosition) {
-        const update = partialPositionsModel.deleteOne({ order: filledOrder.orderId })
+        const update = await partialPositionsModel.deleteOne({ order: filledOrder.orderId })
         if (!update) {
             return [false, "Could not delete partial order!"]
         }

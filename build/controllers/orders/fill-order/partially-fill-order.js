@@ -23,9 +23,9 @@ const liquidate_positions_1 = require("../../liquidator/liquidate-positions");
 function partiallyFillOrder(filledOrder, fillingOrder) {
     return __awaiter(this, void 0, void 0, function* () {
         // Get the filling orders for the current order being filled.
-        const { size, fillingOrders, sizeLeft } = yield orders_1.default.findOne({ orderId: filledOrder.orderId });
+        const { size, sizeLeft } = yield orders_1.default.findOne({ orderId: filledOrder.orderId });
         // Get the entry price from the orders filling the stuff previously and the current one to fill it.
-        const entryPrice = yield (0, calculate_twap_1.default)([...fillingOrders, fillingOrder.orderId], parseFloat(size));
+        const entryPrice = yield (0, calculate_twap_1.default)([...filledOrder.fillingOrders, fillingOrder.orderId], parseFloat(size));
         const timeOfPositionCreation = new Date().getTime();
         const leverage = parseInt(filledOrder.leverage);
         const positionIdOfOrder = (0, get_unique_id_1.getUniqueId)(20);
