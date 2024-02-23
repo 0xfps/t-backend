@@ -35,7 +35,7 @@ export default async function processLongMarketOrder(order: Order): Promise<[boo
         // Can one fill a market order with a limit order?
         type: LIMIT,
         ticker: order.ticker.toLowerCase(),
-        size: {$gte: order.size},
+        size: { $gte: order.size },
         // Get short orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
         price: { $gte: calculateSlippage(LONG, order.price), $lte: order.price },
