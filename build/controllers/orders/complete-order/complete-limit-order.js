@@ -31,9 +31,9 @@ function completeLimitOrder(order, completingOrders) {
         let status = true;
         if (!order.filled) {
             // Get size of order to be filled.
-            const totalOrderSize = parseInt(order.size);
+            const totalOrderSize = parseFloat(order.size);
             // Get orders that have filled the order to be filled so far.
-            let totalFilledSize = parseInt(order.fillingOrders.reduce(function (total, fillingOrder) {
+            let totalFilledSize = parseFloat(order.fillingOrders.reduce(function (total, fillingOrder) {
                 return total + fillingOrder.size;
             }, 0));
             // Iterate and fill the order up if the size of the order to fill the
@@ -41,13 +41,13 @@ function completeLimitOrder(order, completingOrders) {
             // total size.
             completingOrders.forEach(function (completingOrder) {
                 return __awaiter(this, void 0, void 0, function* () {
-                    const completingOrderSize = parseInt(completingOrder.size);
+                    const completingOrderSize = parseFloat(completingOrder.size);
                     if ((completingOrderSize + totalFilledSize) <= totalOrderSize) {
                         // The completing order was fully executed.
                         /**
                          * Position created for completing order, NOT THE MAIN ORDER.
                          */
-                        const entryPrice = parseInt(completingOrder.price);
+                        const entryPrice = parseFloat(completingOrder.price);
                         const completingOrderLeverage = parseInt(completingOrder.leverage);
                         const timeOfPositionCreation = new Date().getTime();
                         const positionIdOfCompletingOrder = (0, get_unique_id_1.getUniqueId)(20);
@@ -84,7 +84,7 @@ function completeLimitOrder(order, completingOrders) {
                         if (completingOrder.size + totalFilledSize == totalOrderSize) {
                             const { size, fillingOrders } = yield orders_1.default.findOne({ orderId: order.orderId });
                             // Update order to be filled.
-                            const entryPrice = yield (0, calculate_twap_1.default)(fillingOrders, parseInt(size));
+                            const entryPrice = yield (0, calculate_twap_1.default)(fillingOrders, parseFloat(size));
                             const timeOfPositionCreation = new Date().getTime();
                             const orderLeverage = parseInt(order.leverage);
                             const positionIdOfOrder = (0, get_unique_id_1.getUniqueId)(20);

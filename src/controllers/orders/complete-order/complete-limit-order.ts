@@ -19,9 +19,9 @@ export default async function completeLimitOrder(order: any, completingOrders: a
 
     if (!order.filled) {
         // Get size of order to be filled.
-        const totalOrderSize = parseInt(order.size)
+        const totalOrderSize = parseFloat(order.size)
         // Get orders that have filled the order to be filled so far.
-        let totalFilledSize = parseInt(order.fillingOrders.reduce(function (total: any, fillingOrder: any) {
+        let totalFilledSize = parseFloat(order.fillingOrders.reduce(function (total: any, fillingOrder: any) {
             return total + fillingOrder.size
         }, 0))
 
@@ -29,14 +29,14 @@ export default async function completeLimitOrder(order: any, completingOrders: a
         // initial order, when added to the current size is still below the
         // total size.
         completingOrders.forEach(async function (completingOrder: any) {
-            const completingOrderSize = parseInt(completingOrder.size)
+            const completingOrderSize = parseFloat(completingOrder.size)
             if ((completingOrderSize + totalFilledSize) <= totalOrderSize) {
                 // The completing order was fully executed.
 
                 /**
                  * Position created for completing order, NOT THE MAIN ORDER.
                  */
-                const entryPrice = parseInt(completingOrder.price)
+                const entryPrice = parseFloat(completingOrder.price)
                 const completingOrderLeverage = parseInt(completingOrder.leverage)
                 const timeOfPositionCreation = new Date().getTime()
                 const positionIdOfCompletingOrder = getUniqueId(20)
@@ -90,7 +90,7 @@ export default async function completeLimitOrder(order: any, completingOrders: a
                 if (completingOrder.size + totalFilledSize == totalOrderSize) {
                     const { size, fillingOrders } = await ordersModel.findOne({ orderId: order.orderId })
                     // Update order to be filled.
-                    const entryPrice = await calculateTwap(fillingOrders, parseInt(size))
+                    const entryPrice = await calculateTwap(fillingOrders, parseFloat(size))
                     const timeOfPositionCreation = new Date().getTime()
                     const orderLeverage = parseInt(order.leverage)
 
