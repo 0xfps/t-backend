@@ -28,7 +28,7 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
         await liquidatePositions(liquidatablePositions)
     // Liquidate positions.
 
-    const positionCreated = await positionsModel.create({
+    const createdPosition = await positionsModel.create({
         orderId: filledOrder.orderId,
         positionId: positionIdOfOrder,
         opener: filledOrder.opener,
@@ -39,7 +39,7 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
         time: timeOfPositionCreation
     })
 
-    if (!positionCreated) {
+    if (!createdPosition) {
         return [false, "Position could not be created!"]
     }
 

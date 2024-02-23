@@ -70,7 +70,7 @@ export default async function partiallyFillOrder(filledOrder: any, fillingOrder:
         { orderId: filledOrder.orderId },
         {
             fillingOrders: [...filledOrder.fillingOrders, fillingOrder.orderId],
-            sizeLeft: filledOrder.sizeLeft - fillingOrder.size
+            sizeLeft: parseFloat((filledOrder.sizeLeft - fillingOrder.size).toFixed(4))
         }
     )
 

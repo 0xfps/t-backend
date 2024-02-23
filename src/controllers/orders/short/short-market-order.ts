@@ -5,7 +5,6 @@ import { calculateSlippage } from "../../../utils/calculate-slippage"
 import { LIMIT, LONG, MARKET, Order, SHORT, SPREAD } from "../../../utils/constants"
 import decrementMargin from "../../../utils/decrement-margin"
 import { getUniqueId } from "../../../utils/get-unique-id"
-import completeMarketOrder from "../complete-order/complete-market-order"
 import completeOrder from "../complete-order/complete-order"
 /**
  * Long market order process.

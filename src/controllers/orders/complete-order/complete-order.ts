@@ -1,11 +1,3 @@
-import ordersModel from "../../../db/schema/orders";
-import positionsModel from "../../../db/schema/positions";
-import calculateLiquidationPrice from "../../../utils/calculate-liquidation-price";
-import { calculateMarginRatio } from "../../../utils/calculate-margin-ratio";
-import calculateTwap from "../../../utils/calculate-twap";
-import { MARKET, Order } from "../../../utils/constants";
-import { getUniqueId } from "../../../utils/get-unique-id";
-import { liquidatePositions } from "../../liquidator/liquidate-positions";
 import completelyFillOrder from "../fill-order/completely-fill-order";
 import partiallyFillOrder from "../fill-order/partially-fill-order";
 
@@ -41,7 +33,7 @@ export default async function completeOrder(order: any, completingOrders: any[])
 
                 // If the size of the main order is still > the size of
                 // the filling order, then go ahead and fill the main order.
-                if (totalOrderSize > completingOrderSize) {
+                if (totalOrderSizeLeft > completingOrderSize) {
                     // Fill the completing order.
                     const [success1, reason1] = await completelyFillOrder(completingOrder, order)
                     // Partially open the order.
@@ -56,7 +48,7 @@ export default async function completeOrder(order: any, completingOrders: any[])
 
                 // If the size of the main order is still > the size of
                 // the filling order, then go ahead and fill the main order.
-                if (totalOrderSize < completingOrderSize) {
+                if (totalOrderSizeLeft < completingOrderSize) {
                     // Fill the completing order.
                     const [success1, reason1] = await completelyFillOrder(order, completingOrder)
                     // Partially open the order.

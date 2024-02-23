@@ -45,7 +45,7 @@ function completeOrder(order, completingOrders) {
                         const completingOrderSize = parseFloat(completingOrder.size);
                         // If the size of the main order is still > the size of
                         // the filling order, then go ahead and fill the main order.
-                        if (totalOrderSize > completingOrderSize) {
+                        if (totalOrderSizeLeft > completingOrderSize) {
                             // Fill the completing order.
                             const [success1, reason1] = yield (0, completely_fill_order_1.default)(completingOrder, order);
                             // Partially open the order.
@@ -57,7 +57,7 @@ function completeOrder(order, completingOrders) {
                         }
                         // If the size of the main order is still > the size of
                         // the filling order, then go ahead and fill the main order.
-                        if (totalOrderSize < completingOrderSize) {
+                        if (totalOrderSizeLeft < completingOrderSize) {
                             // Fill the completing order.
                             const [success1, reason1] = yield (0, completely_fill_order_1.default)(order, completingOrder);
                             // Partially open the order.

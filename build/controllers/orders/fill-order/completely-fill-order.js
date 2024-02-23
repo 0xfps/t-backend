@@ -35,7 +35,7 @@ function completelyFillOrder(filledOrder, fillingOrder) {
         if (liquidatablePositions.length > 0)
             yield (0, liquidate_positions_1.liquidatePositions)(liquidatablePositions);
         // Liquidate positions.
-        const positionCreated = yield positions_1.default.create({
+        const createdPosition = yield positions_1.default.create({
             orderId: filledOrder.orderId,
             positionId: positionIdOfOrder,
             opener: filledOrder.opener,
@@ -45,7 +45,7 @@ function completelyFillOrder(filledOrder, fillingOrder) {
             fundingRate: 0, // 0% for a start.
             time: timeOfPositionCreation
         });
-        if (!positionCreated) {
+        if (!createdPosition) {
             return [false, "Position could not be created!"];
         }
         const updateOrderEntry = yield orders_1.default.updateOne({ orderId: filledOrder.orderId }, {

@@ -67,7 +67,7 @@ function partiallyFillOrder(filledOrder, fillingOrder) {
         }
         const updateOrderEntry = yield orders_1.default.updateOne({ orderId: filledOrder.orderId }, {
             fillingOrders: [...filledOrder.fillingOrders, fillingOrder.orderId],
-            sizeLeft: filledOrder.sizeLeft - fillingOrder.size
+            sizeLeft: parseFloat((filledOrder.sizeLeft - fillingOrder.size).toFixed(4))
         });
         if (!updateOrderEntry) {
             return [false, "Order entry could not be updated!"];
