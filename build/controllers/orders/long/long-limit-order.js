@@ -18,7 +18,7 @@ const calculate_slippage_1 = require("../../../utils/calculate-slippage");
 const constants_1 = require("../../../utils/constants");
 const decrement_margin_1 = __importDefault(require("../../../utils/decrement-margin"));
 const get_unique_id_1 = require("../../../utils/get-unique-id");
-const complete_limit_order_1 = __importDefault(require("../complete-order/complete-limit-order"));
+const complete_order_1 = __importDefault(require("../complete-order/complete-order"));
 /**
  * Process a long limit order.
  *
@@ -39,8 +39,12 @@ function processLongLimitOrder(order) {
             // Get short orders where the selling price is within 20% slippage of the
             // buying price of the market and the selling price.
             price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.LONG, order.price), $lte: order.price },
-            filled: false
+            filled: false,
+            deleted: false
         }).sort({ time: 1, price: 1 }); // Sort by first post first. 🚨 Possible bug.
+        // Long limit price must be <= market price.
+        if (order.price > order.marketPrice)
+            return [false, "Long limit price cannot be greater than market price."];
         const { user } = yield user_addreses_1.default.findOne({ tWallet: order.opener });
         // If not short orders matching the user's market order are open, then
         // add data to database and then make order.
@@ -49,7 +53,7 @@ function processLongLimitOrder(order) {
         const aoriOrderId = `${orderId}-${(0, get_unique_id_1.getUniqueId)(20)}`;
         const time = new Date().getTime();
         const createdOrder = yield orders_1.default.create(Object.assign(Object.assign({ orderId,
-            aoriOrderId }, order), { filled: false, fillingOrders: [], time }));
+            aoriOrderId }, order), { sizeLeft: order.size, filled: false, fillingOrders: [], deleted: false, time }));
         if (!createdOrder) {
             const response = {
                 status: 400,
@@ -67,7 +71,7 @@ function processLongLimitOrder(order) {
         if (!decremented) {
             return [false, "Margin could not be deducted."];
         }
-        const [completed, reason] = yield (0, complete_limit_order_1.default)(createdOrder, openShortOrders);
+        const [completed, reason] = yield (0, complete_order_1.default)(createdOrder, openShortOrders);
         return [completed, reason];
     });
 }

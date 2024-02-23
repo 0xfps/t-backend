@@ -33,7 +33,7 @@ function completeMarketOrder(order, completingOrder) {
         const aoriOrderId = `${orderId}-${(0, get_unique_id_1.getUniqueId)(20)}`;
         const time = new Date().getTime();
         const createdOrder = yield orders_1.default.create(Object.assign(Object.assign({ orderId,
-            aoriOrderId }, order), { time }));
+            aoriOrderId }, order), { sizeLeft: order.size, filled: false, fillingOrders: [], deleted: false, time }));
         if (!createdOrder) {
             return [false, "Making order not created!"];
         }

@@ -42,7 +42,7 @@ export default async function cancelOrderController(req: Request, res: Response)
         return
     }
 
-    const deleteOrder = await ordersModel.deleteOne({ orderId: orderId })
+    const deleteOrder = await ordersModel.updateOne({ orderId: orderId }, { deleted: true })
     if (!deleteOrder) {
         const response: ResponseInterface = {
             status: 400,

@@ -26,7 +26,7 @@ const liquidate_positions_1 = require("../../liquidator/liquidate-positions");
  * @param order
  * @param completingOrders
  */
-function completeLimitOrder(order, completingOrders) {
+function completeOrder(order, completingOrders) {
     return __awaiter(this, void 0, void 0, function* () {
         let status = true;
         if (!order.filled) {
@@ -42,6 +42,7 @@ function completeLimitOrder(order, completingOrders) {
             completingOrders.forEach(function (completingOrder) {
                 return __awaiter(this, void 0, void 0, function* () {
                     const completingOrderSize = parseFloat(completingOrder.size);
+                    console.log("Completing order: ", completingOrder.orderId, "::", completingOrderSize + totalFilledSize);
                     if ((completingOrderSize + totalFilledSize) <= totalOrderSize) {
                         // The completing order was fully executed.
                         /**
@@ -67,9 +68,9 @@ function completeLimitOrder(order, completingOrders) {
                             liquidationPrice: completingOrderLiquidationPrice,
                             time: timeOfPositionCreation
                         });
-                        const updateOrdersPosition = yield orders_1.default.updateOne({ orderId: order.orderId }, 
-                        // Not yet filled, but add the completing order.
-                        { fillingOrders: [...order.fillingOrders, completingOrder.orderId] });
+                        const updateOrdersPosition = yield orders_1.default.updateOne({ orderId: order.orderId },
+                            // Not yet filled, but add the completing order.
+                            { fillingOrders: [...order.fillingOrders, completingOrder.orderId] });
                         const updateCompletingOrdersPosition = yield orders_1.default.updateOne({ orderId: completingOrder.orderId }, { filled: true, fillingOrders: [...completingOrder.fillingOrders, order.orderId] });
                         if (!completingOrdersPosition || !updateCompletingOrdersPosition || !updateOrdersPosition) {
                             status = false;
@@ -118,4 +119,4 @@ function completeLimitOrder(order, completingOrders) {
         return [status, ""];
     });
 }
-exports.default = completeLimitOrder;
+exports.default = completeOrder;

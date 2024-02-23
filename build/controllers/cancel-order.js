@@ -46,7 +46,7 @@ function cancelOrderController(req, res) {
             res.send(response);
             return;
         }
-        const deleteOrder = yield orders_1.default.deleteOne({ orderId: orderId });
+        const deleteOrder = yield orders_1.default.updateOne({ orderId: orderId }, { deleted: true });
         if (!deleteOrder) {
             const response = {
                 status: 400,

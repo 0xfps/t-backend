@@ -24,6 +24,10 @@ export default async function completeMarketOrder(order: Order, completingOrder:
         orderId,
         aoriOrderId,
         ...order,
+        sizeLeft: order.size,
+        filled: false,
+        fillingOrders: [],
+        deleted: false,
         time
     })
 

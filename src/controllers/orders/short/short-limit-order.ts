@@ -5,7 +5,7 @@ import { calculateSlippage } from "../../../utils/calculate-slippage";
 import { LIMIT, LONG, Order, SHORT, SPREAD } from "../../../utils/constants";
 import decrementMargin from "../../../utils/decrement-margin";
 import { getUniqueId } from "../../../utils/get-unique-id";
-import completeLimitOrder from "../complete-order/complete-limit-order";
+import completeOrder from "../complete-order/complete-order";
 
 export default async function processShortLimitOrder(order: Order): Promise<[boolean, {}]> {
     // Check in long orders to see if there are any orders matching within 20% slippage
@@ -20,8 +20,13 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         // Get long orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
         price: { $gte: order.price, $lte: calculateSlippage(SHORT, order.price) },
-        filled: false
+        filled: false,
+        deleted: false
     }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
+
+    // Short limit price must be >= market price.
+    if (order.price < order.marketPrice)
+        return [false, "Short limit price cannot be less than market price."]
 
     const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
 
@@ -36,8 +41,10 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         orderId,
         aoriOrderId,
         ...order,
+        sizeLeft: order.size,
         filled: false,
         fillingOrders: [],
+        deleted: false,
         time
     })
 
@@ -63,7 +70,7 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         return [false, "Margin could not be deducted."]
     }
 
-    const [completed, reason] = await completeLimitOrder(createdOrder, openLongOrders)
+    const [completed, reason] = await completeOrder(createdOrder, openLongOrders)
 
     return [completed, { result: reason }]
 }
