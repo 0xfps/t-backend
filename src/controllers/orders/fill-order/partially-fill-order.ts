@@ -36,12 +36,12 @@ export default async function partiallyFillOrder(filledOrder: any, fillingOrder:
 
     let partialPosition
 
-    if (partiallyFilledOrderExists.length == 0) {
-        partialPosition = partialPositionsModel.create({
+    if (!partiallyFilledOrderExists) {
+        partialPosition = await partialPositionsModel.create({
             orderId: filledOrder.orderId,
-            positionId: positionIdOfOrder,
+            partialPositionId: positionIdOfOrder,
             opener: filledOrder.opener,
-            positionType: filledOrder.positionType,       // "long" | "short"
+            partialPositionType: filledOrder.positionType,       // "long" | "short"
             entryPrice: entryPrice,
             liquidationPrice: liquidationPrice,
             fundingRate: 0, // 0% for a start.
@@ -50,7 +50,7 @@ export default async function partiallyFillOrder(filledOrder: any, fillingOrder:
             time: timeOfPositionCreation
         })
     } else {
-        partialPosition = partialPositionsModel.updateOne(
+        partialPosition = await partialPositionsModel.updateOne(
             { orderId: filledOrder.orderId },
             {
                 entryPrice: entryPrice,
@@ -61,7 +61,7 @@ export default async function partiallyFillOrder(filledOrder: any, fillingOrder:
             }
         )
     }
-    
+
     if (!partialPosition) {
         return [false, "Position could not be created!"]
     }
@@ -69,6 +69,7 @@ export default async function partiallyFillOrder(filledOrder: any, fillingOrder:
     const updateOrderEntry = await ordersModel.updateOne(
         { orderId: filledOrder.orderId },
         {
+            fillingOrders: [...filledOrder.fillingOrders, fillingOrder.orderId],
             sizeLeft: filledOrder.sizeLeft - fillingOrder.size
         }
     )
@@ -76,6 +77,6 @@ export default async function partiallyFillOrder(filledOrder: any, fillingOrder:
     if (!updateOrderEntry) {
         return [false, "Order entry could not be updated!"]
     }
-    
+
     return [true, `Order ${filledOrder.orderId} filled!`]
 }

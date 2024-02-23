@@ -35,7 +35,7 @@ function completelyFillOrder(filledOrder, fillingOrder) {
         if (liquidatablePositions.length > 0)
             yield (0, liquidate_positions_1.liquidatePositions)(liquidatablePositions);
         // Liquidate positions.
-        const positionCreated = positions_1.default.create({
+        const positionCreated = yield positions_1.default.create({
             orderId: filledOrder.orderId,
             positionId: positionIdOfOrder,
             opener: filledOrder.opener,
@@ -58,7 +58,7 @@ function completelyFillOrder(filledOrder, fillingOrder) {
             return [false, "Order entry could not be updated!"];
         }
         const orderInPartialPosition = yield partial_positions_1.default.findOne({ orderId: filledOrder.orderId });
-        if (orderInPartialPosition.length > 0) {
+        if (orderInPartialPosition) {
             const update = partial_positions_1.default.deleteOne({ order: filledOrder.orderId });
             if (!update) {
                 return [false, "Could not delete partial order!"];

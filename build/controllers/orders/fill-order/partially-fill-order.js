@@ -39,12 +39,12 @@ function partiallyFillOrder(filledOrder, fillingOrder) {
         const partiallyFilledOrderExists = yield partial_positions_1.default.findOne({ orderId: filledOrder.orderId });
         const percentageFilled = parseFloat((100 - (((sizeLeft - fillingOrder.size) / size) * 100)).toFixed(2));
         let partialPosition;
-        if (partiallyFilledOrderExists.length == 0) {
-            partialPosition = partial_positions_1.default.create({
+        if (!partiallyFilledOrderExists) {
+            partialPosition = yield partial_positions_1.default.create({
                 orderId: filledOrder.orderId,
-                positionId: positionIdOfOrder,
+                partialPositionId: positionIdOfOrder,
                 opener: filledOrder.opener,
-                positionType: filledOrder.positionType, // "long" | "short"
+                partialPositionType: filledOrder.positionType, // "long" | "short"
                 entryPrice: entryPrice,
                 liquidationPrice: liquidationPrice,
                 fundingRate: 0, // 0% for a start.
@@ -54,7 +54,7 @@ function partiallyFillOrder(filledOrder, fillingOrder) {
             });
         }
         else {
-            partialPosition = partial_positions_1.default.updateOne({ orderId: filledOrder.orderId }, {
+            partialPosition = yield partial_positions_1.default.updateOne({ orderId: filledOrder.orderId }, {
                 entryPrice: entryPrice,
                 liquidationPrice: liquidationPrice,
                 isComplete: false,
@@ -66,6 +66,7 @@ function partiallyFillOrder(filledOrder, fillingOrder) {
             return [false, "Position could not be created!"];
         }
         const updateOrderEntry = yield orders_1.default.updateOne({ orderId: filledOrder.orderId }, {
+            fillingOrders: [...filledOrder.fillingOrders, fillingOrder.orderId],
             sizeLeft: filledOrder.sizeLeft - fillingOrder.size
         });
         if (!updateOrderEntry) {

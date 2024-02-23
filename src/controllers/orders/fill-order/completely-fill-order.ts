@@ -28,7 +28,7 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
         await liquidatePositions(liquidatablePositions)
     // Liquidate positions.
 
-    const positionCreated = positionsModel.create({
+    const positionCreated = await positionsModel.create({
         orderId: filledOrder.orderId,
         positionId: positionIdOfOrder,
         opener: filledOrder.opener,
@@ -58,7 +58,7 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
     }
 
     const orderInPartialPosition = await partialPositionsModel.findOne({ orderId: filledOrder.orderId })
-    if (orderInPartialPosition.length > 0) {
+    if (orderInPartialPosition) {
         const update = partialPositionsModel.deleteOne({ order: filledOrder.orderId })
         if (!update) {
             return [false, "Could not delete partial order!"]

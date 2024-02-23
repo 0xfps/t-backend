@@ -55,23 +55,23 @@ function processLongMarketOrder(order) {
             deleted: false
         }).sort({ time: 1, price: -1 }); // Sort by first post first. 🚨 Possible bug.
         const { user } = yield user_addreses_1.default.findOne({ tWallet: order.opener });
-        const allOpenOrders = [...openShortLimitOrders, ...openShortMarketOrders];
+        const allOpenShortOrders = [...openShortLimitOrders, ...openShortMarketOrders];
         // If not short orders matching the user's market order are open, then
         // add data to database and then make order.
-        if (!allOpenOrders || allOpenOrders.length == 0) {
-            const orderId = (0, get_unique_id_1.getUniqueId)(20);
-            // 32, making it more unique and trackable, if desired.
-            const aoriOrderId = `${orderId}-${(0, get_unique_id_1.getUniqueId)(20)}`;
-            const time = new Date().getTime();
-            const createdOrder = yield orders_1.default.create(Object.assign(Object.assign({ orderId,
-                aoriOrderId }, order), { sizeLeft: order.size, filled: false, fillingOrders: [], deleted: false, time }));
-            if (!createdOrder) {
-                const response = {
-                    status: 400,
-                    msg: "Error creating order!"
-                };
-                return [false, response];
-            }
+        const orderId = (0, get_unique_id_1.getUniqueId)(20);
+        // 32, making it more unique and trackable, if desired.
+        const aoriOrderId = `${orderId}-${(0, get_unique_id_1.getUniqueId)(20)}`;
+        const time = new Date().getTime();
+        const createdOrder = yield orders_1.default.create(Object.assign(Object.assign({ orderId,
+            aoriOrderId }, order), { sizeLeft: order.size, filled: false, fillingOrders: [], deleted: false, time }));
+        if (!createdOrder) {
+            const response = {
+                status: 400,
+                msg: "Error creating order!"
+            };
+            return [false, response];
+        }
+        if (!allOpenShortOrders || allOpenShortOrders.length == 0) {
             // 💡 Reduce user's margin.
             const decremented = yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
             return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."];
@@ -88,11 +88,11 @@ function processLongMarketOrder(order) {
          * An order is filled.
          * Two positions are created. One for long, one for short.
          */
-        const [completed, reason] = yield (0, complete_order_1.default)(order, allOpenOrders);
+        const [completed, reason] = yield (0, complete_order_1.default)(createdOrder, allOpenShortOrders);
         if (!completed) {
             return [false, { result: reason }];
         }
-        return [true, { respose: "OK!" }];
+        return [true, { respose: reason }];
     });
 }
 exports.default = processLongMarketOrder;

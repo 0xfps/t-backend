@@ -30,7 +30,7 @@ function processLongLimitOrder(order) {
         // Check in short orders to see if there are any orders matching within 20% slippage
         // of order price and order size.
         // User below is trying to sell as much as caller is trying to buy.
-        const openShortOrders = yield orders_1.default.find({
+        const openShortLimitOrders = yield orders_1.default.find({
             positionType: constants_1.SHORT,
             // Can one fill a market order with a limit order?
             type: constants_1.LIMIT,
@@ -42,6 +42,20 @@ function processLongLimitOrder(order) {
             filled: false,
             deleted: false
         }).sort({ time: 1, price: 1 }); // Sort by first post first. 🚨 Possible bug.
+        const openShortMarketOrders = yield orders_1.default.find({
+            positionType: constants_1.SHORT,
+            // Can one fill a market order with a limit order?
+            type: constants_1.MARKET,
+            ticker: order.ticker.toLowerCase(),
+            size: { $lte: order.size },
+            // No need for order size, it's an aggregation.
+            // Get short orders where the selling price is within 20% slippage of the
+            // buying price of the market and the selling price.
+            price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.LONG, order.price), $lte: order.price },
+            filled: false,
+            deleted: false
+        }).sort({ time: 1, price: 1 }); // Sort by first post first. 🚨 Possible bug.
+        const allOpenShortOrders = [...openShortLimitOrders, ...openShortMarketOrders];
         // Long limit price must be <= market price.
         if (order.price > order.marketPrice)
             return [false, "Long limit price cannot be greater than market price."];
@@ -61,7 +75,7 @@ function processLongLimitOrder(order) {
             };
             return [false, response];
         }
-        if (!openShortOrders || openShortOrders.length == 0) {
+        if (!allOpenShortOrders || allOpenShortOrders.length == 0) {
             // 💡 Reduce user's margin.
             const decremented = yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
             return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."];
@@ -71,7 +85,7 @@ function processLongLimitOrder(order) {
         if (!decremented) {
             return [false, "Margin could not be deducted."];
         }
-        const [completed, reason] = yield (0, complete_order_1.default)(createdOrder, openShortOrders);
+        const [completed, reason] = yield (0, complete_order_1.default)(createdOrder, allOpenShortOrders);
         return [completed, reason];
     });
 }

@@ -45,36 +45,37 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
 
     const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
 
-    const allOpenOrders = [...openLongLimitOrders, ...openLongMarketOrders]
+    const allOpenLongOrders = [...openLongLimitOrders, ...openLongMarketOrders]
 
     // If no long orders matching the user's market order are open, then only
     // add data to database because an order must be made to be taken in Aori.
-    if (!allOpenOrders || allOpenOrders.length == 0) {
-        const orderId = getUniqueId(20)
-        // 32, making it more unique and trackable, if desired.
-        const aoriOrderId = `${orderId}-${getUniqueId(20)}`
-        const time = new Date().getTime()
 
-        const createdOrder = await ordersModel.create({
-            orderId,
-            aoriOrderId,
-            ...order,
-            sizeLeft: order.size,
-            filled: false,
-            fillingOrders: [],
-            deleted: false,
-            time
-        })
+    const orderId = getUniqueId(20)
+    // 32, making it more unique and trackable, if desired.
+    const aoriOrderId = `${orderId}-${getUniqueId(20)}`
+    const time = new Date().getTime()
 
-        if (!createdOrder) {
-            const response: ResponseInterface = {
-                status: 400,
-                msg: "Error creating order!"
-            }
+    const createdOrder = await ordersModel.create({
+        orderId,
+        aoriOrderId,
+        ...order,
+        sizeLeft: order.size,
+        filled: false,
+        fillingOrders: [],
+        deleted: false,
+        time
+    })
 
-            return [false, response]
+    if (!createdOrder) {
+        const response: ResponseInterface = {
+            status: 400,
+            msg: "Error creating order!"
         }
 
+        return [false, response]
+    }
+
+    if (!allOpenLongOrders || allOpenLongOrders.length == 0) {
         // 💡 Reduce user's margin.
         const decremented = await decrementMargin(user, (order.margin + order.fee))
         return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."]
@@ -94,11 +95,11 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
      * An order is filled.
      * Two positions are created. One for long, one for short.
      */
-    const [completed, reason] = await completeOrder(order, allOpenOrders)
+    const [completed, reason] = await completeOrder(createdOrder, allOpenLongOrders)
 
     if (!completed) {
         return [false, { result: reason }]
     }
 
-    return [true, { respose: "OK!" }]
+    return [true, { respose: reason }]
 }
