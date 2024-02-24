@@ -1,7 +1,7 @@
 import ordersModel from "../../db/schema/orders"
 import { calculateSlippage } from "../../utils/calculate-slippage"
 import { LIMIT, LONG, SHORT } from "../../utils/constants"
-import completeLimitOrder from "../orders/complete-order/complete-limit-order"
+import completeOrder from "../orders/complete-order/complete-order"
 
 export default async function match(longLimitOrders: any[], shortLimitOrders: any[]) {
     longLimitOrders.forEach(async function (longLimitOrder: any) {
@@ -21,7 +21,7 @@ export default async function match(longLimitOrders: any[], shortLimitOrders: an
         }).sort({ time: 1, price: 1 }) // Sort by first post first. 🚨 Possible bug.
 
         if (openShortOrders.length > 0) {
-            await completeLimitOrder(longLimitOrder, openShortOrders)
+            await completeOrder(longLimitOrder, openShortOrders)
         }
     })
 }

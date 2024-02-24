@@ -22,15 +22,19 @@ function decrementMargin(address, amount) {
         const signer = new ethers_1.ethers.Wallet(process.env.PRIVATE_KEY, provider);
         let nonce = yield provider.getTransactionCount(signer.address, "pending");
         const tradableMarginVault = new ethers_1.ethers.Contract(constants_1.TRADABLE_MARGIN_VAULT_ADDRESS, constants_1.TRADABLE_MARGIN_VAULT_ABI, signer);
-        const tradableMarginHandler = new ethers_1.ethers.Contract(constants_1.TRADABLE_MARGIN_HANDLER_ADDRESS, constants_1.TRADABLE_MARGIN_HANDLER_ABI, signer);
+        // const tradableMarginHandler = new ethers.Contract(
+        //     TRADABLE_MARGIN_HANDLER_ADDRESS,
+        //     TRADABLE_MARGIN_HANDLER_ABI,
+        //     signer
+        // )
         const value = BigInt(amount * (10 ** 8));
-        let tx1, tx2;
+        let tx1;
         let txnSuccess = false;
         function txLoop(nonce) {
             return __awaiter(this, void 0, void 0, function* () {
                 try {
                     tx1 = yield tradableMarginVault.decrementMargin(address, value, { nonce: nonce });
-                    tx2 = yield tradableMarginHandler.decrementMargin(address, value, { nonce: nonce + 1 });
+                    // tx2 = await tradableMarginHandler.decrementMargin(address, value, { nonce: nonce + 1 })
                     txnSuccess = true;
                     return txnSuccess;
                 }
@@ -43,7 +47,7 @@ function decrementMargin(address, amount) {
             yield txLoop(nonce);
             nonce = nonce + 1;
         }
-        if (!tx1 || !tx2) {
+        if (!tx1) {
             return false;
         }
         return true;

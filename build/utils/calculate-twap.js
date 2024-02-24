@@ -16,11 +16,15 @@ const orders_1 = __importDefault(require("../db/schema/orders"));
 function calculateTwap(orderIds, size) {
     return __awaiter(this, void 0, void 0, function* () {
         let TWP = 0;
-        orderIds.forEach(function (orderId) {
+        const twps = orderIds.map(function (orderId) {
             return __awaiter(this, void 0, void 0, function* () {
                 const { size, price } = yield orders_1.default.findOne({ orderId: orderId });
-                TWP += parseInt(size) * parseInt(price);
+                return parseFloat(size) * parseFloat(price);
             });
+        });
+        const TWPs = yield Promise.all(twps);
+        TWPs.forEach(function (thisTWP) {
+            TWP += parseFloat(thisTWP);
         });
         return parseFloat((TWP / size).toFixed(4));
     });

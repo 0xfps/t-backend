@@ -13,12 +13,14 @@ const ordersSchema = new Schema({
     assetA: SchemaTypes.String,
     assetB: SchemaTypes.String,
     ticker: SchemaTypes.String,         // tBTC.
-    size: SchemaTypes.String,
+    size: SchemaTypes.Number,
+    sizeLeft: SchemaTypes.Number,
     price: SchemaTypes.Number,
     // Ends here.
     // Orders that filled this order.
     filled: SchemaTypes.Boolean,
     fillingOrders: SchemaTypes.Array,
+    deleted: SchemaTypes.Boolean,
     time: SchemaTypes.Date
 })
 

@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../../db/schema/orders"));
 const calculate_slippage_1 = require("../../utils/calculate-slippage");
 const constants_1 = require("../../utils/constants");
-const complete_limit_order_1 = __importDefault(require("../orders/complete-order/complete-limit-order"));
+const complete_order_1 = __importDefault(require("../orders/complete-order/complete-order"));
 function match(longLimitOrders, shortLimitOrders) {
     return __awaiter(this, void 0, void 0, function* () {
         longLimitOrders.forEach(function (longLimitOrder) {
@@ -35,7 +35,7 @@ function match(longLimitOrders, shortLimitOrders) {
                     filled: false
                 }).sort({ time: 1, price: 1 }); // Sort by first post first. 🚨 Possible bug.
                 if (openShortOrders.length > 0) {
-                    yield (0, complete_limit_order_1.default)(longLimitOrder, openShortOrders);
+                    yield (0, complete_order_1.default)(longLimitOrder, openShortOrders);
                 }
             });
         });
