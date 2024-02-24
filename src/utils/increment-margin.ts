@@ -21,22 +21,22 @@ export default async function incrementMargin(address: string, amount: number): 
         signer
     )
 
-    const tradableMarginHandler = new ethers.Contract(
-        TRADABLE_MARGIN_HANDLER_ADDRESS,
-        TRADABLE_MARGIN_HANDLER_ABI,
-        signer
-    )
+    // const tradableMarginHandler = new ethers.Contract(
+    //     TRADABLE_MARGIN_HANDLER_ADDRESS,
+    //     TRADABLE_MARGIN_HANDLER_ABI,
+    //     signer
+    // )
 
     const value = BigInt(amount * (10 ** 8))
 
-    let tx1, tx2
+    let tx1
 
     let txnSuccess = false
 
     async function txLoop(nonce: number): Promise<boolean> {
         try {
             tx1 = await tradableMarginVault.incrementMargin(address, value, { nonce: nonce })
-            tx2 = await tradableMarginHandler.incrementMargin(address, value, { nonce: nonce + 1 })
+            // tx2 = await tradableMarginHandler.incrementMargin(address, value, { nonce: nonce + 1 })
 
             txnSuccess = true
             return txnSuccess
@@ -50,7 +50,7 @@ export default async function incrementMargin(address: string, amount: number): 
         nonce = nonce + 1
     }
 
-    if (!tx1 || !tx2) {
+    if (!tx1) {
         return false
     }
 

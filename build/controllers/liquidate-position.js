@@ -12,38 +12,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const dotenv_1 = __importDefault(require("dotenv"));
-const constants_1 = require("../utils/constants");
-dotenv_1.default.config();
-const { ENCRYPTED_DEVELOPMENT_API_KEY, ENCRYPTED_PRODUCTION_API_KEY, ENVIRONMENT_URL } = process.env;
-const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080";
+const close_position_1 = __importDefault(require("./close/close-position"));
 function liquidatePositionController(req, res) {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const { positionId } = req.body;
-        const body = {
-            positionId: positionId
-        };
-        const liquidationCall = yield fetch(`${URL}/close-position`, {
-            method: constants_1.POST,
-            headers: {
-                "api-key": (_a = ENCRYPTED_DEVELOPMENT_API_KEY) !== null && _a !== void 0 ? _a : ENCRYPTED_PRODUCTION_API_KEY
-            },
-            body: JSON.stringify(body)
-        });
-        const resp = yield liquidationCall.json();
-        if (resp.status != 200) {
+        const [success, reason] = yield (0, close_position_1.default)(positionId);
+        if (!success) {
             const response = {
-                status: resp.status,
-                msg: "Error"
+                status: 400,
+                msg: reason
             };
             res.send(response);
             return;
         }
         const response = {
-            status: resp.status,
-            msg: resp.msg,
-            data: resp.data
+            status: 200,
+            msg: reason
         };
         res.send(response);
     });
