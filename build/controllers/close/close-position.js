@@ -52,10 +52,12 @@ function closePosition(positionId) {
         if (positionType == constants_1.SHORT) {
             const totalProfit = (initialPrice - lastMarketPrice) * size * leverage;
             const profit = totalProfit + ((fundingRate / totalProfit) * 100);
-            // 💡 Increment user's margin.
-            const incremented = yield (0, increment_margin_1.default)(user, profit);
-            if (!incremented) {
-                return [false, "Could not increment margin with profit."];
+            if (profit > 0) {
+                // 💡 Increment user's margin.
+                const incremented = yield (0, increment_margin_1.default)(user, profit);
+                if (!incremented) {
+                    return [false, "Could not increment margin with profit."];
+                }
             }
         }
         const deletedPosition = yield positions_1.default.deleteOne({ positionId: positionId });
