@@ -37,6 +37,7 @@ const funding_rate_1 = __importDefault(require("./utils/funding-rate"));
 const get_users_open_orders_1 = __importDefault(require("./routes/get-users-open-orders"));
 const get_users_filled_orders_1 = __importDefault(require("./routes/get-users-filled-orders"));
 const get_order_1 = __importDefault(require("./routes/get-order"));
+const close_all_positions_1 = __importDefault(require("./routes/close-all-positions"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
@@ -157,5 +158,6 @@ app.use(function (req, res, next) {
 app.use("/create", create_1.default);
 app.use("/open-position", open_position_1.default);
 app.use("/close-position", close_position_1.default);
+app.use("/close-all-positions", close_all_positions_1.default);
 app.use("/cancel-order", cancel_order_1.default);
 app.use("/liquidate-position", liquidate_position_1.default);
