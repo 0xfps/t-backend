@@ -4,7 +4,7 @@ import ResponseInterface from "../interfaces/response-interface";
 
 export default async function getUsersOpenOrdersController(req: Request, res: Response) {
     const { address } = req.params
-    const addressOrders = await ordersModel.find({ opener: address, filled: false }).sort({ time: -1 })
+    const addressOrders = await ordersModel.find({ opener: address, filled: false, deleted: false }).sort({ time: -1 })
     if (!addressOrders) {
         const response: ResponseInterface = {
             status: 404,
