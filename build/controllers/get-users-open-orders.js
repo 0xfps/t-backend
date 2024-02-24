@@ -16,7 +16,7 @@ const orders_1 = __importDefault(require("../db/schema/orders"));
 function getUsersOpenOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { address } = req.params;
-        const addressOrders = yield orders_1.default.find({ opener: address, filled: false }).sort({ time: -1 });
+        const addressOrders = yield orders_1.default.find({ opener: address, filled: false, deleted: false }).sort({ time: -1 });
         if (!addressOrders) {
             const response = {
                 status: 404,
