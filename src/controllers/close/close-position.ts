@@ -54,10 +54,12 @@ export default async function closePosition(positionId: string): Promise<[boolea
         const totalProfit = (initialPrice - lastMarketPrice) * size * leverage
         const profit = totalProfit + ((fundingRate / totalProfit) * 100)
 
-        // 💡 Increment user's margin.
-        const incremented = await incrementMargin(user, profit)
-        if (!incremented) {
-            return [false, "Could not increment margin with profit."]
+        if (profit > 0) {
+            // 💡 Increment user's margin.
+            const incremented = await incrementMargin(user, profit)
+            if (!incremented) {
+                return [false, "Could not increment margin with profit."]
+            }
         }
     }
 
