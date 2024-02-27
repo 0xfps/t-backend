@@ -20,6 +20,7 @@ const calculate_margin_ratio_1 = require("../../../utils/calculate-margin-ratio"
 const constants_1 = require("../../../utils/constants");
 const get_unique_id_1 = require("../../../utils/get-unique-id");
 const liquidate_positions_1 = require("../../liquidator/liquidate-positions");
+const tp_sl_1 = __importDefault(require("../../tp-sl/tp-sl"));
 // Fills `filledOrder` completely and closes the DB.
 // The focus is on `filledOrder`, not `fillingOrder`.
 function completelyFillOrder(filledOrder, fillingOrder, isClosingOrder = false) {
@@ -35,6 +36,8 @@ function completelyFillOrder(filledOrder, fillingOrder, isClosingOrder = false) 
         if (liquidatablePositions.length > 0)
             yield (0, liquidate_positions_1.liquidatePositions)(liquidatablePositions);
         // Liquidate positions.
+        // Run 
+        yield (0, tp_sl_1.default)(entryPrice);
         // Create position if the order is not being closed.
         if (!isClosingOrder) {
             const createdPosition = yield positions_1.default.create({
