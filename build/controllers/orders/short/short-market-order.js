@@ -25,7 +25,7 @@ const complete_order_1 = __importDefault(require("../complete-order/complete-ord
  * @param order Order.
  * @returns
  */
-function processShortMarketOrder(order) {
+function processShortMarketOrder(order, isClosingOrder) {
     return __awaiter(this, void 0, void 0, function* () {
         // Check in long orders to see if there are any orders matching within 20% slippage
         // of order price and order size.
@@ -72,14 +72,18 @@ function processShortMarketOrder(order) {
             return [false, response];
         }
         if (!allOpenLongOrders || allOpenLongOrders.length == 0) {
+            if (!isClosingOrder) {
+                // 💡 Reduce user's margin.
+                const decremented = yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
+                return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."];
+            }
+        }
+        if (!isClosingOrder) {
             // 💡 Reduce user's margin.
             const decremented = yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
-            return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."];
-        }
-        // 💡 Reduce user's margin.
-        const decremented = yield (0, decrement_margin_1.default)(user, (order.margin + order.fee));
-        if (!decremented) {
-            return [false, "Margin could not be deducted."];
+            if (!decremented) {
+                return [false, "Margin could not be deducted."];
+            }
         }
         /**
          * If an order is found on the short side, it is expected to fill the long
@@ -88,11 +92,11 @@ function processShortMarketOrder(order) {
          * An order is filled.
          * Two positions are created. One for long, one for short.
          */
-        const [completed, reason] = yield (0, complete_order_1.default)(createdOrder, allOpenLongOrders);
+        const [completed, reason] = yield (0, complete_order_1.default)(createdOrder, allOpenLongOrders, isClosingOrder);
         if (!completed) {
             return [false, { result: reason }];
         }
-        return [true, { respose: reason }];
+        return [true, { response: reason }];
     });
 }
 exports.default = processShortMarketOrder;

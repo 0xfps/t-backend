@@ -7,6 +7,8 @@ const positionsSchema = new Schema({
     positionType: SchemaTypes.String,       // "long" | "short"
     entryPrice: SchemaTypes.Number,
     liquidationPrice: SchemaTypes.Number,
+    tp: SchemaTypes.Number || null,
+    sl: SchemaTypes.Number || null,
     fundingRate: SchemaTypes.Number,
     time: SchemaTypes.Date
 })

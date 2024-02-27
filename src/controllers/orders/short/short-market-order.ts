@@ -12,7 +12,7 @@ import completeOrder from "../complete-order/complete-order"
  * @param order Order.
  * @returns 
  */
-export default async function processShortMarketOrder(order: Order): Promise<[boolean, {}]> {
+export default async function processShortMarketOrder(order: Order, isClosingOrder: boolean): Promise<[boolean, {}]> {
     // Check in long orders to see if there are any orders matching within 20% slippage
     // of order price and order size.
     // User below is trying to sell as much as caller is trying to buy.
@@ -75,16 +75,20 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
     }
 
     if (!allOpenLongOrders || allOpenLongOrders.length == 0) {
-        // 💡 Reduce user's margin.
-        const decremented = await decrementMargin(user, (order.margin + order.fee))
-        return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."]
+        if (!isClosingOrder) {
+            // 💡 Reduce user's margin.
+            const decremented = await decrementMargin(user, (order.margin + order.fee))
+            return decremented ? [true, "Order Created!"] : [false, "Margin could not be deducted."]
+        }
     }
 
-    // 💡 Reduce user's margin.
-    const decremented = await decrementMargin(user, (order.margin + order.fee))
-
-    if (!decremented) {
-        return [false, "Margin could not be deducted."]
+    if (!isClosingOrder) {
+        // 💡 Reduce user's margin.
+        const decremented = await decrementMargin(user, (order.margin + order.fee))
+        
+        if (!decremented) {
+            return [false, "Margin could not be deducted."]
+        }
     }
 
     /**
@@ -94,11 +98,11 @@ export default async function processShortMarketOrder(order: Order): Promise<[bo
      * An order is filled.
      * Two positions are created. One for long, one for short.
      */
-    const [completed, reason] = await completeOrder(createdOrder, allOpenLongOrders)
+    const [completed, reason] = await completeOrder(createdOrder, allOpenLongOrders, isClosingOrder)
 
     if (!completed) {
         return [false, { result: reason }]
     }
 
-    return [true, { respose: reason }]
+    return [true, { response: reason }]
 }

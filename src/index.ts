@@ -25,6 +25,7 @@ import getUsersOpenOrdersRouter from "./routes/get-users-open-orders"
 import getUsersFilledOrdersRouter from "./routes/get-users-filled-orders"
 import getOrderRouter from "./routes/get-order"
 import closeAllPositionsRouter from "./routes/close-all-positions"
+import addTPAndSLRouter from "./routes/add-tp-sl"
 
 dotenv.config()
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env
@@ -159,5 +160,6 @@ app.use("/create", createRouter)
 app.use("/open-position", openPositionRouter)
 app.use("/close-position", closePositionRouter)
 app.use("/close-all-positions", closeAllPositionsRouter)
+app.use("/add-tp-sl", addTPAndSLRouter)
 app.use("/cancel-order", cancelOrderRouter)
 app.use("/liquidate-position", liquidatePositionRouter)
