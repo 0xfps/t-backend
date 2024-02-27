@@ -11,8 +11,10 @@ import completeOrder from "../complete-order/complete-order"
  * 
  * @param order Order.
  * @returns 
- */
+*/
 export default async function processShortMarketOrder(order: Order, isClosingOrder: boolean): Promise<[boolean, {}]> {
+    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
+    
     // Check in long orders to see if there are any orders matching within 20% slippage
     // of order price and order size.
     // User below is trying to sell as much as caller is trying to buy.
@@ -21,6 +23,7 @@ export default async function processShortMarketOrder(order: Order, isClosingOrd
         // Can one fill a market order with a limit order?
         type: MARKET,
         ticker: order.ticker.toLowerCase(),
+        opener: { $ne: user },
         size: order.size,
         // Get long orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
@@ -34,6 +37,7 @@ export default async function processShortMarketOrder(order: Order, isClosingOrd
         // Can one fill a market order with a limit order?
         type: LIMIT,
         ticker: order.ticker.toLowerCase(),
+        opener: { $ne: user },
         size: { $gte: order.size },
         // Get long orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
@@ -41,8 +45,6 @@ export default async function processShortMarketOrder(order: Order, isClosingOrd
         filled: false,
         deleted: false
     }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
-
-    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
 
     const allOpenLongOrders = [...openLongLimitOrders, ...openLongMarketOrders]
 
