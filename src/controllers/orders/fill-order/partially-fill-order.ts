@@ -44,6 +44,8 @@ export default async function partiallyFillOrder(filledOrder: any, fillingOrder:
             partialPositionType: filledOrder.positionType,       // "long" | "short"
             entryPrice: entryPrice,
             liquidationPrice: liquidationPrice,
+            tp: null,
+            sl: null,
             fundingRate: 0, // 0% for a start.
             isComplete: false,
             percentageFilled: percentageFilled,

@@ -14,9 +14,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../../db/schema/orders"));
 const positions_1 = __importDefault(require("../../db/schema/positions"));
-const user_addreses_1 = __importDefault(require("../../db/schema/user-addreses"));
 const constants_1 = require("../../utils/constants");
-const increment_margin_1 = __importDefault(require("../../utils/increment-margin"));
+const long_market_order_1 = __importDefault(require("../orders/long/long-market-order"));
+const short_market_order_1 = __importDefault(require("../orders/short/short-market-order"));
 function closePosition(positionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const positionEntry = yield positions_1.default.findOne({ positionId: positionId });
@@ -28,37 +28,35 @@ function closePosition(positionId) {
         if (!orderEntry) {
             return [false, "Order not found for position!"];
         }
-        const { leverage, opener, price: initialPrice, size } = orderEntry;
         const lastMarketPrice = (yield positions_1.default.find({}).sort({ time: -1 }))[0].entryPrice;
-        const { user } = yield user_addreses_1.default.findOne({ tWallet: opener });
+        const { positionType: orderPositionType, type, opener, market, leverage, margin, fee, assetA, assetB, ticker, size, price: initialPrice } = orderEntry;
+        const newOrder = {
+            positionType: orderPositionType,
+            type,
+            opener,
+            market,
+            leverage,
+            margin,
+            fee,
+            assetA,
+            assetB,
+            ticker,
+            size,
+            price: initialPrice,
+            marketPrice: lastMarketPrice
+        };
         // All are sold off as market orders.
         // If long position, sell as short.
         // If short, long.
-        // More info at:
-        // https://pippenguin.com/forex/learn-forex/calculate-profit-forex/#:~:text=To%20calculate%20forex%20profit%2C%20subtract,Trade%20Size%20%C3%97%20Pip%20Value.
-        if (positionType == constants_1.LONG) {
-            const totalProfit = (lastMarketPrice - initialPrice) * size * leverage;
-            const profit = totalProfit + ((fundingRate / totalProfit) * 100);
-            if (profit > 0) {
-                // 💡 Increment user's margin.
-                const incremented = yield (0, increment_margin_1.default)(user, profit);
-                if (!incremented) {
-                    return [false, "Could not increment margin with profit."];
-                }
-            }
+        let success, reason;
+        if (orderPositionType == constants_1.LONG) {
+            [success, reason] = yield (0, short_market_order_1.default)(newOrder, true);
         }
-        // Math culled from:
-        // https://leverage.trading/short-selling-calculator/
-        if (positionType == constants_1.SHORT) {
-            const totalProfit = (initialPrice - lastMarketPrice) * size * leverage;
-            const profit = totalProfit + ((fundingRate / totalProfit) * 100);
-            if (profit > 0) {
-                // 💡 Increment user's margin.
-                const incremented = yield (0, increment_margin_1.default)(user, profit);
-                if (!incremented) {
-                    return [false, "Could not increment margin with profit."];
-                }
-            }
+        if (orderPositionType == constants_1.SHORT) {
+            [success, reason] = yield (0, long_market_order_1.default)(newOrder, true);
+        }
+        if (!success) {
+            return [success, reason.response];
         }
         const deletedPosition = yield positions_1.default.deleteOne({ positionId: positionId });
         if (!deletedPosition) {

@@ -9,7 +9,7 @@ import { liquidatePositions } from "../../liquidator/liquidate-positions"
 
 // Fills `filledOrder` completely and closes the DB.
 // The focus is on `filledOrder`, not `fillingOrder`.
-export default async function completelyFillOrder(filledOrder: any, fillingOrder: any): Promise<[boolean, string]> {
+export default async function completelyFillOrder(filledOrder: any, fillingOrder: any, isClosingOrder = false): Promise<[boolean, string]> {
     const entryPrice = filledOrder.positionType == SHORT ? filledOrder.price : fillingOrder.price
     const leverage = parseInt(filledOrder.leverage)
     const timeOfPositionCreation = new Date().getTime()
@@ -28,19 +28,24 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
         await liquidatePositions(liquidatablePositions)
     // Liquidate positions.
 
-    const createdPosition = await positionsModel.create({
-        orderId: filledOrder.orderId,
-        positionId: positionIdOfOrder,
-        opener: filledOrder.opener,
-        positionType: filledOrder.positionType,       // "long" | "short"
-        entryPrice: entryPrice,
-        liquidationPrice: liquidationPrice,
-        fundingRate: 0, // 0% for a start.
-        time: timeOfPositionCreation
-    })
+    // Create position if the order is not being closed.
+    if (!isClosingOrder) {
+        const createdPosition = await positionsModel.create({
+            orderId: filledOrder.orderId,
+            positionId: positionIdOfOrder,
+            opener: filledOrder.opener,
+            positionType: filledOrder.positionType,       // "long" | "short"
+            entryPrice: entryPrice,
+            liquidationPrice: liquidationPrice,
+            tp: null,
+            sl: null,
+            fundingRate: 0, // 0% for a start.
+            time: timeOfPositionCreation
+        })
 
-    if (!createdPosition) {
-        return [false, "Position could not be created!"]
+        if (!createdPosition) {
+            return [false, "Position could not be created!"]
+        }
     }
 
     const updateOrderEntry = await ordersModel.updateOne(

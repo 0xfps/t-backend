@@ -1,8 +1,9 @@
 import ordersModel from "../../db/schema/orders"
 import positionsModel from "../../db/schema/positions"
 import userAddressesModel from "../../db/schema/user-addreses"
-import { LONG, SHORT } from "../../utils/constants"
-import incrementMargin from "../../utils/increment-margin"
+import { LONG, Order, SHORT } from "../../utils/constants"
+import processLongMarketOrder from "../orders/long/long-market-order"
+import processShortMarketOrder from "../orders/short/short-market-order"
 
 export default async function closePosition(positionId: string): Promise<[boolean, string]> {
     const positionEntry = await positionsModel.findOne({ positionId: positionId })
@@ -19,48 +20,54 @@ export default async function closePosition(positionId: string): Promise<[boolea
         return [false, "Order not found for position!"]
     }
 
-    const {
-        leverage,
-        opener,
-        price: initialPrice,
-        size
-    } = orderEntry
-
     const lastMarketPrice: any = ((await positionsModel.find({}).sort({ time: -1 })) as any)[0].entryPrice
 
-    const { user } = await userAddressesModel.findOne({ tWallet: opener })
+    const {
+        positionType: orderPositionType,
+        type,
+        opener,
+        market,
+        leverage,
+        margin,
+        fee,
+        assetA,
+        assetB,
+        ticker,
+        size,
+        price: initialPrice
+    }: Order = orderEntry
+
+    const newOrder: Order = {
+        positionType: orderPositionType,
+        type,
+        opener,
+        market,
+        leverage,
+        margin,
+        fee,
+        assetA,
+        assetB,
+        ticker,
+        size,
+        price: initialPrice,
+        marketPrice: lastMarketPrice
+    }
 
     // All are sold off as market orders.
     // If long position, sell as short.
     // If short, long.
-    // More info at:
-    // https://pippenguin.com/forex/learn-forex/calculate-profit-forex/#:~:text=To%20calculate%20forex%20profit%2C%20subtract,Trade%20Size%20%C3%97%20Pip%20Value.
-    if (positionType == LONG) {
-        const totalProfit = (lastMarketPrice - initialPrice) * size * leverage
-        const profit = totalProfit + ((fundingRate / totalProfit) * 100)
+    let success: any, reason: any
 
-        if (profit > 0) {
-            // 💡 Increment user's margin.
-            const incremented = await incrementMargin(user, profit)
-            if (!incremented) {
-                return [false, "Could not increment margin with profit."]
-            }
-        }
+    if (orderPositionType == LONG) {
+        [success, reason] = await processShortMarketOrder(newOrder, true)
     }
 
-    // Math culled from:
-    // https://leverage.trading/short-selling-calculator/
-    if (positionType == SHORT) {
-        const totalProfit = (initialPrice - lastMarketPrice) * size * leverage
-        const profit = totalProfit + ((fundingRate / totalProfit) * 100)
+    if (orderPositionType == SHORT) {
+        [success, reason] = await processLongMarketOrder(newOrder, true)
+    }
 
-        if (profit > 0) {
-            // 💡 Increment user's margin.
-            const incremented = await incrementMargin(user, profit)
-            if (!incremented) {
-                return [false, "Could not increment margin with profit."]
-            }
-        }
+    if (!success) {
+        return [success, reason.response]
     }
 
     const deletedPosition = await positionsModel.deleteOne({ positionId: positionId })

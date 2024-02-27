@@ -22,7 +22,7 @@ const get_unique_id_1 = require("../../../utils/get-unique-id");
 const liquidate_positions_1 = require("../../liquidator/liquidate-positions");
 // Fills `filledOrder` completely and closes the DB.
 // The focus is on `filledOrder`, not `fillingOrder`.
-function completelyFillOrder(filledOrder, fillingOrder) {
+function completelyFillOrder(filledOrder, fillingOrder, isClosingOrder = false) {
     return __awaiter(this, void 0, void 0, function* () {
         const entryPrice = filledOrder.positionType == constants_1.SHORT ? filledOrder.price : fillingOrder.price;
         const leverage = parseInt(filledOrder.leverage);
@@ -35,18 +35,23 @@ function completelyFillOrder(filledOrder, fillingOrder) {
         if (liquidatablePositions.length > 0)
             yield (0, liquidate_positions_1.liquidatePositions)(liquidatablePositions);
         // Liquidate positions.
-        const createdPosition = yield positions_1.default.create({
-            orderId: filledOrder.orderId,
-            positionId: positionIdOfOrder,
-            opener: filledOrder.opener,
-            positionType: filledOrder.positionType, // "long" | "short"
-            entryPrice: entryPrice,
-            liquidationPrice: liquidationPrice,
-            fundingRate: 0, // 0% for a start.
-            time: timeOfPositionCreation
-        });
-        if (!createdPosition) {
-            return [false, "Position could not be created!"];
+        // Create position if the order is not being closed.
+        if (!isClosingOrder) {
+            const createdPosition = yield positions_1.default.create({
+                orderId: filledOrder.orderId,
+                positionId: positionIdOfOrder,
+                opener: filledOrder.opener,
+                positionType: filledOrder.positionType, // "long" | "short"
+                entryPrice: entryPrice,
+                liquidationPrice: liquidationPrice,
+                tp: null,
+                sl: null,
+                fundingRate: 0, // 0% for a start.
+                time: timeOfPositionCreation
+            });
+            if (!createdPosition) {
+                return [false, "Position could not be created!"];
+            }
         }
         const updateOrderEntry = yield orders_1.default.updateOne({ orderId: filledOrder.orderId }, {
             filled: true,

@@ -7,8 +7,11 @@ import partiallyFillOrder from "../fill-order/partially-fill-order";
  * 
  * @param order 
  * @param completingOrders
+ * @param isClosingOrder    Bool to indicate if the order is being closed or not
+ *                          relevant to only market calls. It's false on default.
+ *                          and not relevant in limit orders.
  */
-export default async function completeOrder(order: any, completingOrders: any[]): Promise<[boolean, string]> {
+export default async function completeOrder(order: any, completingOrders: any[], isClosingOrder = false): Promise<[boolean, string]> {
     let status: boolean = true
     let reason: string = ""
 
@@ -48,9 +51,10 @@ export default async function completeOrder(order: any, completingOrders: any[])
 
                 // If the size of the main order is still > the size of
                 // the filling order, then go ahead and fill the main order.
+                // Market orders start being relevant here.
                 if (totalOrderSizeLeft < completingOrderSize) {
                     // Fill the completing order.
-                    const [success1, reason1] = await completelyFillOrder(order, completingOrder)
+                    const [success1, reason1] = await completelyFillOrder(order, completingOrder, isClosingOrder)
                     // Partially open the order.
                     const [success2, reason2] = await partiallyFillOrder(completingOrder, order)
 
@@ -62,9 +66,10 @@ export default async function completeOrder(order: any, completingOrders: any[])
                 }
 
                 // Only one slot left.
+                // Market orders are also relevant here.
                 if (totalOrderSize == completingOrderSize) {
                     // Fill the main order.
-                    const [success1, reason1] = await completelyFillOrder(order, completingOrder)
+                    const [success1, reason1] = await completelyFillOrder(order, completingOrder, isClosingOrder)
                     // Partially open the completing order.
                     const [success2, reason2] = await completelyFillOrder(completingOrder, order)
 

@@ -20,8 +20,11 @@ const partially_fill_order_1 = __importDefault(require("../fill-order/partially-
  *
  * @param order
  * @param completingOrders
+ * @param isClosingOrder    Bool to indicate if the order is being closed or not
+ *                          relevant to only market calls. It's false on default.
+ *                          and not relevant in limit orders.
  */
-function completeOrder(order, completingOrders) {
+function completeOrder(order, completingOrders, isClosingOrder = false) {
     return __awaiter(this, void 0, void 0, function* () {
         let status = true;
         let reason = "";
@@ -57,9 +60,10 @@ function completeOrder(order, completingOrders) {
                         }
                         // If the size of the main order is still > the size of
                         // the filling order, then go ahead and fill the main order.
+                        // Market orders start being relevant here.
                         if (totalOrderSizeLeft < completingOrderSize) {
                             // Fill the completing order.
-                            const [success1, reason1] = yield (0, completely_fill_order_1.default)(order, completingOrder);
+                            const [success1, reason1] = yield (0, completely_fill_order_1.default)(order, completingOrder, isClosingOrder);
                             // Partially open the order.
                             const [success2, reason2] = yield (0, partially_fill_order_1.default)(completingOrder, order);
                             status = status && success1 && success2;
@@ -68,9 +72,10 @@ function completeOrder(order, completingOrders) {
                             totalOrderSizeLeft = 0;
                         }
                         // Only one slot left.
+                        // Market orders are also relevant here.
                         if (totalOrderSize == completingOrderSize) {
                             // Fill the main order.
-                            const [success1, reason1] = yield (0, completely_fill_order_1.default)(order, completingOrder);
+                            const [success1, reason1] = yield (0, completely_fill_order_1.default)(order, completingOrder, isClosingOrder);
                             // Partially open the completing order.
                             const [success2, reason2] = yield (0, completely_fill_order_1.default)(completingOrder, order);
                             status = status && success1 && success2;

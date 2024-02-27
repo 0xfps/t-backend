@@ -22,16 +22,17 @@ const short_market_order_1 = __importDefault(require("./short/short-market-order
  * short positions.
  *
  * @param order Order.
+ * @param isClosingOrder Boolean indicating if the order is being called from a close position.
  * @returns Promise<[boolean, {}]>
  */
-function processMarketOrder(order) {
+function processMarketOrder(order, isClosingOrder = false) {
     return __awaiter(this, void 0, void 0, function* () {
         const { positionType } = order;
         let success = false, result = {};
         if (positionType == constants_1.LONG)
-            [success, result] = yield (0, long_market_order_1.default)(order);
+            [success, result] = yield (0, long_market_order_1.default)(order, isClosingOrder);
         if (positionType == constants_1.SHORT)
-            [success, result] = yield (0, short_market_order_1.default)(order);
+            [success, result] = yield (0, short_market_order_1.default)(order, isClosingOrder);
         return [success, result];
     });
 }

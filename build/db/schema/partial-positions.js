@@ -8,6 +8,8 @@ const partialPositionsSchema = new mongoose_1.Schema({
     partialPositionType: mongoose_1.SchemaTypes.String, // "long" | "short"
     entryPrice: mongoose_1.SchemaTypes.Number,
     liquidationPrice: mongoose_1.SchemaTypes.Number,
+    tp: mongoose_1.SchemaTypes.Number || null,
+    sl: mongoose_1.SchemaTypes.Number || null,
     fundingRate: mongoose_1.SchemaTypes.Number,
     isComplete: mongoose_1.SchemaTypes.Number,
     percentageFilled: mongoose_1.SchemaTypes.Number,
