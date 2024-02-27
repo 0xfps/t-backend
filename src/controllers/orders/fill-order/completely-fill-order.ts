@@ -6,6 +6,7 @@ import { calculateMarginRatio } from "../../../utils/calculate-margin-ratio"
 import { SHORT } from "../../../utils/constants"
 import { getUniqueId } from "../../../utils/get-unique-id"
 import { liquidatePositions } from "../../liquidator/liquidate-positions"
+import TPxSL from "../../tp-sl/tp-sl"
 
 // Fills `filledOrder` completely and closes the DB.
 // The focus is on `filledOrder`, not `fillingOrder`.
@@ -27,6 +28,11 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
     if (liquidatablePositions.length > 0)
         await liquidatePositions(liquidatablePositions)
     // Liquidate positions.
+
+    // Run Take profit and stop loss.
+    // Stop loss first.
+    // Take profit next.
+    await TPxSL(entryPrice)
 
     // Create position if the order is not being closed.
     if (!isClosingOrder) {
