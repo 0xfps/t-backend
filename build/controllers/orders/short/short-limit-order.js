@@ -21,6 +21,7 @@ const get_unique_id_1 = require("../../../utils/get-unique-id");
 const complete_order_1 = __importDefault(require("../complete-order/complete-order"));
 function processShortLimitOrder(order) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { user } = yield user_addreses_1.default.findOne({ tWallet: order.opener });
         // Check in long orders to see if there are any orders matching within 20% slippage
         // of order price and order size.
         // User below is trying to sell as much as caller is trying to buy.
@@ -29,6 +30,7 @@ function processShortLimitOrder(order) {
             // Can one fill a market order with a limit order?
             type: constants_1.LIMIT,
             ticker: order.ticker.toLowerCase(),
+            opener: { $ne: user },
             // No need for order size, it's an aggregation.
             // Get long orders where the selling price is within 20% slippage of the
             // buying price of the market and the selling price.
@@ -41,6 +43,7 @@ function processShortLimitOrder(order) {
             // Can one fill a market order with a limit order?
             type: constants_1.MARKET,
             ticker: order.ticker.toLowerCase(),
+            opener: { $ne: user },
             size: { $lte: order.size },
             // No need for order size, it's an aggregation.
             // Get long orders where the selling price is within 20% slippage of the
@@ -53,7 +56,6 @@ function processShortLimitOrder(order) {
         // Short limit price must be >= market price.
         if (order.price < order.marketPrice)
             return [false, "Short limit price cannot be less than market price."];
-        const { user } = yield user_addreses_1.default.findOne({ tWallet: order.opener });
         // If no long orders matching the user's market order are open, then only
         // add data to database because an order must be made to be taken in Aori.
         const orderId = (0, get_unique_id_1.getUniqueId)(20);

@@ -8,6 +8,8 @@ import { getUniqueId } from "../../../utils/get-unique-id";
 import completeOrder from "../complete-order/complete-order";
 
 export default async function processShortLimitOrder(order: Order): Promise<[boolean, {}]> {
+    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
+
     // Check in long orders to see if there are any orders matching within 20% slippage
     // of order price and order size.
     // User below is trying to sell as much as caller is trying to buy.
@@ -16,6 +18,7 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         // Can one fill a market order with a limit order?
         type: LIMIT,
         ticker: order.ticker.toLowerCase(),
+        opener: { $ne: user },
         // No need for order size, it's an aggregation.
         // Get long orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
@@ -29,6 +32,7 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         // Can one fill a market order with a limit order?
         type: MARKET,
         ticker: order.ticker.toLowerCase(),
+        opener: { $ne: user },
         size: { $lte: order.size },
         // No need for order size, it's an aggregation.
         // Get long orders where the selling price is within 20% slippage of the
@@ -43,8 +47,6 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
     // Short limit price must be >= market price.
     if (order.price < order.marketPrice)
         return [false, "Short limit price cannot be less than market price."]
-
-    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
 
     // If no long orders matching the user's market order are open, then only
     // add data to database because an order must be made to be taken in Aori.

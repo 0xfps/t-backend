@@ -12,8 +12,10 @@ import completeOrder from "../complete-order/complete-order";
  * 
  * @param order Order.
  * @returns 
- */
+*/
 export default async function processLongLimitOrder(order: Order): Promise<[boolean, {}]> {
+    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
+
     // Check in short orders to see if there are any orders matching within 20% slippage
     // of order price and order size.
     // User below is trying to sell as much as caller is trying to buy.
@@ -22,6 +24,7 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
         // Can one fill a market order with a limit order?
         type: LIMIT,
         ticker: order.ticker.toLowerCase(),
+        opener: { $ne: user },
         // No need for order size, it's an aggregation.
         // Get short orders where the selling price is within 20% slippage of the
         // buying price of the market and the selling price.
@@ -36,6 +39,7 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
         // Can one fill a market order with a limit order?
         type: MARKET,
         ticker: order.ticker.toLowerCase(),
+        opener: { $ne: user },
         size: { $lte: order.size },
         // No need for order size, it's an aggregation.
         // Get short orders where the selling price is within 20% slippage of the
@@ -51,7 +55,6 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
     if (order.price > order.marketPrice)
         return [false, "Long limit price cannot be greater than market price."]
 
-    const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
 
     // If not short orders matching the user's market order are open, then
     // add data to database and then make order.
