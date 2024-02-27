@@ -17,6 +17,7 @@ export const POST = "GET"
 // Maximum slippage percentage allowed for long and short positions.
 // 5%, in this case.
 export const SPREAD = 5
+export const LIQUIDATION_THRESHOLD = 0.8
 
 export const EIGHT_HOURS = 1000 * 60 * 60 * 8
 export const BINANCE_API = "https://api.binance.com"
