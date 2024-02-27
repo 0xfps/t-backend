@@ -36,7 +36,9 @@ function completelyFillOrder(filledOrder, fillingOrder, isClosingOrder = false) 
         if (liquidatablePositions.length > 0)
             yield (0, liquidate_positions_1.liquidatePositions)(liquidatablePositions);
         // Liquidate positions.
-        // Run 
+        // Run Take profit and stop loss.
+        // Stop loss first.
+        // Take profit next.
         yield (0, tp_sl_1.default)(entryPrice);
         // Create position if the order is not being closed.
         if (!isClosingOrder) {

@@ -30,7 +30,8 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
     // Liquidate positions.
 
     // Run Take profit and stop loss.
-    // Stop lo
+    // Stop loss first.
+    // Take profit next.
     await TPxSL(entryPrice)
 
     // Create position if the order is not being closed.
@@ -76,3 +77,4 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
     }
 
     return [true, `Order ${filledOrder.orderId} filled!`]
+}
