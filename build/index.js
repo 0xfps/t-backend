@@ -38,7 +38,6 @@ const get_order_1 = __importDefault(require("./routes/get-order"));
 const close_all_positions_1 = __importDefault(require("./routes/close-all-positions"));
 const add_tp_sl_1 = __importDefault(require("./routes/add-tp-sl"));
 const fetch_open_orders_1 = __importDefault(require("./web-socket/fetch-open-orders"));
-const fetch_market_price_1 = __importDefault(require("./web-socket/fetch-market-price"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
@@ -56,8 +55,8 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
         setInterval(function () {
             return __awaiter(this, void 0, void 0, function* () {
                 const data = yield (0, fetch_open_orders_1.default)(ticker);
-                const marketPrice = yield (0, fetch_market_price_1.default)(ticker);
-                const response = Object.assign(Object.assign({}, data), { marketPrice: marketPrice });
+                // const marketPrice = await fetchMarketPrice(ticker)
+                const response = Object.assign({}, data);
                 ws.send(JSON.stringify(response));
             });
         }, 1000);
