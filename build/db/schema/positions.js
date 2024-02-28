@@ -6,6 +6,7 @@ const positionsSchema = new mongoose_1.Schema({
     positionId: mongoose_1.SchemaTypes.String,
     opener: mongoose_1.SchemaTypes.String,
     positionType: mongoose_1.SchemaTypes.String, // "long" | "short"
+    ticker: mongoose_1.SchemaTypes.String,
     entryPrice: mongoose_1.SchemaTypes.Number,
     liquidationPrice: mongoose_1.SchemaTypes.Number,
     tp: mongoose_1.SchemaTypes.Number || null,

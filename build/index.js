@@ -32,13 +32,13 @@ const orders_1 = __importDefault(require("./db/schema/orders"));
 const constants_1 = require("./utils/constants");
 const match_limit_1 = __importDefault(require("./controllers/matcher/match-limit"));
 const cancel_order_1 = __importDefault(require("./routes/cancel-order"));
-const get_funding_rate_time_left_1 = __importDefault(require("./utils/get-funding-rate-time-left"));
-const funding_rate_1 = __importDefault(require("./utils/funding-rate"));
 const get_users_open_orders_1 = __importDefault(require("./routes/get-users-open-orders"));
 const get_users_filled_orders_1 = __importDefault(require("./routes/get-users-filled-orders"));
 const get_order_1 = __importDefault(require("./routes/get-order"));
 const close_all_positions_1 = __importDefault(require("./routes/close-all-positions"));
 const add_tp_sl_1 = __importDefault(require("./routes/add-tp-sl"));
+const fetch_open_orders_1 = __importDefault(require("./web-socket/fetch-open-orders"));
+const fetch_market_price_1 = __importDefault(require("./web-socket/fetch-market-price"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
@@ -50,42 +50,15 @@ app.use((0, cors_1.default)(cors_config_1.corsOptions));
 app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" });
 });
-appWs.ws("/", function (ws, req) {
-    return __awaiter(this, void 0, void 0, function* () {
-        setInterval(function () {
-            ws.send("Hi there, welcome!");
-        }, 1000);
-    });
-});
-appWs.ws("/hi/:ty", function (ws, req) {
-    return __awaiter(this, void 0, void 0, function* () {
-        const { ty } = req.params;
-        setInterval(function () {
-            ws.send(`Hi there, welcome, ${ty}!`);
-        }, 1000);
-    });
-});
 appWs.ws("/market-data/:ticker", function (ws, req) {
     return __awaiter(this, void 0, void 0, function* () {
-        const URL = ENVIRONMENT_URL ? ENVIRONMENT_URL : "http://localhost:8080";
         const { ticker } = req.params;
         setInterval(function () {
             return __awaiter(this, void 0, void 0, function* () {
-                // Do nothing for now.
-                // When set, send order book every second to frontend.
-                const shortsRequest = yield fetch(`${URL}/get-short-orders/${ticker}`, {
-                    method: constants_1.GET
-                });
-                const longsRequest = yield fetch(`${URL}/get-long-orders/${ticker}`, {
-                    method: constants_1.GET
-                });
-                const longs = yield longsRequest.json();
-                const shorts = yield shortsRequest.json();
-                const data = {
-                    longs: longs.data.body,
-                    shorts: shorts.data.body
-                };
-                ws.send(JSON.stringify(data));
+                const data = yield (0, fetch_open_orders_1.default)(ticker);
+                const marketPrice = yield (0, fetch_market_price_1.default)(ticker);
+                const response = Object.assign(Object.assign({}, data), { marketPrice: marketPrice });
+                ws.send(JSON.stringify(response));
             });
         }, 1000);
         // Make a call to an endpoint that compares long orders to short orders
@@ -101,11 +74,6 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
                 yield (0, match_limit_1.default)(allLongLimitOrders, allShortLimitOrders);
             });
         }, 5000);
-        setInterval(function () {
-            return __awaiter(this, void 0, void 0, function* () {
-                yield (0, funding_rate_1.default)(ticker);
-            });
-        }, yield (0, get_funding_rate_time_left_1.default)(ticker));
         console.log("Websocket initiated!");
     });
 });

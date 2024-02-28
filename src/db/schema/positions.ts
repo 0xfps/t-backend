@@ -5,6 +5,7 @@ const positionsSchema = new Schema({
     positionId: SchemaTypes.String,
     opener: SchemaTypes.String,
     positionType: SchemaTypes.String,       // "long" | "short"
+    ticker: SchemaTypes.String,
     entryPrice: SchemaTypes.Number,
     liquidationPrice: SchemaTypes.Number,
     tp: SchemaTypes.Number || null,

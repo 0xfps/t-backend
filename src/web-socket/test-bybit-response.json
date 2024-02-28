@@ -1,0 +1,37 @@
+{
+    "retCode": 0,
+    "retMsg": "OK",
+    "result": {
+        "category": "inverse",
+        "list": [
+            {
+                "symbol": "BTCUSD",
+                "lastPrice": "60578.50",
+                "indexPrice": "60489.71",
+                "markPrice": "60534.50",
+                "prevPrice24h": "57144.00",
+                "price24hPcnt": "0.060102",
+                "highPrice24h": "213450.50",
+                "lowPrice24h": "42461.50",
+                "prevPrice1h": "61442.50",
+                "openInterest": "56259063",
+                "openInterestValue": "929.37",
+                "turnover24h": "38184.7097",
+                "volume24h": "2280587875.0000",
+                "fundingRate": "0.0001",
+                "nextFundingTime": "1709164800000",
+                "predictedDeliveryPrice": "",
+                "basisRate": "",
+                "deliveryFeeRate": "",
+                "deliveryTime": "0",
+                "ask1Size": "115480",
+                "bid1Price": "60577.00",
+                "ask1Price": "60579.50",
+                "bid1Size": "116316",
+                "basis": ""
+            }
+        ]
+    },
+    "retExtInfo": {},
+    "time": 1709145629223
+}
