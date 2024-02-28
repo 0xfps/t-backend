@@ -45,6 +45,7 @@ function partiallyFillOrder(filledOrder, fillingOrder) {
                 partialPositionId: positionIdOfOrder,
                 opener: filledOrder.opener,
                 partialPositionType: filledOrder.positionType, // "long" | "short"
+                ticker: filledOrder.ticker,
                 entryPrice: entryPrice,
                 liquidationPrice: liquidationPrice,
                 tp: null,
