@@ -48,8 +48,8 @@ function partiallyFillOrder(filledOrder, fillingOrder) {
                 ticker: filledOrder.ticker,
                 entryPrice: entryPrice,
                 liquidationPrice: liquidationPrice,
-                tp: null,
-                sl: null,
+                tp: 0,
+                sl: 0,
                 fundingRate: 0, // 0% for a start.
                 isComplete: false,
                 percentageFilled: percentageFilled,

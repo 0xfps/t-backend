@@ -8,8 +8,8 @@ const positionsSchema = new Schema({
     ticker: SchemaTypes.String,
     entryPrice: SchemaTypes.Number,
     liquidationPrice: SchemaTypes.Number,
-    tp: SchemaTypes.Number || null,
-    sl: SchemaTypes.Number || null,
+    tp: SchemaTypes.Number,
+    sl: SchemaTypes.Number,
     fundingRate: SchemaTypes.Number,
     time: SchemaTypes.Date
 })

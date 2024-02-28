@@ -50,8 +50,8 @@ function completelyFillOrder(filledOrder, fillingOrder, isClosingOrder = false) 
                 ticker: filledOrder.ticker,
                 entryPrice: entryPrice,
                 liquidationPrice: liquidationPrice,
-                tp: null,
-                sl: null,
+                tp: 0,
+                sl: 0,
                 fundingRate: 0, // 0% for a start.
                 time: timeOfPositionCreation
             });
