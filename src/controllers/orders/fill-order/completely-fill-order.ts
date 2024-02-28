@@ -41,6 +41,7 @@ export default async function completelyFillOrder(filledOrder: any, fillingOrder
             positionId: positionIdOfOrder,
             opener: filledOrder.opener,
             positionType: filledOrder.positionType,       // "long" | "short"
+            ticker: filledOrder.ticker,
             entryPrice: entryPrice,
             liquidationPrice: liquidationPrice,
             tp: null,

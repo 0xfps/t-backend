@@ -47,6 +47,7 @@ function completelyFillOrder(filledOrder, fillingOrder, isClosingOrder = false) 
                 positionId: positionIdOfOrder,
                 opener: filledOrder.opener,
                 positionType: filledOrder.positionType, // "long" | "short"
+                ticker: filledOrder.ticker,
                 entryPrice: entryPrice,
                 liquidationPrice: liquidationPrice,
                 tp: null,
