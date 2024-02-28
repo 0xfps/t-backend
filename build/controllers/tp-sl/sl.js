@@ -16,7 +16,7 @@ const positions_1 = __importDefault(require("../../db/schema/positions"));
 const close_position_1 = __importDefault(require("../close/close-position"));
 function SL(price) {
     return __awaiter(this, void 0, void 0, function* () {
-        const allSLs = yield positions_1.default.findOne({ sl: { $lte: price } });
+        const allSLs = yield positions_1.default.find({ sl: { $lte: price } });
         if (allSLs.length > 0) {
             const tpRequests = allSLs.map(function (tpPosition) {
                 return __awaiter(this, void 0, void 0, function* () {

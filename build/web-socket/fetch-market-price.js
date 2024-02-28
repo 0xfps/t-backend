@@ -17,6 +17,8 @@ const constants_1 = require("../utils/constants");
 function fetchMarketPrice(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
         const positions = yield positions_1.default.find({ ticker: ticker }).sort({ time: "descending" });
+        ticker = ticker.slice(1, ticker.length);
+        console.log(ticker);
         if (positions.length == 0) {
             const bybitSymbol = `${ticker}usd`.toUpperCase();
             const req = yield fetch(`${constants_1.BYBIT_SPOT_PRICE_API}${bybitSymbol}`);
