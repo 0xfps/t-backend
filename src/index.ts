@@ -49,11 +49,11 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
 
     setInterval(async function () {
         const data = await fetchOpenOrders(ticker)
-        // const marketPrice = await fetchMarketPrice(ticker)
+        const marketPrice = await fetchMarketPrice(ticker)
 
         const response = {
             ...data,
-            // marketPrice: marketPrice
+            marketPrice: marketPrice
         }
 
         ws.send(JSON.stringify(response))

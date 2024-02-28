@@ -21,6 +21,7 @@ export const LIQUIDATION_THRESHOLD = 0.8
 
 export const EIGHT_HOURS = 1000 * 60 * 60 * 8
 export const BINANCE_API = "https://api.binance.com"
+// 🚨🚨 This is a testnet API.
 export const BYBIT_SPOT_PRICE_API = "https://api-testnet.bybit.com/v5/market/tickers?category=inverse&symbol="// Attach symbol.
 
 export type Order = {

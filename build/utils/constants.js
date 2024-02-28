@@ -19,6 +19,7 @@ exports.SPREAD = 5;
 exports.LIQUIDATION_THRESHOLD = 0.8;
 exports.EIGHT_HOURS = 1000 * 60 * 60 * 8;
 exports.BINANCE_API = "https://api.binance.com";
+// 🚨🚨 This is a testnet API.
 exports.BYBIT_SPOT_PRICE_API = "https://api-testnet.bybit.com/v5/market/tickers?category=inverse&symbol="; // Attach symbol.
 exports.JSON_RPC_URL = "https://rpc.ankr.com/avalanche_fuji";
 exports.TRADABLE_MARGIN_VAULT_ABI = contracts_json_1.default.tradableMarginVault.abi;
