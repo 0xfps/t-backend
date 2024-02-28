@@ -13,20 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const positions_1 = __importDefault(require("../db/schema/positions"));
-const constants_1 = require("../utils/constants");
 function fetchMarketPrice(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
         const positions = yield positions_1.default.find({ ticker: ticker }).sort({ time: "descending" });
         ticker = ticker.slice(1, ticker.length);
-        console.log(ticker);
         if (positions.length == 0) {
-            const bybitSymbol = `${ticker}usd`.toUpperCase();
-            const req = yield fetch(`${constants_1.BYBIT_SPOT_PRICE_API}${bybitSymbol}`);
-            const res = yield req.json();
-            if (res.retMsg.toLowerCase() == "ok") {
-                const marketPrice = res.result.list[0].lastPrice;
-                return parseFloat(marketPrice);
-            }
+            return 0;
         }
         const marketPrice = positions[0].entryPrice;
         return parseFloat(marketPrice);
