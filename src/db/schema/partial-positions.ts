@@ -7,8 +7,8 @@ const partialPositionsSchema = new Schema({
     partialPositionType: SchemaTypes.String,       // "long" | "short"
     entryPrice: SchemaTypes.Number,
     liquidationPrice: SchemaTypes.Number,
-    tp: SchemaTypes.Number || null,
-    sl: SchemaTypes.Number || null,
+    tp: SchemaTypes.Number,
+    sl: SchemaTypes.Number,
     fundingRate: SchemaTypes.Number,
     isComplete: SchemaTypes.Number,
     percentageFilled: SchemaTypes.Number,

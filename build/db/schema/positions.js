@@ -9,8 +9,8 @@ const positionsSchema = new mongoose_1.Schema({
     ticker: mongoose_1.SchemaTypes.String,
     entryPrice: mongoose_1.SchemaTypes.Number,
     liquidationPrice: mongoose_1.SchemaTypes.Number,
-    tp: mongoose_1.SchemaTypes.Number || null,
-    sl: mongoose_1.SchemaTypes.Number || null,
+    tp: mongoose_1.SchemaTypes.Number,
+    sl: mongoose_1.SchemaTypes.Number,
     fundingRate: mongoose_1.SchemaTypes.Number,
     time: mongoose_1.SchemaTypes.Date
 });
