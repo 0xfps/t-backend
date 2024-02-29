@@ -28,6 +28,7 @@ import closeAllPositionsRouter from "./routes/close-all-positions"
 import addTPAndSLRouter from "./routes/add-tp-sl"
 import fetchOpenOrders from "./web-socket/fetch-open-orders"
 import fetchMarketPrice from "./web-socket/fetch-market-price"
+import getTickerInformationRouter from "./routes/get-ticker-information"
 
 dotenv.config()
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env
@@ -94,6 +95,7 @@ app.use("/get-users-orders", getUsersOrdersRouter)
 app.use("/get-users-open-orders", getUsersOpenOrdersRouter)
 app.use("/get-users-filled-orders", getUsersFilledOrdersRouter)
 app.use("/get-users-positions", getUsersPositionsRouter)
+app.use("/get-ticker-information", getTickerInformationRouter)
 
 /**
  * Middleware for all POST endpoints.
