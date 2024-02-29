@@ -69,9 +69,10 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
             return __awaiter(this, void 0, void 0, function* () {
                 // Do nothing for now.
                 // When set, send order book every second to frontend.
-                const allLongLimitOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.LONG, filled: false }).sort({ time: 1, price: -1 });
-                const allShortLimitOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.SHORT, filled: false }).sort({ time: 1, price: -1 });
-                yield (0, match_limit_1.default)(allLongLimitOrders, allShortLimitOrders);
+                const allLongMarketOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.LONG, filled: false }).sort({ time: 1, price: -1 });
+                const allShortMarketOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.SHORT, filled: false }).sort({ time: 1, price: -1 });
+                if (allLongMarketOrders.length > 0 && allShortMarketOrders.length > 0)
+                    yield (0, match_limit_1.default)(allLongMarketOrders, allShortMarketOrders);
             });
         }, 5000);
         console.log("Websocket initiated!");

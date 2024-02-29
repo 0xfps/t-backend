@@ -42,8 +42,9 @@ function closePosition(positionId) {
             assetB,
             ticker,
             size,
-            price: initialPrice,
-            marketPrice: lastMarketPrice
+            price: lastMarketPrice,
+            marketPrice: lastMarketPrice,
+            initialPriceBeforeClose: initialPrice
         };
         // All are sold off as market orders.
         // If long position, sell as short.

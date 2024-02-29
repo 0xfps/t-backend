@@ -37,7 +37,8 @@ export type Order = {
     ticker: string,
     size: number,
     price: number,
-    marketPrice: number
+    marketPrice: number,
+    initialPriceBeforeClose?: number
 }
 
 export const JSON_RPC_URL = "https://rpc.ankr.com/avalanche_fuji"

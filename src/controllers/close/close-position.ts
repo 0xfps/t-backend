@@ -49,8 +49,9 @@ export default async function closePosition(positionId: string): Promise<[boolea
         assetB,
         ticker,
         size,
-        price: initialPrice,
-        marketPrice: lastMarketPrice
+        price: lastMarketPrice,
+        marketPrice: lastMarketPrice,
+        initialPriceBeforeClose: initialPrice
     }
 
     // All are sold off as market orders.

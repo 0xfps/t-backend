@@ -14,7 +14,7 @@ import completeOrder from "../complete-order/complete-order"
 */
 export default async function processShortMarketOrder(order: Order, isClosingOrder: boolean): Promise<[boolean, {}]> {
     const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
-    
+
     // Check in long orders to see if there are any orders matching within 20% slippage
     // of order price and order size.
     // User below is trying to sell as much as caller is trying to buy.
@@ -87,7 +87,7 @@ export default async function processShortMarketOrder(order: Order, isClosingOrd
     if (!isClosingOrder) {
         // 💡 Reduce user's margin.
         const decremented = await decrementMargin(user, (order.margin + order.fee))
-        
+
         if (!decremented) {
             return [false, "Margin could not be deducted."]
         }
@@ -100,7 +100,12 @@ export default async function processShortMarketOrder(order: Order, isClosingOrd
      * An order is filled.
      * Two positions are created. One for long, one for short.
      */
-    const [completed, reason] = await completeOrder(createdOrder, allOpenLongOrders, isClosingOrder)
+    const [completed, reason] = await completeOrder(
+        createdOrder,
+        allOpenLongOrders,
+        isClosingOrder,
+        order.initialPriceBeforeClose
+    )
 
     if (!completed) {
         return [false, { result: reason }]
