@@ -8,6 +8,8 @@ const positionsSchema = new Schema({
     ticker: SchemaTypes.String,
     entryPrice: SchemaTypes.Number,
     liquidationPrice: SchemaTypes.Number,
+    size: SchemaTypes.Number,
+    leverage: SchemaTypes.Number,
     tp: SchemaTypes.Number,
     sl: SchemaTypes.Number,
     openingMargin: SchemaTypes.Number,

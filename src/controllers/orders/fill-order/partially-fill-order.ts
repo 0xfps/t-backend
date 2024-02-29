@@ -45,6 +45,8 @@ export default async function partiallyFillOrder(filledOrder: any, fillingOrder:
             ticker: filledOrder.ticker,
             entryPrice: entryPrice,
             liquidationPrice: liquidationPrice,
+            size: filledOrder.size,
+            leverage: filledOrder.leverage,
             tp: 0,
             sl: 0,
             openingMargin: filledOrder.margin,

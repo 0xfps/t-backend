@@ -41,6 +41,7 @@ const close_all_positions_1 = __importDefault(require("./routes/close-all-positi
 const add_tp_sl_1 = __importDefault(require("./routes/add-tp-sl"));
 const fetch_open_orders_1 = __importDefault(require("./web-socket/fetch-open-orders"));
 const fetch_market_price_1 = __importDefault(require("./web-socket/fetch-market-price"));
+const get_ticker_information_1 = __importDefault(require("./routes/get-ticker-information"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
@@ -98,6 +99,7 @@ app.use("/get-users-orders", get_users_orders_1.default);
 app.use("/get-users-open-orders", get_users_open_orders_1.default);
 app.use("/get-users-filled-orders", get_users_filled_orders_1.default);
 app.use("/get-users-positions", get_users_positions_1.default);
+app.use("/get-ticker-information", get_ticker_information_1.default);
 /**
  * Middleware for all POST endpoints.
  * All post endpoints secure themselves by decrypting the API key
