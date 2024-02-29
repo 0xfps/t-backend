@@ -11,6 +11,7 @@ const positionsSchema = new mongoose_1.Schema({
     liquidationPrice: mongoose_1.SchemaTypes.Number,
     tp: mongoose_1.SchemaTypes.Number,
     sl: mongoose_1.SchemaTypes.Number,
+    openingMargin: mongoose_1.SchemaTypes.Number,
     fundingRate: mongoose_1.SchemaTypes.Number,
     time: mongoose_1.SchemaTypes.Date
 });

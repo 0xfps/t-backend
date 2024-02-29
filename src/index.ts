@@ -73,6 +73,10 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
             await match(allLongMarketOrders, allShortMarketOrders)
     }, 5000)
 
+    setInterval(async function () {
+        await fundingRate(ticker)
+    }, await getFundingRateTimeLeft(ticker))
+
     console.log("Websocket initiated!")
 })
 

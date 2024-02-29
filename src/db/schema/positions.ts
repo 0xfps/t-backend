@@ -10,6 +10,7 @@ const positionsSchema = new Schema({
     liquidationPrice: SchemaTypes.Number,
     tp: SchemaTypes.Number,
     sl: SchemaTypes.Number,
+    openingMargin: SchemaTypes.Number,
     fundingRate: SchemaTypes.Number,
     time: SchemaTypes.Date
 })
