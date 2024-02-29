@@ -32,6 +32,8 @@ const orders_1 = __importDefault(require("./db/schema/orders"));
 const constants_1 = require("./utils/constants");
 const match_limit_1 = __importDefault(require("./controllers/matcher/match-limit"));
 const cancel_order_1 = __importDefault(require("./routes/cancel-order"));
+const get_funding_rate_time_left_1 = __importDefault(require("./utils/get-funding-rate-time-left"));
+const funding_rate_1 = __importDefault(require("./utils/funding-rate"));
 const get_users_open_orders_1 = __importDefault(require("./routes/get-users-open-orders"));
 const get_users_filled_orders_1 = __importDefault(require("./routes/get-users-filled-orders"));
 const get_order_1 = __importDefault(require("./routes/get-order"));
@@ -69,11 +71,17 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
             return __awaiter(this, void 0, void 0, function* () {
                 // Do nothing for now.
                 // When set, send order book every second to frontend.
-                const allLongLimitOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.LONG, filled: false }).sort({ time: 1, price: -1 });
-                const allShortLimitOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.SHORT, filled: false }).sort({ time: 1, price: -1 });
-                yield (0, match_limit_1.default)(allLongLimitOrders, allShortLimitOrders);
+                const allLongMarketOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.LONG, filled: false }).sort({ time: 1, price: -1 });
+                const allShortMarketOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.SHORT, filled: false }).sort({ time: 1, price: -1 });
+                if (allLongMarketOrders.length > 0 && allShortMarketOrders.length > 0)
+                    yield (0, match_limit_1.default)(allLongMarketOrders, allShortMarketOrders);
             });
         }, 5000);
+        setInterval(function () {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield (0, funding_rate_1.default)(ticker);
+            });
+        }, yield (0, get_funding_rate_time_left_1.default)(ticker));
         console.log("Websocket initiated!");
     });
 });

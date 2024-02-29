@@ -94,7 +94,7 @@ function processShortMarketOrder(order, isClosingOrder) {
          * An order is filled.
          * Two positions are created. One for long, one for short.
          */
-        const [completed, reason] = yield (0, complete_order_1.default)(createdOrder, allOpenLongOrders, isClosingOrder);
+        const [completed, reason] = yield (0, complete_order_1.default)(createdOrder, allOpenLongOrders, isClosingOrder, order.initialPriceBeforeClose);
         if (!completed) {
             return [false, { result: reason }];
         }

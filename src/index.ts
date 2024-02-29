@@ -66,10 +66,16 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
     setInterval(async function () {
         // Do nothing for now.
         // When set, send order book every second to frontend.
-        const allLongLimitOrders = await ordersModel.find({ type: MARKET, positionType: LONG, filled: false }).sort({ time: 1, price: -1 })
-        const allShortLimitOrders = await ordersModel.find({ type: MARKET, positionType: SHORT, filled: false }).sort({ time: 1, price: -1 })
-        await match(allLongLimitOrders, allShortLimitOrders)
+        const allLongMarketOrders = await ordersModel.find({ type: MARKET, positionType: LONG, filled: false }).sort({ time: 1, price: -1 })
+        const allShortMarketOrders = await ordersModel.find({ type: MARKET, positionType: SHORT, filled: false }).sort({ time: 1, price: -1 })
+
+        if (allLongMarketOrders.length > 0 && allShortMarketOrders.length > 0)
+            await match(allLongMarketOrders, allShortMarketOrders)
     }, 5000)
+
+    setInterval(async function () {
+        await fundingRate(ticker)
+    }, await getFundingRateTimeLeft(ticker))
 
     console.log("Websocket initiated!")
 })

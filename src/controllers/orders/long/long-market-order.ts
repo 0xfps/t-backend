@@ -101,7 +101,12 @@ export default async function processLongMarketOrder(order: Order, isClosingOrde
      * An order is filled.
      * Two positions are created. One for long, one for short.
      */
-    const [completed, reason] = await completeOrder(createdOrder, allOpenShortOrders, isClosingOrder)
+    const [completed, reason] = await completeOrder(
+        createdOrder,
+        allOpenShortOrders,
+        isClosingOrder,
+        order.initialPriceBeforeClose
+    )
 
     if (!completed) {
         return [false, { result: reason }]

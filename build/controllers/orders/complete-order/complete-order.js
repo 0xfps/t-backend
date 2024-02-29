@@ -24,7 +24,7 @@ const partially_fill_order_1 = __importDefault(require("../fill-order/partially-
  *                          relevant to only market calls. It's false on default.
  *                          and not relevant in limit orders.
  */
-function completeOrder(order, completingOrders, isClosingOrder = false) {
+function completeOrder(order, completingOrders, isClosingOrder = false, usersEntryMarketPrice) {
     return __awaiter(this, void 0, void 0, function* () {
         let status = true;
         let reason = "";
@@ -63,7 +63,7 @@ function completeOrder(order, completingOrders, isClosingOrder = false) {
                         // Market orders start being relevant here.
                         if (totalOrderSizeLeft < completingOrderSize) {
                             // Fill the completing order.
-                            const [success1, reason1] = yield (0, completely_fill_order_1.default)(order, completingOrder, isClosingOrder);
+                            const [success1, reason1] = yield (0, completely_fill_order_1.default)(order, completingOrder, isClosingOrder, usersEntryMarketPrice);
                             // Partially open the order.
                             const [success2, reason2] = yield (0, partially_fill_order_1.default)(completingOrder, order);
                             status = status && success1 && success2;
@@ -75,7 +75,7 @@ function completeOrder(order, completingOrders, isClosingOrder = false) {
                         // Market orders are also relevant here.
                         if (totalOrderSize == completingOrderSize) {
                             // Fill the main order.
-                            const [success1, reason1] = yield (0, completely_fill_order_1.default)(order, completingOrder, isClosingOrder);
+                            const [success1, reason1] = yield (0, completely_fill_order_1.default)(order, completingOrder, isClosingOrder, usersEntryMarketPrice);
                             // Partially open the completing order.
                             const [success2, reason2] = yield (0, completely_fill_order_1.default)(completingOrder, order);
                             status = status && success1 && success2;

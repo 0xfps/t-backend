@@ -47,7 +47,8 @@ export default async function partiallyFillOrder(filledOrder: any, fillingOrder:
             liquidationPrice: liquidationPrice,
             tp: 0,
             sl: 0,
-            fundingRate: 0, // 0% for a start.
+            openingMargin: filledOrder.margin,
+            fundingRate: filledOrder.margin, // 0% for a start.
             isComplete: false,
             percentageFilled: percentageFilled,
             time: timeOfPositionCreation
