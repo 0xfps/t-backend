@@ -1,5 +1,6 @@
 import { liquidatePositions } from "../controllers/liquidator/liquidate-positions";
 import fundingRatesModel from "../db/schema/funding-rates";
+import ordersModel from "../db/schema/orders";
 import positionsModel from "../db/schema/positions";
 import { BINANCE_API, BYBIT_SPOT_PRICE_API, LIQUIDATION_THRESHOLD, LONG, SHORT } from "./constants";
 
@@ -46,22 +47,27 @@ export default async function fundingRate(ticker: string) {
             const currentOpeningMargin = position.openingMargin
             const currentFundingRate = position.fundingRate
 
+            const order = (await ordersModel.findOne({ orderId: position.orderId }))
+            const { size, leverage } = order
+
+            const positionSize = size * leverage * position.openingMargin
+
             let fundingMargin = 0
 
             // +ve, +ve for longs and -ve for shorts so it can be decuctible from
             // longs and addable to shorts.
             if (fundingPerc > 0) {
                 fundingMargin = position.positionType == LONG ?
-                    (1 * fundingPerc * currentOpeningMargin * 0.01)
-                    : (-1 * fundingPerc * currentOpeningMargin * 0.01)
+                    (1 * fundingPerc * positionSize * 0.01)
+                    : (-1 * fundingPerc * positionSize * 0.01)
             }
 
             // -ve. -ve for longs and +ve for shorts so it can be decuctible from
             // shorts and addable to longs.
             if (fundingPerc < 0) {
                 fundingMargin = position.positionType == LONG ?
-                    (-1 * fundingPerc * currentOpeningMargin * 0.01)
-                    : (1 * fundingPerc * currentOpeningMargin * 0.01)
+                    (-1 * fundingPerc * positionSize * 0.01)
+                    : (1 * fundingPerc * positionSize * 0.01)
             }
 
             const treshold = LIQUIDATION_THRESHOLD * currentOpeningMargin
