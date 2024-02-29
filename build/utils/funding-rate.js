@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const liquidate_positions_1 = require("../controllers/liquidator/liquidate-positions");
 const funding_rates_1 = __importDefault(require("../db/schema/funding-rates"));
+const orders_1 = __importDefault(require("../db/schema/orders"));
 const positions_1 = __importDefault(require("../db/schema/positions"));
 const constants_1 = require("./constants");
 function fundingRate(ticker) {
@@ -53,20 +54,23 @@ function fundingRate(ticker) {
                 const position = allPositions[i];
                 const currentOpeningMargin = position.openingMargin;
                 const currentFundingRate = position.fundingRate;
+                const order = (yield orders_1.default.findOne({ orderId: position.orderId }));
+                const { size, leverage } = order;
+                const positionSize = size * leverage * position.openingMargin;
                 let fundingMargin = 0;
                 // +ve, +ve for longs and -ve for shorts so it can be decuctible from
                 // longs and addable to shorts.
                 if (fundingPerc > 0) {
                     fundingMargin = position.positionType == constants_1.LONG ?
-                        (1 * fundingPerc * currentOpeningMargin * 0.01)
-                        : (-1 * fundingPerc * currentOpeningMargin * 0.01);
+                        (1 * fundingPerc * positionSize * 0.01)
+                        : (-1 * fundingPerc * positionSize * 0.01);
                 }
                 // -ve. -ve for longs and +ve for shorts so it can be decuctible from
                 // shorts and addable to longs.
                 if (fundingPerc < 0) {
                     fundingMargin = position.positionType == constants_1.LONG ?
-                        (-1 * fundingPerc * currentOpeningMargin * 0.01)
-                        : (1 * fundingPerc * currentOpeningMargin * 0.01);
+                        (-1 * fundingPerc * positionSize * 0.01)
+                        : (1 * fundingPerc * positionSize * 0.01);
                 }
                 const treshold = constants_1.LIQUIDATION_THRESHOLD * currentOpeningMargin;
                 if ((currentFundingRate - fundingMargin) <= treshold) {
