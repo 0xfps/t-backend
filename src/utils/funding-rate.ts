@@ -5,9 +5,9 @@ import positionsModel from "../db/schema/positions";
 import { BINANCE_API, BYBIT_SPOT_PRICE_API, LIQUIDATION_THRESHOLD, LONG, SHORT } from "./constants";
 
 export default async function fundingRate(ticker: string) {
-    ticker = ticker.slice(1, ticker.length)
+    const bybitTicker = ticker.slice(1, ticker.length)
 
-    const binanceData = await fetch(`${BYBIT_SPOT_PRICE_API}${ticker.toUpperCase()}USD`)
+    const binanceData = await fetch(`${BYBIT_SPOT_PRICE_API}${bybitTicker.toUpperCase()}USD`)
     const data = await binanceData.json()
     const averageSpotPrice = parseFloat((data.result.list[0].markPrice).toFixed(4))
 

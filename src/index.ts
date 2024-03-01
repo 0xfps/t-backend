@@ -29,6 +29,7 @@ import addTPAndSLRouter from "./routes/add-tp-sl"
 import fetchOpenOrders from "./web-socket/fetch-open-orders"
 import fetchMarketPrice from "./web-socket/fetch-market-price"
 import getTickerInformationRouter from "./routes/get-ticker-information"
+import checkForNewOrders from "./utils/check-for-new-orders"
 
 dotenv.config()
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env
@@ -59,6 +60,10 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
 
         ws.send(JSON.stringify(response))
     }, 1000)
+
+    setInterval(async function () {
+        await checkForNewOrders(ticker)
+    }, 300_000)
 
     // Make a call to an endpoint that compares long orders to short orders
     // every 5 seconds and tries to match them.
