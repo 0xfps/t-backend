@@ -19,8 +19,8 @@ const positions_1 = __importDefault(require("../db/schema/positions"));
 const constants_1 = require("./constants");
 function fundingRate(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
-        ticker = ticker.slice(1, ticker.length);
-        const binanceData = yield fetch(`${constants_1.BYBIT_SPOT_PRICE_API}${ticker.toUpperCase()}USD`);
+        const bybitTicker = ticker.slice(1, ticker.length);
+        const binanceData = yield fetch(`${constants_1.BYBIT_SPOT_PRICE_API}${bybitTicker.toUpperCase()}USD`);
         const data = yield binanceData.json();
         const averageSpotPrice = parseFloat((data.result.list[0].markPrice).toFixed(4));
         const lastMarketPrice = (yield positions_1.default.find({}).sort({ time: -1 }))[0].entryPrice;

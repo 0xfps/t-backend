@@ -42,6 +42,7 @@ const add_tp_sl_1 = __importDefault(require("./routes/add-tp-sl"));
 const fetch_open_orders_1 = __importDefault(require("./web-socket/fetch-open-orders"));
 const fetch_market_price_1 = __importDefault(require("./web-socket/fetch-market-price"));
 const get_ticker_information_1 = __importDefault(require("./routes/get-ticker-information"));
+const check_for_new_orders_1 = __importDefault(require("./utils/check-for-new-orders"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
@@ -64,6 +65,11 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
                 ws.send(JSON.stringify(response));
             });
         }, 1000);
+        setInterval(function () {
+            return __awaiter(this, void 0, void 0, function* () {
+                yield (0, check_for_new_orders_1.default)(ticker);
+            });
+        }, 300000);
         // Make a call to an endpoint that compares long orders to short orders
         // every 5 seconds and tries to match them.
         // This can be the idea of an orderbook.
