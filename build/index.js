@@ -43,6 +43,9 @@ const fetch_open_orders_1 = __importDefault(require("./web-socket/fetch-open-ord
 const fetch_market_price_1 = __importDefault(require("./web-socket/fetch-market-price"));
 const get_ticker_information_1 = __importDefault(require("./routes/get-ticker-information"));
 const check_for_new_orders_1 = __importDefault(require("./utils/check-for-new-orders"));
+const get_all_trades_1 = __importDefault(require("./routes/get-all-trades"));
+const get_latest_trades_1 = __importDefault(require("./routes/get-latest-trades"));
+const get_ticker_funding_rate_time_left_1 = __importDefault(require("./routes/get-ticker-funding-rate-time-left"));
 dotenv_1.default.config();
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env;
 const app = (0, express_1.default)();
@@ -106,6 +109,9 @@ app.use("/get-users-open-orders", get_users_open_orders_1.default);
 app.use("/get-users-filled-orders", get_users_filled_orders_1.default);
 app.use("/get-users-positions", get_users_positions_1.default);
 app.use("/get-ticker-information", get_ticker_information_1.default);
+app.use("/get-all-trades", get_all_trades_1.default);
+app.use("/get-latest-trades", get_latest_trades_1.default);
+app.use("/get-ticker-funding-rate-time-left", get_ticker_funding_rate_time_left_1.default);
 /**
  * Middleware for all POST endpoints.
  * All post endpoints secure themselves by decrypting the API key

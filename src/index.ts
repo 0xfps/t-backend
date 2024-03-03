@@ -30,6 +30,9 @@ import fetchOpenOrders from "./web-socket/fetch-open-orders"
 import fetchMarketPrice from "./web-socket/fetch-market-price"
 import getTickerInformationRouter from "./routes/get-ticker-information"
 import checkForNewOrders from "./utils/check-for-new-orders"
+import getAllTradesRouter from "./routes/get-all-trades"
+import getLatestTradesRouter from "./routes/get-latest-trades"
+import getTickerFundingRateTimeLeftRouter from "./routes/get-ticker-funding-rate-time-left"
 
 dotenv.config()
 const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env
@@ -101,6 +104,9 @@ app.use("/get-users-open-orders", getUsersOpenOrdersRouter)
 app.use("/get-users-filled-orders", getUsersFilledOrdersRouter)
 app.use("/get-users-positions", getUsersPositionsRouter)
 app.use("/get-ticker-information", getTickerInformationRouter)
+app.use("/get-all-trades", getAllTradesRouter)
+app.use("/get-latest-trades", getLatestTradesRouter)
+app.use("/get-ticker-funding-rate-time-left", getTickerFundingRateTimeLeftRouter)
 
 /**
  * Middleware for all POST endpoints.
