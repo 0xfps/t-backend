@@ -3,7 +3,7 @@ import positionsModel from "../db/schema/positions";
 import ResponseInterface from "../interfaces/response-interface";
 
 export default async function getAllTradesController(req: Request, res: Response) {
-    const { ticker, size } = req.params
+    const { ticker } = req.params
 
     const latestTrades = await positionsModel.find({ ticker: ticker }).sort({ time: "descending" })
 

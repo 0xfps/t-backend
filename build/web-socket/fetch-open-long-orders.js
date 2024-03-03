@@ -21,7 +21,7 @@ function fetchOpenLongOrders(ticker) {
             ticker: ticker,
             deleted: false,
             filled: false
-        });
+        }).sort({ price: "descending" });
         if (allOpenLongOrders.length == 0) {
             return [];
         }

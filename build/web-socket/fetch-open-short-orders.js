@@ -21,7 +21,7 @@ function fetchOpenShortOrders(ticker) {
             ticker: ticker,
             deleted: false,
             filled: false
-        });
+        }).sort({ price: "ascending" });
         if (allOpenShortOrders.length == 0) {
             return [];
         }

@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const positions_1 = __importDefault(require("../db/schema/positions"));
 function getAllTradesController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
-        const { ticker, size } = req.params;
+        const { ticker } = req.params;
         const latestTrades = yield positions_1.default.find({ ticker: ticker }).sort({ time: "descending" });
         const response = {
             status: 200,
