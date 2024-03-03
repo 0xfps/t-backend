@@ -6,5 +6,5 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
 const get_all_trades_1 = __importDefault(require("../controllers/get-all-trades"));
 const getAllTradesRouter = (0, express_1.Router)();
-getAllTradesRouter.get("/:ticker/:size", get_all_trades_1.default);
+getAllTradesRouter.get("/:ticker", get_all_trades_1.default);
 exports.default = getAllTradesRouter;
