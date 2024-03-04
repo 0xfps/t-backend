@@ -16,7 +16,7 @@ const get_funding_rate_time_left_1 = __importDefault(require("../utils/get-fundi
 function getTickerFundingRateTimeLeftController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { ticker } = req.params;
-        const timeLeft = (0, get_funding_rate_time_left_1.default)(ticker);
+        const timeLeft = yield (0, get_funding_rate_time_left_1.default)(ticker);
         const response = {
             status: 200,
             msg: "OK",

@@ -5,7 +5,7 @@ import ResponseInterface from "../interfaces/response-interface";
 export default async function getTickerFundingRateTimeLeftController(req: Request, res: Response) {
     const { ticker } = req.params
 
-    const timeLeft = getFundingRateTimeLeft(ticker)
+    const timeLeft = await getFundingRateTimeLeft(ticker)
     const response: ResponseInterface = {
         status: 200,
         msg: "OK",

@@ -20,7 +20,7 @@ function getFundingRateTimeLeft(ticker) {
         if (!fundingRates) {
             return constants_1.EIGHT_HOURS;
         }
-        const timeLeftTo8Hours = (fundingRates.timeOfLastFunding + constants_1.EIGHT_HOURS) - new Date().getTime();
+        const timeLeftTo8Hours = (parseInt(fundingRates.timeOfLastFunding) + constants_1.EIGHT_HOURS) - new Date().getTime();
         return timeLeftTo8Hours;
     });
 }
