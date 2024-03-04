@@ -8,6 +8,6 @@ export default async function getFundingRateTimeLeft(ticker: string): Promise<nu
         return EIGHT_HOURS
     }
 
-    const timeLeftTo8Hours = (fundingRates.timeOfLastFunding + EIGHT_HOURS) - new Date().getTime()
+    const timeLeftTo8Hours = (parseInt(fundingRates.timeOfLastFunding) + EIGHT_HOURS) - new Date().getTime()
     return timeLeftTo8Hours
 }
