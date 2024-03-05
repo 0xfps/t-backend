@@ -20,8 +20,10 @@ const constants_1 = require("./constants");
 function fundingRate(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
         const bybitTicker = ticker.slice(1, ticker.length);
-        const binanceData = yield fetch(`${constants_1.BYBIT_SPOT_PRICE_API}${bybitTicker.toUpperCase()}USD`);
-        const data = yield binanceData.json();
+        // 💡 Add BitGet, Coinbase, and OKX APIs here.
+        // 💡 Move this function to another file where it will be handled solely.
+        const bybitData = yield fetch(`${constants_1.BYBIT_SPOT_PRICE_API}${bybitTicker.toUpperCase()}USD`);
+        const data = yield bybitData.json();
         const averageSpotPrice = parseFloat((data.result.list[0].markPrice).toFixed(4));
         const lastMarketPrice = (yield positions_1.default.find({}).sort({ time: -1 }))[0].entryPrice;
         // This can be positive or negative.
