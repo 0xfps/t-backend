@@ -7,8 +7,11 @@ import { BINANCE_API, BYBIT_SPOT_PRICE_API, LIQUIDATION_THRESHOLD, LONG, SHORT }
 export default async function fundingRate(ticker: string) {
     const bybitTicker = ticker.slice(1, ticker.length)
 
-    const binanceData = await fetch(`${BYBIT_SPOT_PRICE_API}${bybitTicker.toUpperCase()}USD`)
-    const data = await binanceData.json()
+    // 💡 Add Binance, BitGet, Coinbase, and OKX APIs here.
+    // 💡 Move this function to another file where it will be handled solely.
+    // 💡 They're currently blocked by VPNs, so we'll use Axios and a proxy.
+    const bybitData = await fetch(`${BYBIT_SPOT_PRICE_API}${bybitTicker.toUpperCase()}USD`)
+    const data = await bybitData.json()
     const averageSpotPrice = parseFloat((data.result.list[0].markPrice).toFixed(4))
 
     const lastMarketPrice = (await positionsModel.find({}).sort({ time: -1 }))[0].entryPrice
