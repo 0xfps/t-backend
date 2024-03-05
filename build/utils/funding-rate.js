@@ -20,8 +20,9 @@ const constants_1 = require("./constants");
 function fundingRate(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
         const bybitTicker = ticker.slice(1, ticker.length);
-        // 💡 Add BitGet, Coinbase, and OKX APIs here.
+        // 💡 Add Binance, BitGet, Coinbase, and OKX APIs here.
         // 💡 Move this function to another file where it will be handled solely.
+        // 💡 They're currently blocked by VPNs, so we'll use Axios and a proxy.
         const bybitData = yield fetch(`${constants_1.BYBIT_SPOT_PRICE_API}${bybitTicker.toUpperCase()}USD`);
         const data = yield bybitData.json();
         const averageSpotPrice = parseFloat((data.result.list[0].markPrice).toFixed(4));
