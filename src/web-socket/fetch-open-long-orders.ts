@@ -9,7 +9,7 @@ export default async function fetchOpenLongOrders(ticker: string) {
             deleted: false,
             filled: false
         }
-    ).sort({ price: "descending" })
+    ).sort({ price: "ascending" })
 
     if (allOpenLongOrders.length == 0) {
         return []
