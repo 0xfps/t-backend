@@ -59,13 +59,13 @@ function fundingRate(ticker) {
                 const currentFundingRate = position.fundingRate;
                 const order = (yield orders_1.default.findOne({ orderId: position.orderId }));
                 const { size, leverage } = order;
-                const positionSize = size * leverage * position.openingMargin;
+                const positionSize = leverage * position.openingMargin;
                 let fundingMargin = 0;
                 // +ve, +ve for longs and -ve for shorts so it can be decuctible from
                 // longs and addable to shorts.
                 if (fundingPerc > 0) {
                     fundingMargin = position.positionType == constants_1.LONG ?
-                        (1 * fundingPerc * positionSize * 0.01)
+                        (fundingPerc * positionSize * 0.01)
                         : (-1 * fundingPerc * positionSize * 0.01);
                 }
                 // -ve. -ve for longs and +ve for shorts so it can be decuctible from
@@ -73,7 +73,7 @@ function fundingRate(ticker) {
                 if (fundingPerc < 0) {
                     fundingMargin = position.positionType == constants_1.LONG ?
                         (-1 * fundingPerc * positionSize * 0.01)
-                        : (1 * fundingPerc * positionSize * 0.01);
+                        : (fundingPerc * positionSize * 0.01);
                 }
                 const treshold = constants_1.LIQUIDATION_THRESHOLD * currentOpeningMargin;
                 if ((currentFundingRate - fundingMargin) <= treshold) {
