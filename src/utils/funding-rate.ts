@@ -53,7 +53,7 @@ export default async function fundingRate(ticker: string) {
             const order = (await ordersModel.findOne({ orderId: position.orderId }))
             const { size, leverage } = order
 
-            const positionSize = size * leverage * position.openingMargin
+            const positionSize = leverage * position.openingMargin
 
             let fundingMargin = 0
 
@@ -61,7 +61,7 @@ export default async function fundingRate(ticker: string) {
             // longs and addable to shorts.
             if (fundingPerc > 0) {
                 fundingMargin = position.positionType == LONG ?
-                    (1 * fundingPerc * positionSize * 0.01)
+                    (fundingPerc * positionSize * 0.01)
                     : (-1 * fundingPerc * positionSize * 0.01)
             }
 
@@ -70,7 +70,7 @@ export default async function fundingRate(ticker: string) {
             if (fundingPerc < 0) {
                 fundingMargin = position.positionType == LONG ?
                     (-1 * fundingPerc * positionSize * 0.01)
-                    : (1 * fundingPerc * positionSize * 0.01)
+                    : (fundingPerc * positionSize * 0.01)
             }
 
             const treshold = LIQUIDATION_THRESHOLD * currentOpeningMargin
