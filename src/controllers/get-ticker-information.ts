@@ -3,6 +3,14 @@ import getTickerContract from "../utils/get-ticker-contract";
 import ResponseInterface from "../interfaces/response-interface";
 import positionsModel from "../db/schema/positions";
 
+/**
+ * Returns exchange information based on `ticker`. Open interest,
+ * 24-hour change, 24-hour highs and lows, etc. Different tickers
+ * will have different exchange information.
+ * 
+ * @param req Request.
+ * @param res Response.
+ */
 export async function getTickerInformationController(req: Request, res: Response) {
     const { ticker } = req.params
 
@@ -76,5 +84,4 @@ export async function getTickerInformationController(req: Request, res: Response
     }
 
     res.send(response)
-    return
 }

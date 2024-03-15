@@ -17,19 +17,25 @@ const positions_1 = __importDefault(require("../../db/schema/positions"));
 const constants_1 = require("../../utils/constants");
 const long_market_order_1 = __importDefault(require("../orders/long/long-market-order"));
 const short_market_order_1 = __importDefault(require("../orders/short/short-market-order"));
+/**
+ * Closes position identified by `positionId`.
+ *
+ * @param positionId Position id to be closed.
+ * @returns Promise<[boolean, string]>
+ */
 function closePosition(positionId) {
     return __awaiter(this, void 0, void 0, function* () {
         const positionEntry = yield positions_1.default.findOne({ positionId: positionId });
         if (!positionEntry) {
             return [false, "Position not found."];
         }
-        const { positionType, orderId, fundingRate } = positionEntry;
+        const { orderId } = positionEntry;
         const orderEntry = yield orders_1.default.findOne({ orderId: orderId });
         if (!orderEntry) {
             return [false, "Order not found for position!"];
         }
         const lastMarketPrice = (yield positions_1.default.find({}).sort({ time: -1 }))[0].entryPrice;
-        const { positionType: orderPositionType, type, opener, market, leverage, margin, fee, assetA, assetB, ticker, size, price: initialPrice } = orderEntry;
+        const { positionType: orderPositionType, type, opener, market, leverage, margin, fee, ticker, size, price: initialPrice } = orderEntry;
         const newOrder = {
             positionType: orderPositionType,
             type,
@@ -38,8 +44,6 @@ function closePosition(positionId) {
             leverage,
             margin,
             fee,
-            assetA,
-            assetB,
             ticker,
             size,
             price: lastMarketPrice,

@@ -10,6 +10,14 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
+/**
+ * Increases `address`'s margin by `amount` allowing them to
+ * close a position.
+ * 
+ * @param address   Wallet address.
+ * @param amount    Amount to withdraw, non-etherized.
+ * @returns Promise<boolean>
+ */
 export default async function incrementMargin(address: string, amount: number): Promise<boolean> {
     const provider = new ethers.JsonRpcProvider(JSON_RPC_URL)
     const signer = new ethers.Wallet(process.env.PRIVATE_KEY as string, provider)
@@ -21,6 +29,7 @@ export default async function incrementMargin(address: string, amount: number): 
         signer
     )
 
+    // Don't remove this.
     // const tradableMarginHandler = new ethers.Contract(
     //     TRADABLE_MARGIN_HANDLER_ADDRESS,
     //     TRADABLE_MARGIN_HANDLER_ABI,
@@ -45,6 +54,7 @@ export default async function incrementMargin(address: string, amount: number): 
         }
     }
 
+    // Refer to src\utils\decrement-margin.ts:decrementMargin.
     while (!txnSuccess) {
         await txLoop(nonce)
         nonce = nonce + 1

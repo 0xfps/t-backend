@@ -13,6 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const positions_1 = __importDefault(require("../db/schema/positions"));
+/**
+ * Adds TP (Take Profit) and SL (Stop Loss) prices to a paticular `positionId`.
+ * TP and SL can be added inependently.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function addTPAndSLController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { positionId, tp, sl } = req.body;
@@ -34,8 +41,8 @@ function addTPAndSLController(req, res) {
             return;
         }
         const positionUpdated = yield positions_1.default.updateOne({ positionId: positionId }, {
-            tp: parseFloat(tp.toFixed(4)),
-            sl: parseFloat(sl.toFixed(4)),
+            tp: tp ? parseFloat(tp.toFixed(4)) : 0,
+            sl: sl ? parseFloat(sl.toFixed(4)) : 0,
         });
         if (!positionUpdated) {
             const response = {

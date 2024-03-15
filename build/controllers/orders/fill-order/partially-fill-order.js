@@ -20,6 +20,24 @@ const calculate_margin_ratio_1 = require("../../../utils/calculate-margin-ratio"
 const calculate_twap_1 = __importDefault(require("../../../utils/calculate-twap"));
 const get_unique_id_1 = require("../../../utils/get-unique-id");
 const liquidate_positions_1 = require("../../liquidator/liquidate-positions");
+/**
+ * There are two ways of filling an order:
+ * 1. Partial filling.
+ * 2. Complete filling.
+ *
+ * PARTIAL FILLING.
+ * This type of filling is ONLY applicable to LIMIT orders, i.e, for an order to
+ * get to this point, it has to be a limit order. As limit orders have to be equal to
+ * or of a higher size than market orders. Understand it as "the `fillingOrder` is partially
+ * filling the `filledOrder`".
+ *
+ * Partially filling the `filledOrder` creates a partial position for the `filledOrder`. The
+ * `fillingOrder` is untouched here. Why? Because, this function ONLY partially fills the `filledOrder`.
+ *
+ * @param filledOrder   Order to be filled.
+ * @param fillingOrder  Order filling the one above.
+ * @returns Promise<[boolean, string]>
+ */
 function partiallyFillOrder(filledOrder, fillingOrder) {
     return __awaiter(this, void 0, void 0, function* () {
         // Get the filling orders for the current order being filled.

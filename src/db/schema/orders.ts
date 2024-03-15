@@ -2,7 +2,6 @@ import { Schema, SchemaTypes, model, models } from "mongoose"
 
 const ordersSchema = new Schema({
     orderId: SchemaTypes.String,
-    aoriOrderId: SchemaTypes.String,
     // Order object starts here.
     positionType: SchemaTypes.String,   // "long" | "short"
     type: SchemaTypes.String,           // "limit" | "market"
@@ -10,8 +9,6 @@ const ordersSchema = new Schema({
     market: SchemaTypes.String,         // BTC/USD
     margin: SchemaTypes.Number,
     leverage: SchemaTypes.Number,
-    assetA: SchemaTypes.String,
-    assetB: SchemaTypes.String,
     ticker: SchemaTypes.String,         // tBTC.
     size: SchemaTypes.Number,
     sizeLeft: SchemaTypes.Number,

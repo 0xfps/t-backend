@@ -2,9 +2,16 @@ import { Request, Response } from "express";
 import ordersModel from "../db/schema/orders";
 import ResponseInterface from "../interfaces/response-interface";
 
+/**
+ * Retrieves all orders placed by an `address`, passed in `req.params` from
+ * the database, opened or closed.
+ * 
+ * @param req Request.
+ * @param res Response.
+ */
 export default async function getUsersOrdersController(req: Request, res: Response) {
     const { address } = req.params
-    const addressOrders = await ordersModel.find({ opener: address }).sort({ time: -1 })
+    const addressOrders = await ordersModel.find({ opener: address }).sort({ time: "descending" })
     if (!addressOrders) {
         const response: ResponseInterface = {
             status: 404,

@@ -3,10 +3,17 @@ import { LONG } from "../utils/constants"
 import ordersModel from "../db/schema/orders"
 import ResponseInterface from "../interfaces/response-interface"
 
+/**
+ * Retrieves all long orders placed for a `ticker`, passed in `req.params` from
+ * the database.
+ * 
+ * @param req Request.
+ * @param res Response.
+ */
 export default async function getLongOrdersController(req: Request, res: Response) {
     const { ticker } = req.params
 
-    const longOrders = await ordersModel.find({ positionType: LONG, ticker: ticker }).sort({ time: 1 })
+    const longOrders = await ordersModel.find({ positionType: LONG, ticker: ticker }).sort({ time: "descending" })
     if (!longOrders) {
         const response: ResponseInterface = {
             status: 200,

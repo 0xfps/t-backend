@@ -10,7 +10,7 @@ import completeOrder from "../complete-order/complete-order"
  * Long market order process.
  * 
  * @param order Order.
- * @returns 
+ * @returns Promise<[boolean, {}]>
  */
 export default async function processLongMarketOrder(order: Order, isClosingOrder: boolean): Promise<[boolean, {}]> {
     const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
@@ -30,7 +30,7 @@ export default async function processLongMarketOrder(order: Order, isClosingOrde
         price: { $gte: calculateSlippage(LONG, order.price), $lte: order.price },
         filled: false,
         deleted: false
-    }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
+    }).sort({ time: 1, price: -1 })
 
     const openShortLimitOrders = await ordersModel.find({
         positionType: SHORT,
@@ -44,7 +44,7 @@ export default async function processLongMarketOrder(order: Order, isClosingOrde
         price: { $gte: calculateSlippage(LONG, order.price), $lte: order.price },
         filled: false,
         deleted: false
-    }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
+    }).sort({ time: 1, price: -1 })
 
     const allOpenShortOrders = [...openShortLimitOrders, ...openShortMarketOrders]
 
@@ -52,13 +52,10 @@ export default async function processLongMarketOrder(order: Order, isClosingOrde
     // add data to database and then make order.
 
     const orderId = getUniqueId(20)
-    // 32, making it more unique and trackable, if desired.
-    const aoriOrderId = `${orderId}-${getUniqueId(20)}`
     const time = new Date().getTime()
 
     const createdOrder = await ordersModel.create({
         orderId,
-        aoriOrderId,
         ...order,
         sizeLeft: order.size,
         filled: false,

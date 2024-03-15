@@ -2,6 +2,13 @@ import { Request, Response } from "express";
 import ResponseInterface from "../interfaces/response-interface";
 import positionsModel from "../db/schema/positions";
 
+/**
+ * Adds TP (Take Profit) and SL (Stop Loss) prices to a paticular `positionId`.
+ * TP and SL can be added inependently.
+ * 
+ * @param req Request.
+ * @param res Response.
+ */
 export default async function addTPAndSLController(req: Request, res: Response) {
     const { positionId, tp, sl } = req.body
     if (!positionId) {
@@ -26,8 +33,8 @@ export default async function addTPAndSLController(req: Request, res: Response) 
     const positionUpdated = await positionsModel.updateOne(
         { positionId: positionId },
         {
-            tp: parseFloat(tp.toFixed(4)),
-            sl: parseFloat(sl.toFixed(4)),
+            tp: tp ? parseFloat(tp.toFixed(4)) : 0,
+            sl: sl ? parseFloat(sl.toFixed(4)) : 0,
         }
     )
 

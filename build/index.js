@@ -46,8 +46,20 @@ const check_for_new_orders_1 = __importDefault(require("./utils/check-for-new-or
 const get_all_trades_1 = __importDefault(require("./routes/get-all-trades"));
 const get_latest_trades_1 = __importDefault(require("./routes/get-latest-trades"));
 const get_ticker_funding_rate_time_left_1 = __importDefault(require("./routes/get-ticker-funding-rate-time-left"));
+/**
+ * 🚨🚨🚨 READ THIS 🚨🚨🚨
+ *
+ * Dear developer,
+ *
+ * DO NOT change the return objects of any WebSocket endpoints without
+ * notifying the entire team, and the frontend engineer, most importantly.
+ * Because the current return objects have been used in integrations,
+ * it will crash the web app.
+ *
+ * Anthony.
+ */
 dotenv_1.default.config();
-const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env;
+const { PORT, AUTH_KEY } = process.env;
 const app = (0, express_1.default)();
 const appWs = (0, express_ws_1.default)(app).app;
 app.use(express_1.default.json());
@@ -57,17 +69,49 @@ app.use((0, cors_1.default)(cors_config_1.corsOptions));
 app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" });
 });
+/**
+ * WEB SOCKET IMPLEMENTATION.
+ *
+ * The Tradable WebSocket performs a number of functions:
+ *
+ * 1. Returning open orders.
+ * Every second, the WebSocket retrieves orders submitted for a ticker from
+ * the frontend, and the entry price of the last opened position for a ticker,
+ * which is displayed on the frontend as the market price.
+ *
+ * 2. Checking for new orders.
+ * By design, after 5 minutes (300,000 milliseconds) of inactivity, the
+ * WebSocket runs and funding rate is charged. Inactivity involves non-submission
+ * of orders for a ticker.
+ *
+ * 3. Matching orders.
+ * Every 5 seconds, it goes through unmatched existing orders in the orderbook
+ * for a ticker and tries to match them.
+ *
+ * 4. Return funding rate time left.
+ * This data is used in a timed function to charge funding rate.
+ *
+ * All these functions above are dependent on the `ticker` passed to the endpoint.
+ * Actions are carried out with respect to the `ticker`. A `ticker` specifies a
+ * trading market.
+ */
 appWs.ws("/market-data/:ticker", function (ws, req) {
     return __awaiter(this, void 0, void 0, function* () {
         const { ticker } = req.params;
+        // Fetch open orders and market price for a ticker.
+        // Runs this functione every second.
         setInterval(function () {
             return __awaiter(this, void 0, void 0, function* () {
                 const data = yield (0, fetch_open_orders_1.default)(ticker);
                 const marketPrice = yield (0, fetch_market_price_1.default)(ticker);
                 const response = Object.assign(Object.assign({}, data), { marketPrice: marketPrice });
+                // Send WebSocket message.
                 ws.send(JSON.stringify(response));
             });
         }, 1000);
+        // Run every 5 minutes.
+        // Check to see if last order submitted for a ticker is older than 5 minutes,
+        // and charge funding rate if true.
         setInterval(function () {
             return __awaiter(this, void 0, void 0, function* () {
                 yield (0, check_for_new_orders_1.default)(ticker);
@@ -77,22 +121,23 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
         // every 5 seconds and tries to match them.
         // This can be the idea of an orderbook.
         // I don't know if this can function as a matching engine.
+        // No shit, it did.
         setInterval(function () {
             return __awaiter(this, void 0, void 0, function* () {
-                // Do nothing for now.
-                // When set, send order book every second to frontend.
                 const allLongMarketOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.LONG, filled: false }).sort({ time: 1, price: -1 });
                 const allShortMarketOrders = yield orders_1.default.find({ type: constants_1.MARKET, positionType: constants_1.SHORT, filled: false }).sort({ time: 1, price: -1 });
                 if (allLongMarketOrders.length > 0 && allShortMarketOrders.length > 0)
-                    yield (0, match_limit_1.default)(allLongMarketOrders, allShortMarketOrders);
+                    yield (0, match_limit_1.default)(allLongMarketOrders);
             });
         }, 5000);
+        // Charge funding rate once the timer returned by the function runs out.
         setInterval(function () {
             return __awaiter(this, void 0, void 0, function* () {
                 yield (0, funding_rate_1.default)(ticker);
             });
         }, yield (0, get_funding_rate_time_left_1.default)(ticker));
-        console.log("Websocket initiated!");
+        // Logger indicating successful WebSocket connection.
+        console.log("WebSocket initiated!");
     });
 });
 // Start server.
@@ -132,6 +177,7 @@ app.use(function (req, res, next) {
     //         return
     //     }
     // }
+    // API key is 292 in length.
     if (encryptedAPIKey.length != 292) {
         const response = { status: 403, msg: "Invalid API Key!" };
         res.send(response);

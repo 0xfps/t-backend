@@ -1,6 +1,12 @@
 import positionsModel from "../../db/schema/positions";
 import closePosition from "../close/close-position";
 
+/**
+ * Stops loss by closing a position once the "sl" entry of the
+ * position strikes `price`.
+ * 
+ * @param price Price.
+ */
 export default async function SL(price: number) {
     const allSLs = await positionsModel.find({ sl: { $lte: price } })
 

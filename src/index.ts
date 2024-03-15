@@ -2,7 +2,7 @@ import express, { Request, Response } from "express"
 import expressWs from "express-ws"
 import dotenv from "dotenv"
 import cors from "cors"
-import { corsOptions, whitelist } from "./config/cors-config"
+import { corsOptions } from "./config/cors-config"
 import createRouter from "./routes/create"
 import "./db/index"
 import { decryptAPIKey } from "./utils/encrypt-decrypt"
@@ -16,7 +16,7 @@ import getUsersOrdersRouter from "./routes/get-users-orders"
 import liquidatePositionRouter from "./routes/liquidate-position"
 import getUsersPositionsRouter from "./routes/get-users-positions"
 import ordersModel from "./db/schema/orders"
-import { GET, LONG, MARKET, POST, SHORT } from "./utils/constants"
+import { LONG, MARKET, SHORT } from "./utils/constants"
 import match from "./controllers/matcher/match-limit"
 import cancelOrderRouter from "./routes/cancel-order"
 import getFundingRateTimeLeft from "./utils/get-funding-rate-time-left"
@@ -34,8 +34,21 @@ import getAllTradesRouter from "./routes/get-all-trades"
 import getLatestTradesRouter from "./routes/get-latest-trades"
 import getTickerFundingRateTimeLeftRouter from "./routes/get-ticker-funding-rate-time-left"
 
+/**
+ * 🚨🚨🚨 READ THIS 🚨🚨🚨
+ * 
+ * Dear developer,
+ * 
+ * DO NOT change the return objects of any WebSocket endpoints without
+ * notifying the entire team, and the frontend engineer, most importantly.
+ * Because the current return objects have been used in integrations,
+ * it will crash the web app.
+ * 
+ * Anthony.
+ */
+
 dotenv.config()
-const { PORT, AUTH_KEY, ENVIRONMENT_URL } = process.env
+const { PORT, AUTH_KEY } = process.env
 
 const app = express()
 const appWs = expressWs(app).app
@@ -49,9 +62,37 @@ app.get("/", function (req, res) {
     res.send({ msg: "Welcome to Tradable's Backend!" })
 })
 
+/**
+ * WEB SOCKET IMPLEMENTATION.
+ * 
+ * The Tradable WebSocket performs a number of functions:
+ * 
+ * 1. Returning open orders.
+ * Every second, the WebSocket retrieves orders submitted for a ticker from
+ * the frontend, and the entry price of the last opened position for a ticker,
+ * which is displayed on the frontend as the market price.
+ * 
+ * 2. Checking for new orders.
+ * By design, after 5 minutes (300,000 milliseconds) of inactivity, the
+ * WebSocket runs and funding rate is charged. Inactivity involves non-submission 
+ * of orders for a ticker.
+ * 
+ * 3. Matching orders.
+ * Every 5 seconds, it goes through unmatched existing orders in the orderbook
+ * for a ticker and tries to match them.
+ * 
+ * 4. Return funding rate time left.
+ * This data is used in a timed function to charge funding rate.
+ * 
+ * All these functions above are dependent on the `ticker` passed to the endpoint.
+ * Actions are carried out with respect to the `ticker`. A `ticker` specifies a
+ * trading market.
+ */
 appWs.ws("/market-data/:ticker", async function (ws, req) {
     const { ticker } = req.params
 
+    // Fetch open orders and market price for a ticker.
+    // Runs this functione every second.
     setInterval(async function () {
         const data = await fetchOpenOrders(ticker)
         const marketPrice = await fetchMarketPrice(ticker)
@@ -61,9 +102,13 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
             marketPrice: marketPrice
         }
 
+        // Send WebSocket message.
         ws.send(JSON.stringify(response))
-    }, 1000)
+    }, 1_000)
 
+    // Run every 5 minutes.
+    // Check to see if last order submitted for a ticker is older than 5 minutes,
+    // and charge funding rate if true.
     setInterval(async function () {
         await checkForNewOrders(ticker)
     }, 300_000)
@@ -72,21 +117,22 @@ appWs.ws("/market-data/:ticker", async function (ws, req) {
     // every 5 seconds and tries to match them.
     // This can be the idea of an orderbook.
     // I don't know if this can function as a matching engine.
+    // No shit, it did.
     setInterval(async function () {
-        // Do nothing for now.
-        // When set, send order book every second to frontend.
         const allLongMarketOrders = await ordersModel.find({ type: MARKET, positionType: LONG, filled: false }).sort({ time: 1, price: -1 })
         const allShortMarketOrders = await ordersModel.find({ type: MARKET, positionType: SHORT, filled: false }).sort({ time: 1, price: -1 })
 
         if (allLongMarketOrders.length > 0 && allShortMarketOrders.length > 0)
-            await match(allLongMarketOrders, allShortMarketOrders)
+            await match(allLongMarketOrders)
     }, 5000)
 
+    // Charge funding rate once the timer returned by the function runs out.
     setInterval(async function () {
         await fundingRate(ticker)
     }, await getFundingRateTimeLeft(ticker))
 
-    console.log("Websocket initiated!")
+    // Logger indicating successful WebSocket connection.
+    console.log("WebSocket initiated!")
 })
 
 // Start server.
@@ -131,6 +177,7 @@ app.use(function (req: Request, res: Response, next: () => void) {
     //     }
     // }
 
+    // API key is 292 in length.
     if (encryptedAPIKey.length != 292) {
         const response: ResponseInterface = { status: 403, msg: "Invalid API Key!" }
         res.send(response)

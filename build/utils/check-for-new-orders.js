@@ -14,6 +14,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
 const funding_rate_1 = __importDefault(require("./funding-rate"));
+/**
+ * Using the passed ticker, the code takes the last order
+ * submitted for that ticker and evaluates the time of
+ * submission. If the time is older than 5 minutes, then
+ * funding rate is charged.
+ *
+ * @param ticker Ticker.
+ */
 function checkForNewOrders(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
         const allOrders = yield orders_1.default.find({}).sort({ time: "descending" });

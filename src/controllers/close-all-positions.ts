@@ -28,7 +28,7 @@ export default async function closeAllPositionsController(req: Request, res: Res
     }
 
     const promises = openPositions.map(async function ({ positionId }: any) {
-        const [closeSuccess, closeReason] = await closePosition(positionId)
+        const [closeSuccess,] = await closePosition(positionId)
         return closeSuccess
     })
 

@@ -1,10 +1,15 @@
 import ordersModel from "../../db/schema/orders"
 import positionsModel from "../../db/schema/positions"
-import userAddressesModel from "../../db/schema/user-addreses"
 import { LONG, Order, SHORT } from "../../utils/constants"
 import processLongMarketOrder from "../orders/long/long-market-order"
 import processShortMarketOrder from "../orders/short/short-market-order"
 
+/**
+ * Closes position identified by `positionId`.
+ * 
+ * @param positionId Position id to be closed.
+ * @returns Promise<[boolean, string]>
+ */
 export default async function closePosition(positionId: string): Promise<[boolean, string]> {
     const positionEntry = await positionsModel.findOne({ positionId: positionId })
 
@@ -12,7 +17,7 @@ export default async function closePosition(positionId: string): Promise<[boolea
         return [false, "Position not found."]
     }
 
-    const { positionType, orderId, fundingRate } = positionEntry
+    const { orderId } = positionEntry
 
     const orderEntry = await ordersModel.findOne({ orderId: orderId })
 
@@ -30,8 +35,6 @@ export default async function closePosition(positionId: string): Promise<[boolea
         leverage,
         margin,
         fee,
-        assetA,
-        assetB,
         ticker,
         size,
         price: initialPrice
@@ -45,8 +48,6 @@ export default async function closePosition(positionId: string): Promise<[boolea
         leverage,
         margin,
         fee,
-        assetA,
-        assetB,
         ticker,
         size,
         price: lastMarketPrice,

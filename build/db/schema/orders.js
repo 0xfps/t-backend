@@ -3,7 +3,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const ordersSchema = new mongoose_1.Schema({
     orderId: mongoose_1.SchemaTypes.String,
-    aoriOrderId: mongoose_1.SchemaTypes.String,
     // Order object starts here.
     positionType: mongoose_1.SchemaTypes.String, // "long" | "short"
     type: mongoose_1.SchemaTypes.String, // "limit" | "market"
@@ -11,8 +10,6 @@ const ordersSchema = new mongoose_1.Schema({
     market: mongoose_1.SchemaTypes.String, // BTC/USD
     margin: mongoose_1.SchemaTypes.Number,
     leverage: mongoose_1.SchemaTypes.Number,
-    assetA: mongoose_1.SchemaTypes.String,
-    assetB: mongoose_1.SchemaTypes.String,
     ticker: mongoose_1.SchemaTypes.String, // tBTC.
     size: mongoose_1.SchemaTypes.Number,
     sizeLeft: mongoose_1.SchemaTypes.Number,

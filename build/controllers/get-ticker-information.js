@@ -15,6 +15,14 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getTickerInformationController = void 0;
 const get_ticker_contract_1 = __importDefault(require("../utils/get-ticker-contract"));
 const positions_1 = __importDefault(require("../db/schema/positions"));
+/**
+ * Returns exchange information based on `ticker`. Open interest,
+ * 24-hour change, 24-hour highs and lows, etc. Different tickers
+ * will have different exchange information.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function getTickerInformationController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { ticker } = req.params;
@@ -75,7 +83,6 @@ function getTickerInformationController(req, res) {
             }
         };
         res.send(response);
-        return;
     });
 }
 exports.getTickerInformationController = getTickerInformationController;

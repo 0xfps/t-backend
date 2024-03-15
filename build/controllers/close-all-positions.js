@@ -37,7 +37,7 @@ function closeAllPositionsController(req, res) {
         }
         const promises = openPositions.map(function ({ positionId }) {
             return __awaiter(this, void 0, void 0, function* () {
-                const [closeSuccess, closeReason] = yield (0, close_position_1.default)(positionId);
+                const [closeSuccess,] = yield (0, close_position_1.default)(positionId);
                 return closeSuccess;
             });
         });

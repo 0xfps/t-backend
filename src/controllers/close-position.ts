@@ -3,7 +3,8 @@ import ResponseInterface from "../interfaces/response-interface";
 import closePosition from "./close/close-position";
 
 /**
- * Closes a position specified by the positionId.
+ * Closes a position specified by the positionId. Liquidating a positions is
+ * simply force-closing the position.
  * 
  * @param req Request.
  * @param res Response.
@@ -14,7 +15,6 @@ export default async function closePositionController(req: Request, res: Respons
     // I think there maybe should be some sort of authorization
     // to validate the call to this endpoint in order to avoid
     // wrong calls.
-
     const [success, reason] = await closePosition(positionId)
     if (!success) {
         const response: ResponseInterface = {

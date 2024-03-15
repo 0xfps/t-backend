@@ -16,12 +16,21 @@ const ethers_1 = require("ethers");
 const constants_1 = require("./constants");
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
+/**
+ * Increases `address`'s margin by `amount` allowing them to
+ * close a position.
+ *
+ * @param address   Wallet address.
+ * @param amount    Amount to withdraw, non-etherized.
+ * @returns Promise<boolean>
+ */
 function incrementMargin(address, amount) {
     return __awaiter(this, void 0, void 0, function* () {
         const provider = new ethers_1.ethers.JsonRpcProvider(constants_1.JSON_RPC_URL);
         const signer = new ethers_1.ethers.Wallet(process.env.PRIVATE_KEY, provider);
         let nonce = yield provider.getTransactionCount(signer.address, "pending");
         const tradableMarginVault = new ethers_1.ethers.Contract(constants_1.TRADABLE_MARGIN_VAULT_ADDRESS, constants_1.TRADABLE_MARGIN_VAULT_ABI, signer);
+        // Don't remove this.
         // const tradableMarginHandler = new ethers.Contract(
         //     TRADABLE_MARGIN_HANDLER_ADDRESS,
         //     TRADABLE_MARGIN_HANDLER_ABI,
@@ -43,6 +52,7 @@ function incrementMargin(address, amount) {
                 }
             });
         }
+        // Refer to src\utils\decrement-margin.ts:decrementMargin.
         while (!txnSuccess) {
             yield txLoop(nonce);
             nonce = nonce + 1;

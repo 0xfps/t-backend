@@ -13,6 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
+/**
+ * Returns the order data for a specific `orderId` passed in `req.params` from the backend.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function getOrderController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { orderId } = req.params;
@@ -20,7 +26,7 @@ function getOrderController(req, res) {
         if (!order) {
             const response = {
                 status: 404,
-                msg: "Not found!",
+                msg: "Order not found!",
                 data: {}
             };
             res.send(response);

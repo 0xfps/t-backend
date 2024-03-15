@@ -13,10 +13,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
+/**
+ * Retrieves all open orders placed by an `address`, passed in `req.params` from
+ * the database.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function getUsersOpenOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { address } = req.params;
-        const addressOrders = yield orders_1.default.find({ opener: address, filled: false, deleted: false }).sort({ time: -1 });
+        const addressOrders = yield orders_1.default.find({ opener: address, filled: false, deleted: false }).sort({ time: "descending" });
         if (!addressOrders) {
             const response = {
                 status: 404,

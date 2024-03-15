@@ -3,7 +3,7 @@ import dotenv from "dotenv"
 
 dotenv.config()
 
-const { AUTH_KEY, AUTH_ENCRYPTION_KEY, PRIVATE_KEY_ENCRYPTION_KEY } = process.env
+const { AUTH_ENCRYPTION_KEY, PRIVATE_KEY_ENCRYPTION_KEY } = process.env
 
 /**
  * Encryption keys used for created wallets on the /create

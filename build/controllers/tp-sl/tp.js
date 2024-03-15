@@ -14,6 +14,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const positions_1 = __importDefault(require("../../db/schema/positions"));
 const close_position_1 = __importDefault(require("../close/close-position"));
+/**
+ * Takes profit by closing a position once the "tp" entry of the
+ * position strikes `price`.
+ *
+ * @param price Price.
+ */
 function TP(price) {
     return __awaiter(this, void 0, void 0, function* () {
         const allTPs = yield positions_1.default.find({ tp: { $gte: price } });

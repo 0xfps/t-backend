@@ -10,6 +10,7 @@ import partiallyFillOrder from "../fill-order/partially-fill-order";
  * @param isClosingOrder    Bool to indicate if the order is being closed or not
  *                          relevant to only market calls. It's false on default.
  *                          and not relevant in limit orders.
+ * @returns Promise<[boolean, string]>
  */
 export default async function completeOrder(
     order: any,

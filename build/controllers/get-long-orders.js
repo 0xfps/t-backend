@@ -14,10 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const constants_1 = require("../utils/constants");
 const orders_1 = __importDefault(require("../db/schema/orders"));
+/**
+ * Retrieves all long orders placed for a `ticker`, passed in `req.params` from
+ * the database.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function getLongOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { ticker } = req.params;
-        const longOrders = yield orders_1.default.find({ positionType: constants_1.LONG, ticker: ticker }).sort({ time: 1 });
+        const longOrders = yield orders_1.default.find({ positionType: constants_1.LONG, ticker: ticker }).sort({ time: "descending" });
         if (!longOrders) {
             const response = {
                 status: 200,

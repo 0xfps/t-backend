@@ -2,6 +2,15 @@ import { Request, Response } from "express";
 import positionsModel from "../db/schema/positions";
 import ResponseInterface from "../interfaces/response-interface";
 
+/**
+ * Returns a specified number of recent positions opened for a ticker.
+ * ticker and size are specified when calling the endpoint. Ticker,
+ * stating what market to get data from and size denoting now much
+ * is to be returned.
+ * 
+ * @param req Request.
+ * @param res Response.
+ */
 export default async function getLatestTradesController(req: Request, res: Response) {
     const { ticker, size } = req.params
 
@@ -17,7 +26,8 @@ export default async function getLatestTradesController(req: Request, res: Respo
         return
     }
 
-    let lastNTrades
+    let lastNTrades = []
+    
     if (latestTrades.length > parseInt(size))
         lastNTrades = latestTrades.slice(0, parseInt(size) + 1)
     else

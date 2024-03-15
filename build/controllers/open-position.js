@@ -38,8 +38,6 @@ const user_addreses_1 = __importDefault(require("../db/schema/user-addreses"));
  * opener
  * market       // BTC/USD
  * leverage
- * assetA
- * assetB
  * ticker       // tBTC.
  * size
  * price

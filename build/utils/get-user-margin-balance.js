@@ -11,6 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const ethers_1 = require("ethers");
 const constants_1 = require("./constants");
+/**
+ * Returns the margin balance of a user from the TradableMarginVault. This
+ * allows us to proceed or halt position creation.
+ *
+ * @param address User wallet address.
+ * @returns number User balance, non-etherized.
+ */
 function getUserMarginBalance(address) {
     return __awaiter(this, void 0, void 0, function* () {
         const provider = new ethers_1.ethers.JsonRpcProvider(constants_1.JSON_RPC_URL);

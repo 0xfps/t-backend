@@ -14,6 +14,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const sl_1 = __importDefault(require("./sl"));
 const tp_1 = __importDefault(require("./tp"));
+/**
+ * Runs two functions to stop losses and take profits respectively.
+ *
+ * @param price Price.
+ */
 function TPxSL(price) {
     return __awaiter(this, void 0, void 0, function* () {
         yield (0, sl_1.default)(price);

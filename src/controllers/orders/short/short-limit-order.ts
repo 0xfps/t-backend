@@ -2,11 +2,17 @@ import ordersModel from "../../../db/schema/orders";
 import userAddressesModel from "../../../db/schema/user-addreses";
 import ResponseInterface from "../../../interfaces/response-interface";
 import { calculateSlippage } from "../../../utils/calculate-slippage";
-import { LIMIT, LONG, MARKET, Order, SHORT, SPREAD } from "../../../utils/constants";
+import { LIMIT, LONG, MARKET, Order, SHORT } from "../../../utils/constants";
 import decrementMargin from "../../../utils/decrement-margin";
 import { getUniqueId } from "../../../utils/get-unique-id";
 import completeOrder from "../complete-order/complete-order";
 
+/**
+ * Processes a short limit order.
+ * 
+ * @param order Order
+ * @returns Promise<[boolean, {}]>
+ */
 export default async function processShortLimitOrder(order: Order): Promise<[boolean, {}]> {
     const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
 
@@ -25,7 +31,7 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         price: { $gte: order.price, $lte: calculateSlippage(SHORT, order.price) },
         filled: false,
         deleted: false
-    }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
+    }).sort({ time: 1, price: -1 })
 
     const openLongMarketOrders = await ordersModel.find({
         positionType: LONG,
@@ -40,7 +46,7 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
         price: { $gte: order.price, $lte: calculateSlippage(SHORT, order.price) },
         filled: false,
         deleted: false
-    }).sort({ time: 1, price: -1 }) // Sort by first post first. 🚨 Possible bug.
+    }).sort({ time: 1, price: -1 })
 
     const allOpenLongOrders = [...openLongLimitOrders, ...openLongMarketOrders]
 
@@ -51,13 +57,10 @@ export default async function processShortLimitOrder(order: Order): Promise<[boo
     // If no long orders matching the user's market order are open, then only
     // add data to database because an order must be made to be taken in Aori.
     const orderId = getUniqueId(20)
-    // 32, making it more unique and trackable, if desired.
-    const aoriOrderId = `${orderId}-${getUniqueId(20)}`
     const time = new Date().getTime()
 
     const createdOrder = await ordersModel.create({
         orderId,
-        aoriOrderId,
         ...order,
         sizeLeft: order.size,
         filled: false,

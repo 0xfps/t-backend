@@ -2,8 +2,33 @@ import { liquidatePositions } from "../controllers/liquidator/liquidate-position
 import fundingRatesModel from "../db/schema/funding-rates";
 import ordersModel from "../db/schema/orders";
 import positionsModel from "../db/schema/positions";
-import { BINANCE_API, BYBIT_SPOT_PRICE_API, LIQUIDATION_THRESHOLD, LONG, SHORT } from "./constants";
+import { BYBIT_SPOT_PRICE_API, LIQUIDATION_THRESHOLD, LONG, SHORT } from "./constants";
 
+/**
+ * Funding rates.
+ * 
+ * 🚨🚨
+ * Note: The math here was solely done by a developer and has not
+ * been accepted by the team of devs. It is subject to changes.
+ * 
+ * Funding rates are calculated from a position's size (margin x leverage)
+ * and charged on the position's opening margin. Positions are created
+ * with two properties:
+ * `openingMargin`: The amount of money the order that opened the position was made with,
+ * this is a static property.
+ * `fundingRate`: This is a variable property, which at the start is equal to the `openingMargin`,
+ * but, as funding rates are charged, the value of this property is incremented or decremented
+ * respectively. This value is expected to not fall below a certain treshold, and when that
+ * happens, the parent position is liquidated instantly.
+ * 
+ * Using data from four sources, Bybit, Binance, OKX and Coinbase (future additions), the average
+ * spot price for a particular ticker is retrieved and the average is taken. The percentage difference
+ * between this average and our last market price is the funding percentage. The funding percentage
+ * is used to calculate the funding rate from the position size and charged from or to the position's
+ * `fundingRate`. Looking back at it, this is a not-so-good variable name.
+ * 
+ * @param ticker Ticker.
+ */
 export default async function fundingRate(ticker: string) {
     const bybitTicker = ticker.slice(1, ticker.length)
 
@@ -21,40 +46,56 @@ export default async function fundingRate(ticker: string) {
     // https://help.coinbase.com/en/international-exchange/funding/how-is-the-funding-rate-determined
     const fundingPerc = ((lastMarketPrice - averageSpotPrice) / averageSpotPrice) * 100
 
-    // Perp price > spot price.
-    // +ve funding rate.
-    // Longs pay shorts.
-    // Perp price < spot price.
-    // -ve funding rate.
-    // Shorts pay longs.
+    /**
+     * if the perp price on Tradable is greater than the calculated average spot price, there is
+     * a +ve funding rate. In this case, longs pay shorts.
+     * 
+     * If the perp price on Tradable is lesser than the calculated average spot price, there is
+     * a -ve funding rate. In this case, shorts pay longs.
+     */
 
     const allPositions = await positionsModel.find({})
     if (allPositions.length > 0) {
-        // Positions have openingMargins and fundingRates.
-        // If fundingRates drop below 80% or 0.8 of the opening margin, 
-        // i.e. LIQUIDATION_TRESHOLD, liquidate 💦.
-        // Then deduct margin and set funding rate as the initial order price.
-        // Initially, fundingRates in positions is the initial order margin.
-        // If funding rate is positive, LMP > ASP (refer to lines 10 - 17),
-        // Longs are in unnecessary profit, tax longs, pay shorts.
-        // If funding rate is negative, LMP < ASP (refer to lines 10 - 17),
-        // Shorts are in unnecessary profit, tax shorts, pay longs.
-        // Positive funding rate.
-        // If +ve, - longs, + shorts.
-        // If -ve, + longs, - shorts.
-        // Longs = -1 * fundingPerc.
-        // Shorts = 1 * fundingPerc.
+        /**
+         * This is the funding rate charging process.
+         * 
+         * First, all positions on the exchange are retrieved, unordered and iterated upon.
+         * Positions have openingMargins and fundingRates. If fundingRates drop below 80% or 
+         * 0.8 of the opening margin, i.e. LIQUIDATION_TRESHOLD, liquidate 💦.
+         * 
+         * If funding rate is positive, LMP > ASP (refer to lines 50 - 54),
+         * Longs are in unnecessary profit, tax longs, pay shorts. Deduct funding rate from
+         * longs and increment the funding rates of shorts.
+         * 
+         * If funding rate is negative, LMP < ASP (refer to lines 50 - 54),
+         * Shorts are in unnecessary profit, tax shorts, pay longs. Deduct funding rate from
+         * shorts and increment the funding rates of longs.
+         * 
+         * This is a tiny math trick to ensure that no matter the sign of the funding percentage,
+         * that the respective actions (addition or subtraction) are carried out on the respective
+         * position types.
+         * 
+         * If +ve, - longs, + shorts.
+         * If -ve, + longs, - shorts.
+         * Longs = -1 * fundingPerc.
+         * Shorts = 1 * fundingPerc.
+         */
         for (let i = 0; i < allPositions.length; i++) {
             const position = allPositions[i]
 
             const currentOpeningMargin = position.openingMargin
             const currentFundingRate = position.fundingRate
 
-            const order = (await ordersModel.findOne({ orderId: position.orderId }))
-            const { size, leverage } = order
+            const order = await ordersModel.findOne({ orderId: position.orderId })
+            
+            if (!order) continue
+            
+            const { leverage } = order
 
-            const positionSize = leverage * position.openingMargin
+            const positionSize = leverage * currentOpeningMargin
 
+            // This is the amount charged or added to position `fundingRate`s.
+            // 🚨 The calculations are still undecided.
             let fundingMargin = 0
 
             // +ve, +ve for longs and -ve for shorts so it can be decuctible from
@@ -73,6 +114,7 @@ export default async function fundingRate(ticker: string) {
                     : (fundingPerc * positionSize * 0.01)
             }
 
+            // If the fundingRate falls at or below this amount, liquidate the position.
             const treshold = LIQUIDATION_THRESHOLD * currentOpeningMargin
 
             if ((currentFundingRate - fundingMargin) <= treshold) {
@@ -80,6 +122,9 @@ export default async function fundingRate(ticker: string) {
                 continue
             }
 
+            /**
+             * Add funding margin to short fundingRate if positive, deduct if negative.
+             */
             if (position.positionType == SHORT) {
                 if (fundingPerc > 0) {
                     await positionsModel.updateOne(
@@ -95,6 +140,9 @@ export default async function fundingRate(ticker: string) {
                 }
             }
 
+            /**
+             * Deduct funding margin from long fundingRate if positive, add if negative.
+             */
             if (position.positionType == LONG) {
                 if (fundingPerc > 0) {
                     await positionsModel.updateOne(
@@ -112,5 +160,6 @@ export default async function fundingRate(ticker: string) {
         }
     }
 
+    // Update the time of the last funding rate to the current time after all is complete.
     await fundingRatesModel.updateOne({ ticker: ticker }, { timeOfLastFunding: new Date().getTime() })
 }
