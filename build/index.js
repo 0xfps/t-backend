@@ -72,16 +72,16 @@ app.get("/", function (req, res) {
 /**
  * WEB SOCKET IMPLEMENTATION.
  *
- * The Tradable websocket performs a number of functions:
+ * The Tradable WebSocket performs a number of functions:
  *
  * 1. Returning open orders.
- * Every second, the websocket retrieves orders submitted for a ticker from
+ * Every second, the WebSocket retrieves orders submitted for a ticker from
  * the frontend, and the entry price of the last opened position for a ticker,
  * which is displayed on the frontend as the market price.
  *
  * 2. Checking for new orders.
  * By design, after 5 minutes (300,000 milliseconds) of inactivity, the
- * websocket runs and funding rate is charged. Inactivity involves non-submission
+ * WebSocket runs and funding rate is charged. Inactivity involves non-submission
  * of orders for a ticker.
  *
  * 3. Matching orders.
@@ -105,7 +105,7 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
                 const data = yield (0, fetch_open_orders_1.default)(ticker);
                 const marketPrice = yield (0, fetch_market_price_1.default)(ticker);
                 const response = Object.assign(Object.assign({}, data), { marketPrice: marketPrice });
-                // Send websocket message.
+                // Send WebSocket message.
                 ws.send(JSON.stringify(response));
             });
         }, 1000);
@@ -136,8 +136,8 @@ appWs.ws("/market-data/:ticker", function (ws, req) {
                 yield (0, funding_rate_1.default)(ticker);
             });
         }, yield (0, get_funding_rate_time_left_1.default)(ticker));
-        // Logger indicating successful websocket connection.
-        console.log("Websocket initiated!");
+        // Logger indicating successful WebSocket connection.
+        console.log("WebSocket initiated!");
     });
 });
 // Start server.
