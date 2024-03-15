@@ -6,7 +6,6 @@ import getTickerContract from "../utils/get-ticker-contract"
 import ResponseInterface from "../interfaces/response-interface"
 import getUserMarginBalance from "../utils/get-user-margin-balance"
 import userAddressesModel from "../db/schema/user-addreses"
-import incrementMargin from "../utils/increment-margin"
 
 /**
  * Opening a position is simply making a long or short position
@@ -28,8 +27,6 @@ import incrementMargin from "../utils/increment-margin"
  * opener
  * market       // BTC/USD
  * leverage
- * assetA
- * assetB
  * ticker       // tBTC.
  * size
  * price

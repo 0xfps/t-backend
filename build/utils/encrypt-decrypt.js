@@ -7,7 +7,7 @@ exports.decryptAPIKey = exports.decryptPrivateKey = exports.encryptPrivateKey = 
 const cryptr_1 = __importDefault(require("cryptr"));
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
-const { AUTH_KEY, AUTH_ENCRYPTION_KEY, PRIVATE_KEY_ENCRYPTION_KEY } = process.env;
+const { AUTH_ENCRYPTION_KEY, PRIVATE_KEY_ENCRYPTION_KEY } = process.env;
 /**
  * Encryption keys used for created wallets on the /create
  * endpoint use a key different from that which is used to

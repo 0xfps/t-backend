@@ -15,6 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
 const user_addreses_1 = __importDefault(require("../db/schema/user-addreses"));
 const increment_margin_1 = __importDefault(require("../utils/increment-margin"));
+/**
+ * Allows a user to cancel an order `orderId` on the condition that the order
+ * has not started to get filled.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function cancelOrderController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { orderId } = req.body;

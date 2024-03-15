@@ -13,10 +13,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const positions_1 = __importDefault(require("../db/schema/positions"));
+/**
+ * Returns the entry price of the last opened position.
+ * Last opened position can be retrieved by sorting
+ * the returned positions' times in a descending order
+ * (latest to earliest) and taking the first entry of the array.
+ *
+ * @param ticker Ticker.
+ * @returns Entry price of last opened position.
+ */
 function fetchMarketPrice(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
         const positions = yield positions_1.default.find({ ticker: ticker }).sort({ time: "descending" });
-        ticker = ticker.slice(1, ticker.length);
         if (positions.length == 0) {
             return 0;
         }

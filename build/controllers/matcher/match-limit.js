@@ -16,11 +16,17 @@ const orders_1 = __importDefault(require("../../db/schema/orders"));
 const calculate_slippage_1 = require("../../utils/calculate-slippage");
 const constants_1 = require("../../utils/constants");
 const complete_order_1 = __importDefault(require("../orders/complete-order/complete-order"));
-function match(longLimitOrders, shortLimitOrders) {
+/**
+ * This function takes in an array of long limit orders and tries to
+ * match them with any available short limit order found in the database.
+ *
+ * @param longLimitOrders An array of long limit orders.
+ */
+function match(longLimitOrders) {
     return __awaiter(this, void 0, void 0, function* () {
         longLimitOrders.forEach(function (longLimitOrder) {
             return __awaiter(this, void 0, void 0, function* () {
-                // Check in short orders to see if there are any orders matching within 20% slippage
+                // Check in short orders to see if there are any orders matching within slippage
                 // of order price and order size.
                 // User below is trying to sell as much as caller is trying to buy.
                 const openShortOrders = yield orders_1.default.find({
@@ -33,7 +39,7 @@ function match(longLimitOrders, shortLimitOrders) {
                     // buying price of the market and the selling price.
                     price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.LONG, longLimitOrder.price), $lte: longLimitOrder.price },
                     filled: false
-                }).sort({ time: 1, price: 1 }); // Sort by first post first. 🚨 Possible bug.
+                }).sort({ time: 1, price: 1 });
                 if (openShortOrders.length > 0) {
                     yield (0, complete_order_1.default)(longLimitOrder, openShortOrders);
                 }

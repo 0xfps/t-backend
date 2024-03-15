@@ -4,6 +4,13 @@ import ResponseInterface from "../interfaces/response-interface";
 import userAddressesModel from "../db/schema/user-addreses";
 import incrementMargin from "../utils/increment-margin";
 
+/**
+ * Allows a user to cancel an order `orderId` on the condition that the order
+ * has not started to get filled.
+ * 
+ * @param req Request.
+ * @param res Response.
+ */
 export default async function cancelOrderController(req: Request, res: Response) {
     const { orderId } = req.body
 

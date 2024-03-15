@@ -14,7 +14,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const close_position_1 = __importDefault(require("./close/close-position"));
 /**
- * Closes a position specified by the positionId.
+ * Closes a position specified by the positionId. Liquidating a positions is
+ * simply force-closing the position.
  *
  * @param req Request.
  * @param res Response.

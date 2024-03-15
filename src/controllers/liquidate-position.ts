@@ -2,6 +2,12 @@ import { Request, Response } from "express";
 import ResponseInterface from "../interfaces/response-interface";
 import closePosition from "./close/close-position";
 
+/**
+ * Liquidates a position `positionId`.
+ * 
+ * @param req Request.
+ * @param res Response.
+ */
 export default async function liquidatePositionController(req: Request, res: Response) {
     const { positionId } = req.body
 

@@ -13,6 +13,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const positions_1 = __importDefault(require("../db/schema/positions"));
+/**
+ * Returns a specified number of recent positions opened for a ticker.
+ * ticker and size are specified when calling the endpoint. Ticker,
+ * stating what market to get data from and size denoting now much
+ * is to be returned.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function getLatestTradesController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { ticker, size } = req.params;
@@ -26,7 +35,7 @@ function getLatestTradesController(req, res) {
             res.send(response);
             return;
         }
-        let lastNTrades;
+        let lastNTrades = [];
         if (latestTrades.length > parseInt(size))
             lastNTrades = latestTrades.slice(0, parseInt(size) + 1);
         else

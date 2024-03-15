@@ -17,6 +17,7 @@ export const POST = "GET"
 // Maximum slippage percentage allowed for long and short positions.
 // 5%, in this case.
 export const SPREAD = 5
+// Liquidation treshold, 80% of opening margin.
 export const LIQUIDATION_THRESHOLD = 0.8
 
 export const EIGHT_HOURS = 1000 * 60 * 60 * 8
@@ -32,8 +33,6 @@ export type Order = {
     leverage: number,
     margin: number,
     fee: number,
-    assetA: string,
-    assetB: string,
     ticker: string,
     size: number,
     price: number,

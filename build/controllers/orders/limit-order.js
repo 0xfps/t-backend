@@ -15,6 +15,13 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const constants_1 = require("../../utils/constants");
 const long_limit_order_1 = __importDefault(require("./long/long-limit-order"));
 const short_limit_order_1 = __importDefault(require("./short/short-limit-order"));
+/**
+ * Takes an order, validated to be a limit order and processes it
+ * either as a short limit or as a long limit order.
+ *
+ * @param order Order.
+ * @returns Promise<[boolean, {}]> Return data.
+ */
 function processLimitOrder(order) {
     return __awaiter(this, void 0, void 0, function* () {
         const { positionType } = order;

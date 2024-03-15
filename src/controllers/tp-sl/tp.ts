@@ -1,6 +1,12 @@
 import positionsModel from "../../db/schema/positions";
 import closePosition from "../close/close-position";
 
+/**
+ * Takes profit by closing a position once the "tp" entry of the
+ * position strikes `price`.
+ * 
+ * @param price Price.
+ */
 export default async function TP(price: number) {
     const allTPs = await positionsModel.find({ tp: { $gte: price } })
 

@@ -23,7 +23,7 @@ const complete_order_1 = __importDefault(require("../complete-order/complete-ord
  * Long market order process.
  *
  * @param order Order.
- * @returns
+ * @returns Promise<[boolean, {}]>
  */
 function processLongMarketOrder(order, isClosingOrder) {
     return __awaiter(this, void 0, void 0, function* () {
@@ -43,7 +43,7 @@ function processLongMarketOrder(order, isClosingOrder) {
             price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.LONG, order.price), $lte: order.price },
             filled: false,
             deleted: false
-        }).sort({ time: 1, price: -1 }); // Sort by first post first. 🚨 Possible bug.
+        }).sort({ time: 1, price: -1 });
         const openShortLimitOrders = yield orders_1.default.find({
             positionType: constants_1.SHORT,
             // Can one fill a market order with a limit order?
@@ -56,16 +56,13 @@ function processLongMarketOrder(order, isClosingOrder) {
             price: { $gte: (0, calculate_slippage_1.calculateSlippage)(constants_1.LONG, order.price), $lte: order.price },
             filled: false,
             deleted: false
-        }).sort({ time: 1, price: -1 }); // Sort by first post first. 🚨 Possible bug.
+        }).sort({ time: 1, price: -1 });
         const allOpenShortOrders = [...openShortLimitOrders, ...openShortMarketOrders];
         // If not short orders matching the user's market order are open, then
         // add data to database and then make order.
         const orderId = (0, get_unique_id_1.getUniqueId)(20);
-        // 32, making it more unique and trackable, if desired.
-        const aoriOrderId = `${orderId}-${(0, get_unique_id_1.getUniqueId)(20)}`;
         const time = new Date().getTime();
-        const createdOrder = yield orders_1.default.create(Object.assign(Object.assign({ orderId,
-            aoriOrderId }, order), { sizeLeft: order.size, filled: false, fillingOrders: [], deleted: false, time }));
+        const createdOrder = yield orders_1.default.create(Object.assign(Object.assign({ orderId }, order), { sizeLeft: order.size, filled: false, fillingOrders: [], deleted: false, time }));
         if (!createdOrder) {
             const response = {
                 status: 400,

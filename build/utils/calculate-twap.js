@@ -13,6 +13,19 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
+/**
+ * Calculates the Time Weighted Average Price for an array of orders and a particular
+ * size. The size comes from the parent order being filled and the orderIds are the
+ * filling orders. Remember that?
+ *
+ * TWAP =       E(FillingOrder(n).size * FillingOrder(n).price)
+ *          ------------------------------------------------------
+ *                             FilledOrder.size
+ *
+ * @param orderIds  An array of orders.
+ * @param size      Size of the filled order.
+ * @returns Promise<number>
+ */
 function calculateTwap(orderIds, size) {
     return __awaiter(this, void 0, void 0, function* () {
         let TWP = 0;

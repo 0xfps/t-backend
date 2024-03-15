@@ -13,6 +13,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const get_funding_rate_time_left_1 = __importDefault(require("../utils/get-funding-rate-time-left"));
+/**
+ * Funding rates are charged every 8 hours. This function returns the 8 hour difference
+ * between the last funding rate time and the next funding rate.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function getTickerFundingRateTimeLeftController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { ticker } = req.params;

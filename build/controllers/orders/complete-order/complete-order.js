@@ -23,6 +23,7 @@ const partially_fill_order_1 = __importDefault(require("../fill-order/partially-
  * @param isClosingOrder    Bool to indicate if the order is being closed or not
  *                          relevant to only market calls. It's false on default.
  *                          and not relevant in limit orders.
+ * @returns Promise<[boolean, string]>
  */
 function completeOrder(order, completingOrders, isClosingOrder = false, usersEntryMarketPrice) {
     return __awaiter(this, void 0, void 0, function* () {

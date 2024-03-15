@@ -14,6 +14,13 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const funding_rates_1 = __importDefault(require("../db/schema/funding-rates"));
 const constants_1 = require("./constants");
+/**
+ * Funding rates are charged every 8 hours. This function returns the 8 hour difference
+ * between the last funding rate time and the next funding rate.
+ *
+ * @param ticker Ticker.
+ * @returns Time left until 8 hours.
+ */
 function getFundingRateTimeLeft(ticker) {
     return __awaiter(this, void 0, void 0, function* () {
         const fundingRates = yield funding_rates_1.default.findOne({ ticker: ticker });

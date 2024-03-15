@@ -14,10 +14,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
 const constants_1 = require("../utils/constants");
+/**
+ * Retrieves all short orders placed for a `ticker`, passed in `req.params` from
+ * the database.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function getShortOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { ticker } = req.params;
-        const shortOrders = yield orders_1.default.find({ positionType: constants_1.SHORT, ticker: ticker }).sort({ time: 1 });
+        const shortOrders = yield orders_1.default.find({ positionType: constants_1.SHORT, ticker: ticker }).sort({ time: "descending" });
         if (!shortOrders) {
             const response = {
                 status: 200,

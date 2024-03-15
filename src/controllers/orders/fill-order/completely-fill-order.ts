@@ -10,8 +10,31 @@ import incrementMargin from "../../../utils/increment-margin"
 import { liquidatePositions } from "../../liquidator/liquidate-positions"
 import TPxSL from "../../tp-sl/tp-sl"
 
-// Fills `filledOrder` completely and closes the DB.
-// The focus is on `filledOrder`, not `fillingOrder`.
+/**
+ * There are two ways of filling an order:
+ * 1. Partial filling.
+ * 2. Complete filling.
+ * 
+ * COMPLETE FILLING.
+ * This type of filling is applicable to LIMIT and MARKET orders. Understand it as
+ * "the `fillingOrder` is completely filling the `filledOrder`".
+ * 
+ * Fills `filledOrder` completely and closes the DB.
+ * The focus is on `filledOrder`, not `fillingOrder`.
+ * 
+ * Completely filling the `filledOrder` creates a position for the `filledOrder`. The
+ * `fillingOrder` is untouched here. Why? Because, this function ONLY completely fills the `filledOrder`.
+ * 
+ * If `isClosingOrder` is true, this function is regarded as a function that closes a position. i.e.
+ * On the exchange, if a position is closed by either Take Profit, Stop Loss, Liquidation, Funding Rate
+ * or user choice, this variable is passed as true and false if otherwise. In which case, profits and losses
+ * are calculated and the user is rewarded equivalently.
+ * 
+ * @param filledOrder   Order to be filled.
+ * @param fillingOrder  Order filling the one above.
+ * @param isClosingOrder Boolean to indicate if the call to this function is a closing order or not.
+ * @returns Promise<[boolean, string]>
+ */
 export default async function completelyFillOrder(filledOrder: any, fillingOrder: any, isClosingOrder = false, usersEntryMarketPrice?: number): Promise<[boolean, string]> {
     const entryPrice = filledOrder.positionType == SHORT ? filledOrder.price : fillingOrder.price
     const leverage = parseInt(filledOrder.leverage)

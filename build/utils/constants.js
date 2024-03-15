@@ -16,6 +16,7 @@ exports.POST = "GET";
 // Maximum slippage percentage allowed for long and short positions.
 // 5%, in this case.
 exports.SPREAD = 5;
+// Liquidation treshold, 80% of opening margin.
 exports.LIQUIDATION_THRESHOLD = 0.8;
 exports.EIGHT_HOURS = 1000 * 60 * 60 * 8;
 exports.BINANCE_API = "https://api.binance.com";

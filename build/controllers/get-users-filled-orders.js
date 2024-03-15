@@ -13,6 +13,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const orders_1 = __importDefault(require("../db/schema/orders"));
+/**
+ * Returns all orders opened by a user that have been filled.
+ *
+ * @param req Request.
+ * @param res Response.
+ */
 function getUsersFilledOrdersController(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { address } = req.params;

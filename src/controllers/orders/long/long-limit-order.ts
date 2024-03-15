@@ -8,10 +8,10 @@ import { getUniqueId } from "../../../utils/get-unique-id";
 import completeOrder from "../complete-order/complete-order";
 
 /**
- * Process a long limit order.
+ * Processes a long limit order.
  * 
  * @param order Order.
- * @returns 
+ * @returns Promise<[boolean, {}]>
 */
 export default async function processLongLimitOrder(order: Order): Promise<[boolean, {}]> {
     const { user } = await userAddressesModel.findOne({ tWallet: order.opener })
@@ -31,7 +31,7 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
         price: { $gte: calculateSlippage(LONG, order.price), $lte: order.price },
         filled: false,
         deleted: false
-    }).sort({ time: 1, price: 1 }) // Sort by first post first. 🚨 Possible bug.
+    }).sort({ time: 1, price: 1 })
 
 
     const openShortMarketOrders = await ordersModel.find({
@@ -47,7 +47,7 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
         price: { $gte: calculateSlippage(LONG, order.price), $lte: order.price },
         filled: false,
         deleted: false
-    }).sort({ time: 1, price: 1 }) // Sort by first post first. 🚨 Possible bug.
+    }).sort({ time: 1, price: 1 })
 
     const allOpenShortOrders = [...openShortLimitOrders, ...openShortMarketOrders]
 
@@ -59,13 +59,10 @@ export default async function processLongLimitOrder(order: Order): Promise<[bool
     // If not short orders matching the user's market order are open, then
     // add data to database and then make order.
     const orderId = getUniqueId(20)
-    // 32, making it more unique and trackable, if desired.
-    const aoriOrderId = `${orderId}-${getUniqueId(20)}`
     const time = new Date().getTime()
 
     const createdOrder = await ordersModel.create({
         orderId,
-        aoriOrderId,
         ...order,
         sizeLeft: order.size,
         filled: false,
