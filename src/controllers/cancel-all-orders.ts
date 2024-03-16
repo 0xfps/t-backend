@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import ResponseInterface from "../interfaces/response-interface";
 import userAddressesModel from "../db/schema/user-addreses";
 import ordersModel from "../db/schema/orders";
+import incrementMargin from "../utils/increment-margin";
 
 /**
  * Cancels all orders opened by `address` that aren't being filled.
@@ -37,10 +38,33 @@ export default async function cancelAllOrdersController(req: Request, res: Respo
 
     const tWallet = addressEntry.tWallet
 
-    const deletion = ordersModel.deleteMany({
+    const allOrders = await ordersModel.find({
         opener: tWallet,
         filled: false,
-        fillingOrders: [],
+        fillingOrders: []
+    })
+
+    if (allOrders.length == 0) {
+        const response: ResponseInterface = {
+            status: 404,
+            msg: "You have no open orders!"
+        }
+        res.send(response)
+        return
+    }
+
+    // Get a sum of all the user's margin on all orders to be cancelled.
+    const sum = allOrders.reduce(function (cV: number, order: any) {
+        return cV + parseFloat(order.margin)
+    }, 0)
+
+    // Refund the user.
+    await incrementMargin(address, sum)
+
+    const deletion = await ordersModel.deleteMany({
+        opener: tWallet,
+        filled: false,
+        fillingOrders: []
     })
 
     if (!deletion) {

@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_addreses_1 = __importDefault(require("../db/schema/user-addreses"));
 const orders_1 = __importDefault(require("../db/schema/orders"));
+const increment_margin_1 = __importDefault(require("../utils/increment-margin"));
 /**
  * Cancels all orders opened by `address` that aren't being filled.
  * We don't care about the ticker. Delete everything as long as
@@ -44,10 +45,29 @@ function cancelAllOrdersController(req, res) {
             return;
         }
         const tWallet = addressEntry.tWallet;
-        const deletion = orders_1.default.deleteMany({
+        const allOrders = yield orders_1.default.find({
             opener: tWallet,
             filled: false,
-            fillingOrders: [],
+            fillingOrders: []
+        });
+        if (allOrders.length == 0) {
+            const response = {
+                status: 404,
+                msg: "You have no open orders!"
+            };
+            res.send(response);
+            return;
+        }
+        // Get a sum of all the user's margin on all orders to be cancelled.
+        const sum = allOrders.reduce(function (cV, order) {
+            return cV + parseFloat(order.margin);
+        }, 0);
+        // Refund the user.
+        yield (0, increment_margin_1.default)(address, sum);
+        const deletion = yield orders_1.default.deleteMany({
+            opener: tWallet,
+            filled: false,
+            fillingOrders: []
         });
         if (!deletion) {
             const response = {
