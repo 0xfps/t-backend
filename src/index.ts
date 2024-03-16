@@ -33,6 +33,7 @@ import checkForNewOrders from "./utils/check-for-new-orders"
 import getAllTradesRouter from "./routes/get-all-trades"
 import getLatestTradesRouter from "./routes/get-latest-trades"
 import getTickerFundingRateTimeLeftRouter from "./routes/get-ticker-funding-rate-time-left"
+import cancelAllOrdersRouter from "./routes/cancel-all-orders"
 
 /**
  * 🚨🚨🚨 READ THIS 🚨🚨🚨
@@ -202,4 +203,5 @@ app.use("/close-position", closePositionRouter)
 app.use("/close-all-positions", closeAllPositionsRouter)
 app.use("/add-tp-sl", addTPAndSLRouter)
 app.use("/cancel-order", cancelOrderRouter)
+app.use("cancel-all-orders", cancelAllOrdersRouter)
 app.use("/liquidate-position", liquidatePositionRouter)
