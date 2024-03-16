@@ -46,6 +46,7 @@ const check_for_new_orders_1 = __importDefault(require("./utils/check-for-new-or
 const get_all_trades_1 = __importDefault(require("./routes/get-all-trades"));
 const get_latest_trades_1 = __importDefault(require("./routes/get-latest-trades"));
 const get_ticker_funding_rate_time_left_1 = __importDefault(require("./routes/get-ticker-funding-rate-time-left"));
+const cancel_all_orders_1 = __importDefault(require("./routes/cancel-all-orders"));
 /**
  * 🚨🚨🚨 READ THIS 🚨🚨🚨
  *
@@ -198,4 +199,5 @@ app.use("/close-position", close_position_1.default);
 app.use("/close-all-positions", close_all_positions_1.default);
 app.use("/add-tp-sl", add_tp_sl_1.default);
 app.use("/cancel-order", cancel_order_1.default);
+app.use("cancel-all-orders", cancel_all_orders_1.default);
 app.use("/liquidate-position", liquidate_position_1.default);
