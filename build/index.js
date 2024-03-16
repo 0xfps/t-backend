@@ -199,5 +199,5 @@ app.use("/close-position", close_position_1.default);
 app.use("/close-all-positions", close_all_positions_1.default);
 app.use("/add-tp-sl", add_tp_sl_1.default);
 app.use("/cancel-order", cancel_order_1.default);
-app.use("cancel-all-orders", cancel_all_orders_1.default);
+app.use("/cancel-all-orders", cancel_all_orders_1.default);
 app.use("/liquidate-position", liquidate_position_1.default);
